@@ -9,8 +9,8 @@ app.innerHTML = `
   <main id="game" aria-label="ORBIT FPV pinball game">
     <div id="viewport"></div>
     <header class="topbar">
-      <a class="wordmark" href="./" aria-label="ORBIT home"><span class="orbit-mark">◎</span><strong>ORBIT</strong><span class="brand-note">FPV PINBALL</span></a>
-      <div class="top-actions"><span class="best">BEST <b id="best-score">00000</b></span><button id="sound" class="icon-button" aria-label="Enable sound" aria-pressed="false">SOUND OFF</button><button id="pause" class="icon-button" aria-label="Pause game">Ⅱ</button><button id="fullscreen" class="icon-button" aria-label="Enter fullscreen">⛶</button></div>
+      <a class="wordmark" href="./" aria-label="ORBIT home"><span class="orbit-mark">◎</span><strong>ORBIT</strong><span class="brand-note">ORBITAL ARCADE</span></a>
+      <div class="top-actions"><span class="best">BEST <b id="best-score">00000</b></span><button id="quality" class="icon-button" aria-label="Change graphics quality" aria-pressed="false" disabled>FX HIGH</button><button id="sound" class="icon-button" aria-label="Enable sound" aria-pressed="false">SOUND OFF</button><button id="pause" class="icon-button" aria-label="Pause game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button><button id="fullscreen" class="icon-button" aria-label="Enter fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></svg></button></div>
     </header>
     <div id="hud" class="hud" hidden>
       <div class="score-block"><span class="eyebrow">SCORE</span><output id="score">00000</output></div>
@@ -19,8 +19,8 @@ app.innerHTML = `
     <aside id="map-wrap" class="map-wrap" hidden><div class="map-label"><span>TABLE RADAR</span><i></i></div><canvas id="minimap" width="156" height="270" aria-label="Overhead map showing the ball, bumpers, and flippers"></canvas><div class="map-bottom">YOU ARE THE BALL</div></aside>
     <div id="toast" role="status" aria-live="polite"></div>
     <section id="intro" class="intro-panel">
-      <div class="intro-content"><span class="eyebrow amber">A NEW PERSPECTIVE</span><h1>Be the<br/><em>ball.</em></h1><p>A familiar game. An unfamiliar orbit.<br/>Launch into the table and see every<br class="desktop-break"/> ricochet from the inside.</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p></div></div>
-      <div class="intro-index"><span>01 / ORBITAL TABLE</span><span>BB-8 INSPIRED CAMERA</span></div>
+      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ORBITAL ARCADE</span><h1>Be the<br/><em>ball.</em></h1><p>Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p><p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
+      <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
     <nav id="camera-controls" class="camera-controls" aria-label="Camera views" hidden><button class="selected" data-camera="fpv" aria-pressed="true">FPV</button><button data-camera="chase" aria-pressed="false">CHASE</button><button data-camera="table" aria-pressed="false">TABLE</button><button data-camera="spin" aria-pressed="false">SPIN ↻</button></nav>
     <div id="play-controls" class="play-controls" hidden>
@@ -52,7 +52,8 @@ function setCamera(mode: CameraMode) {
   else if (mode === 'fpv') toast('FPV · horizon stabilized');
 }
 function begin() {
-  sim.start(); view.heading = 0; audio.unlock();
+  sim.start(); view.heading = 0; view.resetEffects(); audio.unlock();
+  $('score').textContent = '00000';
   $('intro').hidden = true; $('modal').hidden = true;
   for (const id of ['hud', 'map-wrap', 'camera-controls', 'play-controls']) $(id).hidden = false;
   setCamera('fpv'); toast('Hold SPACE, then release to launch');
@@ -84,6 +85,16 @@ function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
 async function boot() {
   try {
     sim = await PinballSimulation.create(); view = new PinballView($('viewport'));
+    const updateQuality = () => {
+      $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
+      $('quality').setAttribute('aria-pressed', String(view.highQuality));
+      $('quality').setAttribute('aria-label', view.highQuality ? 'Enable Eco graphics' : 'Enable High graphics');
+    };
+    updateQuality(); $<HTMLButtonElement>('quality').disabled = false;
+    $('quality').addEventListener('click', () => {
+      view.setQuality(!view.highQuality); updateQuality();
+      toast(view.highQuality ? 'HIGH · bloom + dynamic shadows' : 'ECO · lighter graphics');
+    });
     $('start').textContent = 'ENTER THE TABLE ↗'; $<HTMLButtonElement>('start').disabled = false;
     $('start').addEventListener('click', begin);
     $('resume').addEventListener('click', resume); $('restart').addEventListener('click', begin);

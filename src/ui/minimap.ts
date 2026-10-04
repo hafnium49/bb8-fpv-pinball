@@ -6,8 +6,8 @@ export function drawMinimap(canvas: HTMLCanvasElement, sim: PinballSimulation, h
   c.clearRect(0, 0, canvas.width, canvas.height);
   const sx = canvas.width / 13, sz = canvas.height / 23;
   const x = (v: number) => (v + 6.5) * sx, z = (v: number) => (v + 11.5) * sz;
-  c.fillStyle = '#11232ce0'; c.fillRect(0, 0, canvas.width, canvas.height);
-  c.strokeStyle = '#526a75'; c.lineWidth = 2;
+  c.fillStyle = '#0c1935e0'; c.fillRect(0, 0, canvas.width, canvas.height);
+  c.strokeStyle = '#537bab'; c.lineWidth = 2;
   for (const r of rails) { c.beginPath(); c.moveTo(x(r.ax), z(r.az)); c.lineTo(x(r.bx), z(r.bz)); c.stroke(); }
   for (const [i, b] of bumpers.entries()) { c.fillStyle = i === 1 ? '#74d9e6' : '#ffad55'; c.beginPath(); c.arc(x(b.x), z(b.z), b.radius * sx, 0, Math.PI * 2); c.fill(); }
   c.fillStyle = '#74d9e6'; for (const t of targets) c.fillRect(x(t.x) - 2, z(t.z) - sz * 0.7, 4, sz * 1.4);

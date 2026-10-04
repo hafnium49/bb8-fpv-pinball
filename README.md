@@ -18,8 +18,15 @@ Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browse
 | Launch | Hold Space, then release | Hold Launch, then release |
 | Pause / resume | Esc | Pause / resume buttons |
 | Camera | 1 / 2 / 3 / 4 | FPV / Chase / Table / Spin |
+| Graphics | — | FX High / FX Eco |
 
 The radar shows the full table, ball and flippers. The two touch flippers support simultaneous presses. Sound is off until enabled. Spin view deliberately follows the rolling ball's rotation; stabilized FPV is the default. A game has three balls; bumper hits score 100 and target hits score 250. The best score is stored locally when a game ends.
+
+## Orbital arcade visuals
+
+The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels. A short ball trail helps in Table and Chase views.
+
+**FX High** enables bloom and dynamic shadows and caps pixel density at 1.5. **FX Eco** skips those extra passes and caps pixel density at 1 while keeping the artwork, mechanical detail and collision effects. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
 
 ## Build and verify
 
@@ -38,7 +45,7 @@ For browser QA, run `npx playwright install chromium`, then `npm run test:browse
 ## Architecture
 
 - `src/physics/`: Rapier rigid bodies, shared table dimensions, a 120 Hz fixed step and game rules.
-- `src/render/`: Three.js view, procedural table, lighting and independent camera modes.
+- `src/render/`: Three.js view and independent cameras, canvas artwork, detailed table geometry, lighting, postprocessing and bounded visual effects.
 - `src/ui/`: radar and synthesized audio.
 - `src/main.ts`: DOM controls, state presentation, input and browser lifecycle.
 
