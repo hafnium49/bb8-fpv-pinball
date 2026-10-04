@@ -1,0 +1,103 @@
+const { chromium } = require('playwright');
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+
+let browser, server, page;
+(async () => {
+  const output = path.resolve('artifacts'); fs.mkdirSync(output, { recursive: true });
+  let url = process.env.GAME_URL;
+  if (!url) {
+    const { createServer } = await import('vite');
+    server = await createServer({ server: { host: '127.0.0.1', port: 5173 } });
+    await server.listen();
+    url = server.resolvedUrls.local[0];
+  }
+  browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] });
+  const errors = [];
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  page = await context.newPage();
+  page.on('pageerror', e => { errors.push(e.message); console.error('Page error:', e.message); });
+  page.on('console', m => { if (m.type() === 'error') { errors.push(m.text()); console.error('Browser error:', m.text()); } });
+  await page.goto(url, { waitUntil: 'networkidle' });
+  await page.locator('#start:not([disabled])').waitFor({ timeout: 60000 });
+  await page.screenshot({ path: path.join(output, 'desktop-intro.png') });
+  await page.locator('#start').click();
+  assert.equal(await page.evaluate(() => window.orbitDebug.sim.phase), 'ready');
+  await page.keyboard.down('Space');
+  await page.waitForFunction(() => window.orbitDebug.sim.charge > 0, undefined, { timeout: 15000 });
+  await page.waitForTimeout(400); await page.keyboard.up('Space');
+  await page.waitForFunction(() => window.orbitDebug.sim.phase === 'playing');
+  await page.waitForTimeout(1000);
+  await page.screenshot({ path: path.join(output, 'desktop-fpv.png') });
+  const up = await page.evaluate(() => { const e = window.orbitDebug.view.camera.matrixWorld.elements; return [e[4], e[5], e[6]]; });
+  assert.ok(Math.abs(up[0]) < 0.02 && up[1] > 0.98, 'FPV horizon is not stable');
+  await page.keyboard.down('KeyA'); await page.keyboard.down('KeyD'); await page.waitForTimeout(140);
+  assert.deepEqual(await page.evaluate(() => [window.orbitDebug.sim.controls.left, window.orbitDebug.sim.controls.right]), [true, true]);
+  await page.keyboard.up('KeyA'); await page.keyboard.up('KeyD');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#modal').isVisible(), true);
+  const pausePosition = await page.evaluate(() => window.orbitDebug.sim.position);
+  await page.waitForTimeout(100); assert.deepEqual(await page.evaluate(() => window.orbitDebug.sim.position), pausePosition);
+  await page.locator('#restart').click();
+  await page.locator('[data-camera="table"]').click();
+  await page.screenshot({ path: path.join(output, 'desktop-table.png') });
+  assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'table');
+  await page.locator('[data-camera="chase"]').click();
+  await page.screenshot({ path: path.join(output, 'desktop-chase.png') });
+  await page.locator('[data-camera="fpv"]').click();
+  await page.evaluate(() => window.orbitDebug.sim.ball.setRotation({ x: 0, y: 0, z: Math.SQRT1_2, w: Math.SQRT1_2 }, true));
+  await page.waitForFunction(() => window.orbitDebug.view.camera.matrixWorld.elements[5] > 0.98);
+  const stabilized = await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5]);
+  assert.ok(stabilized > 0.98, 'ball rotation leaked into stabilized FPV');
+  await page.locator('[data-camera="spin"]').click();
+  await page.waitForFunction(() => Math.abs(window.orbitDebug.view.camera.matrixWorld.elements[5]) < 0.1);
+  const spinning = await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5]);
+  assert.ok(Math.abs(spinning) < 0.1, 'Spin view did not follow ball rotation');
+  await page.locator('[data-camera="fpv"]').click();
+  await page.evaluate(() => { const s = window.orbitDebug.sim; s.launch(0.5); s.balls = 1; s.score = 350; s.ball.setTranslation({ x: 0, y: 0.4, z: 11.6 }, true); });
+  await page.waitForFunction(() => window.orbitDebug.sim.phase === 'over');
+  assert.equal(await page.locator('#modal-title').textContent(), '00350');
+  assert.equal(await page.locator('#best-score').textContent(), '00350');
+  await page.locator('#restart').click();
+  await page.waitForFunction(() => document.querySelector('#score').textContent === '00000');
+  assert.equal(await page.locator('#score').textContent(), '00000');
+  assert.ok(await page.evaluate(() => window.orbitDebug.view.renderer.info.render.calls > 20), '3D scene was not rendered');
+
+  const mobile = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+  const phone = await mobile.newPage(); phone.on('pageerror', e => errors.push(e.message));
+  await phone.goto(url, { waitUntil: 'networkidle' });
+  await phone.locator('#start:not([disabled])').waitFor({ timeout: 60000 }); await phone.locator('#start').tap();
+  await phone.locator('[data-camera="table"]').tap();
+  const left = await phone.locator('#left').boundingBox(), right = await phone.locator('#right').boundingBox();
+  const cdp = await mobile.newCDPSession(phone);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [
+    { x: left.x + left.width / 2, y: left.y + left.height / 2, id: 1 },
+    { x: right.x + right.width / 2, y: right.y + right.height / 2, id: 2 },
+  ] });
+  await phone.waitForTimeout(100);
+  assert.deepEqual(await phone.evaluate(() => [window.orbitDebug.sim.controls.left, window.orbitDebug.sim.controls.right]), [true, true]);
+  await phone.screenshot({ path: path.join(output, 'mobile-landscape.png') });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  assert.deepEqual(await phone.evaluate(() => [window.orbitDebug.sim.controls.left, window.orbitDebug.sim.controls.right]), [false, false]);
+  assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await phone.setViewportSize({ width: 390, height: 844 }); await phone.waitForTimeout(100);
+  await phone.screenshot({ path: path.join(output, 'mobile-portrait.png') });
+  assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  assert.deepEqual(errors, [], 'browser errors occurred');
+  const report = { result: 'pass', checks: ['boot', 'real keyboard launch', 'simultaneous keyboard flippers', 'pause freezes physics', 'table/chase/FPV/spin cameras', 'FPV independent of ball rotation', 'game-over/restart/high score', 'rendered WebGL scene', 'simultaneous touch flippers', 'mobile landscape and portrait resize'], browserErrors: errors, screenshots: fs.readdirSync(output).filter(f => f.endsWith('.png') && f !== 'browser-failure.png') };
+  fs.writeFileSync(path.join(output, 'browser-report.json'), JSON.stringify(report, null, 2));
+  console.log(JSON.stringify(report, null, 2));
+})().catch(async error => {
+  console.error(error); process.exitCode = 1;
+  if (page && !page.isClosed()) {
+    console.error('Failure state:', await page.evaluate(() => {
+      const s = window.orbitDebug?.sim;
+      return { phase: s?.phase, paused: s?.paused, controls: s?.controls, charge: s?.charge, time: s?.time, visibility: document.visibilityState };
+    }).catch(() => 'unavailable'));
+    await page.screenshot({ path: 'artifacts/browser-failure.png' }).catch(() => {});
+  }
+}).finally(async () => {
+  if (browser) await browser.close();
+  if (server) await server.close();
+});

@@ -1,0 +1,77 @@
+:root { font-family: 'DM Sans', system-ui, sans-serif; color: #e9efed; background: #09141b; font-synthesis: none; --amber: #ffad55; --muted: #8c9da3; }
+* { box-sizing: border-box; }
+body { margin: 0; overflow: hidden; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid #74d9e6; outline-offset: 5px; }
+button:disabled { cursor: default; }
+[hidden] { display: none !important; }
+#game, #viewport { position: absolute; inset: 0; width: 100%; height: 100dvh; overflow: hidden; }
+#viewport { touch-action: none; }
+#viewport canvas { width: 100%; height: 100%; display: block; }
+.topbar { position: absolute; z-index: 4; top: 0; left: 0; width: 100%; padding: max(25px, env(safe-area-inset-top)) 34px 20px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(#09141bbb, transparent); }
+.wordmark { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+.orbit-mark { font-size: 34px; color: var(--amber); line-height: 1; }
+.wordmark strong { font-family: 'Space Grotesk', sans-serif; font-size: 21px; letter-spacing: 0.14em; }
+.brand-note { border-left: 1px solid #50616b; margin-left: 9px; padding-left: 18px; font-size: 9px; letter-spacing: 0.20em; color: var(--muted); }
+.top-actions { display: flex; align-items: center; gap: 17px; }
+.best { font-size: 9px; color: var(--muted); letter-spacing: 0.15em; }
+.best b { font-family: 'Space Grotesk', monospace; font-size: 14px; margin-left: 8px; color: #e9efed; font-weight: 500; }
+.icon-button { padding: 9px 3px; background: transparent; border: 0; font-size: 12px; letter-spacing: 0.10em; }
+#pause, #fullscreen { font-size: 21px; }
+.intro-panel { position: absolute; z-index: 3; inset: 0; pointer-events: none; background: linear-gradient(90deg, #09141bee 0%, #09141b90 34%, transparent 65%); }
+.intro-content { position: absolute; left: 7%; top: 20%; width: 430px; pointer-events: auto; }
+.eyebrow { font-size: 9px; letter-spacing: 0.24em; font-weight: 600; }
+.amber { color: var(--amber); }
+h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(60px, 7.5vw, 114px); line-height: 0.98; letter-spacing: -0.06em; margin: 24px 0 26px; font-weight: 500; }
+h1 em { color: var(--amber); font-style: normal; }
+.intro-content > p { font-size: 15px; line-height: 1.8; color: #9eacb2; margin: 0 0 32px; }
+.primary { display: flex; align-items: center; justify-content: space-between; gap: 40px; width: 245px; padding: 18px 22px; border: 0; border-radius: 2px; background: var(--amber); color: #172028; font-size: 11px; font-weight: 700; letter-spacing: 0.13em; transition: background .2s, transform .2s; }
+.primary:hover { background: #ffbf79; transform: translateY(-2px); }
+.primary:disabled { opacity: .6; }
+.primary span { font-size: 20px; line-height: 1; }
+.intro-note { display: flex; gap: 15px; margin-top: 18px; font-size: 8px; color: #9aabb2; letter-spacing: 0.12em; }
+.intro-note span + span::before { content: '·'; margin-right: 15px; color: #627984; }
+.text-button { margin-top: 22px; padding: 8px 0; border: 0; border-bottom: 1px solid #46555c; background: transparent; font-size: 11px; color: #c6d3d8; }
+.text-button span { margin-left: 36px; }
+.instructions { margin-top: 12px; background: #10232cee; padding: 10px 16px; max-width: 400px; font-size: 11px; color: #b2c1c7; line-height: 1.7; }
+.instructions p { margin: 6px 0; }
+.intro-index { position: absolute; bottom: 28px; left: 34px; right: 34px; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: .16em; color: #6e8794; }
+.hud { position: absolute; top: 94px; left: 34px; z-index: 2; display: flex; gap: 26px; align-items: center; padding: 14px 20px; border-left: 2px solid var(--amber); background: #09141b88; backdrop-filter: blur(8px); }
+.score-block, .ball-block { display: flex; flex-direction: column; gap: 4px; }
+.hud .eyebrow { font-size: 8px; color: #99aeb7; }
+#score { font-family: 'Space Grotesk', monospace; font-size: 29px; font-weight: 500; letter-spacing: 0.03em; }
+#balls { color: var(--amber); font-size: 15px; letter-spacing: 3px; }
+.map-wrap { position: absolute; right: 34px; top: 98px; z-index: 2; width: 140px; border: 1px solid #58707b66; background: #09141b66; backdrop-filter: blur(6px); }
+.map-label { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 7px; font-size: 7px; letter-spacing: .15em; color: #a5bec7; }
+.map-label i { width: 4px; height: 4px; border-radius: 50%; background: #74d9e6; }
+#minimap { display: block; width: 100%; height: auto; }
+.map-bottom { padding: 8px; font-size: 7px; color: #7c949f; letter-spacing: .14em; text-align: center; }
+.camera-controls { position: absolute; bottom: max(26px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 2; padding: 4px; display: flex; gap: 2px; background: #09141bd0; border: 1px solid #58707b66; backdrop-filter: blur(8px); }
+.camera-controls button { min-width: 61px; padding: 9px 12px; border: 0; background: transparent; color: #90a4ad; font-size: 9px; font-weight: 600; letter-spacing: .11em; }
+.camera-controls button.selected { background: #ffad55; color: #172028; }
+.play-controls { position: absolute; left: 34px; right: 34px; bottom: max(27px, env(safe-area-inset-bottom)); z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; }
+.play-controls button { pointer-events: auto; touch-action: none; user-select: none; }
+.flipper-button { width: 155px; height: 91px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #09141bba; backdrop-filter: blur(8px); border: 1px solid #536c7777; border-radius: 2px; transition: background .08s, border .08s; }
+.flipper-button.pressed { border-color: var(--amber); background: #684820ba; }
+.flipper-icon { color: var(--amber); font-size: 23px; line-height: 1; }
+.flipper-button b { font-size: 8px; letter-spacing: .14em; font-weight: 500; }
+.flipper-button small { color: #8b9fa9; font-size: 9px; }
+.launch-cluster { position: absolute; bottom: 63px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+#hint { white-space: nowrap; font-size: 8px; letter-spacing: .15em; color: #b8c9d0; text-shadow: 0 2px 8px #000; }
+#launch { width: 135px; padding: 12px; border: 1px solid #ffad5588; background: #09141bc0; color: var(--amber); font-size: 9px; letter-spacing: .17em; }
+#launch:disabled { opacity: .36; }
+.charge-track { width: 100%; height: 2px; background: #ffad5522; display: block; margin-top: 8px; }
+#charge { display: block; height: 100%; width: 0; background: var(--amber); }
+#toast { position: absolute; z-index: 3; top: 88px; left: 50%; transform: translate(-50%, -5px); padding: 12px 18px; background: #09141bc0; backdrop-filter: blur(8px); color: #ffbf79; font-size: 10px; letter-spacing: .08em; opacity: 0; transition: opacity .18s, transform .18s; pointer-events: none; white-space: nowrap; }
+#toast.visible { opacity: 1; transform: translate(-50%, 0); }
+.modal { position: absolute; inset: 0; background: #09141b99; backdrop-filter: blur(10px); z-index: 5; display: grid; place-items: center; }
+.modal-card { text-align: center; max-width: 420px; padding: 40px; }
+.modal-card h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 72px; letter-spacing: -.05em; margin: 22px 0 18px; }
+.modal-card p { color: #afbec5; font-size: 14px; margin-bottom: 30px; }
+.modal-card .primary { margin: auto; }
+.loading-error { position: absolute; z-index: 9; inset: auto 20px 20px; background: #421f20; color: #ffb8ad; border: 1px solid #b7625a; padding: 15px; font-size: 14px; }
+@media (max-height: 650px) and (min-width: 760px) { .intro-content { top: 16%; } h1 { font-size: 75px; margin: 16px 0 20px; } .intro-content > p { margin-bottom: 20px; } .text-button { margin-top: 10px; } .intro-note { margin-top: 12px; } .instructions { position: absolute; left: 280px; bottom: 0; width: 350px; } }
+@media (max-width: 760px) { .topbar { padding: 18px; } .brand-note { display: none; } .wordmark strong { font-size: 17px; } .orbit-mark { font-size: 29px; } .top-actions { gap: 11px; } .best { display: none; } #sound { font-size: 8px; } .hud { left: 18px; top: 80px; padding: 10px 13px; gap: 17px; } #score { font-size: 23px; } .map-wrap { right: 18px; top: 80px; width: 104px; } .map-label, .map-bottom { font-size: 6px; padding: 7px; } .intro-content { left: 8%; top: 23%; width: 84%; } h1 { font-size: 82px; } .intro-content > p { font-size: 14px; } .intro-panel { background: linear-gradient(90deg, #09141bf2, #09141baa 55%, #09141b33); } .intro-index { left: 18px; right: 18px; font-size: 7px; } .play-controls { left: 15px; right: 15px; bottom: max(20px, env(safe-area-inset-bottom)); } .flipper-button { width: 105px; height: 88px; } .flipper-button b { font-size: 7px; } .camera-controls { bottom: 119px; } .launch-cluster { bottom: 0; } #launch { width: 113px; } #hint { font-size: 6px; max-width: 135px; white-space: normal; text-align: center; line-height: 1.7; } #toast { top: 166px; max-width: 85%; font-size: 9px; } .instructions { max-width: 320px; } }
+@media (max-height: 500px) { .topbar { padding-top: 13px; } .intro-content { top: 21%; width: 47%; } h1 { font-size: 55px; margin: 12px 0; } .intro-content > p { font-size: 11px; margin-bottom: 14px; } .desktop-break { display: none; } .intro-note { font-size: 6px; margin-top: 10px; } .primary { width: 215px; padding: 13px 18px; font-size: 9px; } .intro-index { bottom: 13px; } .text-button { margin-top: 7px; font-size: 9px; } .instructions { position: absolute; left: 250px; bottom: 0; width: 310px; } .hud { top: 64px; padding: 8px 12px; } .map-wrap { top: 64px; width: 93px; right: 20px; } .map-bottom { display: none; } .flipper-button { width: 125px; height: 67px; gap: 3px; } .flipper-icon { font-size: 19px; } .play-controls { bottom: 17px; } .camera-controls { bottom: 17px; } .launch-cluster { bottom: 43px; gap: 7px; } #launch { padding: 8px 12px; } #toast { top: 60px; } .modal-card { padding: 15px; } .modal-card h2 { font-size: 49px; margin: 12px 0; } .modal-card p { margin-bottom: 15px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
