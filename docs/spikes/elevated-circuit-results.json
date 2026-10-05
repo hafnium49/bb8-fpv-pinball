@@ -1,0 +1,502 @@
+{
+  "sourceBase": {
+    "repository": "hafnium49/bb8-fpv-pinball",
+    "mainCommit": "26ca301bfc3364bfeb7fe21bd7f151cc47d0719b",
+    "tree": "fd73c0a42e48aa9bbb040260e75539e18a46f099"
+  },
+  "scope": "experimental route added to the original simulation; production source and deployment are unchanged",
+  "physics": {
+    "basis": "Rapier 0.21.0, original table, 120 Hz, ball CCD, production flipper tuning, zero rail restitution combined by Min",
+    "routeLength": 27.44114287370099,
+    "samples": 154,
+    "scannedFlipperSetups": 192,
+    "forwardCrossings": 160,
+    "candidateFlipperSetups": 8,
+    "summary": [
+      {
+        "variant": "boxes",
+        "colliders": 459,
+        "injected": {
+          "complete": 6,
+          "rollback": 27,
+          "escape": 10,
+          "stuck": 1,
+          "timeout": 1,
+          "drain": 18
+        },
+        "flipper": {
+          "complete": 1,
+          "rollback": 2,
+          "escape": 0,
+          "stuck": 2,
+          "timeout": 1,
+          "drain": 2
+        },
+        "maxStepP95Ms": 0.4231399999999894
+      },
+      {
+        "variant": "mesh",
+        "colliders": 1,
+        "injected": {
+          "complete": 17,
+          "rollback": 18,
+          "escape": 5,
+          "stuck": 0,
+          "timeout": 1,
+          "drain": 22
+        },
+        "flipper": {
+          "complete": 1,
+          "rollback": 4,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 1,
+          "drain": 2
+        },
+        "maxStepP95Ms": 0.051538000000164175
+      },
+      {
+        "variant": "wire",
+        "colliders": 266,
+        "injected": {
+          "complete": 0,
+          "rollback": 40,
+          "escape": 13,
+          "stuck": 0,
+          "timeout": 2,
+          "drain": 8
+        },
+        "flipper": {
+          "complete": 0,
+          "rollback": 5,
+          "escape": 0,
+          "stuck": 1,
+          "timeout": 1,
+          "drain": 1
+        },
+        "maxStepP95Ms": 0.23956200000020544
+      },
+      {
+        "variant": "guarded-mesh",
+        "colliders": 1,
+        "injected": {
+          "complete": 20,
+          "rollback": 18,
+          "escape": 9,
+          "stuck": 0,
+          "timeout": 2,
+          "drain": 14
+        },
+        "flipper": {
+          "complete": 1,
+          "rollback": 5,
+          "escape": 1,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 1
+        },
+        "maxStepP95Ms": 0.06774299999960931
+      },
+      {
+        "variant": "guided-wire",
+        "colliders": 450,
+        "injected": {
+          "complete": 34,
+          "rollback": 26,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 1,
+          "drain": 2
+        },
+        "flipper": {
+          "complete": 5,
+          "rollback": 3,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        },
+        "maxStepP95Ms": 0.18541000000004715
+      },
+      {
+        "variant": "baked-wire",
+        "colliders": 3,
+        "injected": {
+          "complete": 37,
+          "rollback": 24,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 2
+        },
+        "flipper": {
+          "complete": 5,
+          "rollback": 2,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 1,
+          "drain": 0
+        },
+        "maxStepP95Ms": 0.0927400000000489
+      }
+    ],
+    "preferredVariantBySpeed": [
+      {
+        "speed": 4,
+        "cases": 9,
+        "outcomes": {
+          "complete": 0,
+          "rollback": 9,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        }
+      },
+      {
+        "speed": 8,
+        "cases": 9,
+        "outcomes": {
+          "complete": 0,
+          "rollback": 9,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        }
+      },
+      {
+        "speed": 12,
+        "cases": 9,
+        "outcomes": {
+          "complete": 2,
+          "rollback": 6,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 1
+        }
+      },
+      {
+        "speed": 16,
+        "cases": 9,
+        "outcomes": {
+          "complete": 9,
+          "rollback": 0,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        }
+      },
+      {
+        "speed": 20,
+        "cases": 9,
+        "outcomes": {
+          "complete": 9,
+          "rollback": 0,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        }
+      },
+      {
+        "speed": 24,
+        "cases": 9,
+        "outcomes": {
+          "complete": 9,
+          "rollback": 0,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        }
+      },
+      {
+        "speed": 28,
+        "cases": 9,
+        "outcomes": {
+          "complete": 8,
+          "rollback": 0,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 1
+        }
+      }
+    ],
+    "preferredFlipperSetups": [
+      {
+        "start": {
+          "x": -1.9,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 0,
+          "flipper": "left"
+        },
+        "outcome": "complete",
+        "orderedGatesPassed": 5,
+        "maxY": 2.9978556632995605,
+        "duration": 2.3333333333333335
+      },
+      {
+        "start": {
+          "x": -1.9,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 4,
+          "flipper": "left"
+        },
+        "outcome": "complete",
+        "orderedGatesPassed": 5,
+        "maxY": 2.8883326053619385,
+        "duration": 2.025
+      },
+      {
+        "start": {
+          "x": -2.3,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 0,
+          "flipper": "left"
+        },
+        "outcome": "complete",
+        "orderedGatesPassed": 5,
+        "maxY": 2.9829213619232178,
+        "duration": 3.05
+      },
+      {
+        "start": {
+          "x": -2.3,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 4,
+          "flipper": "left"
+        },
+        "outcome": "complete",
+        "orderedGatesPassed": 5,
+        "maxY": 2.9936840534210205,
+        "duration": 3.8916666666666666
+      },
+      {
+        "start": {
+          "x": -2.3,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 8,
+          "flipper": "left"
+        },
+        "outcome": "complete",
+        "orderedGatesPassed": 5,
+        "maxY": 2.9572057723999023,
+        "duration": 3.175
+      },
+      {
+        "start": {
+          "x": -2.7,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 0,
+          "flipper": "left"
+        },
+        "outcome": "rollback",
+        "orderedGatesPassed": 1,
+        "maxY": 2.5095102787017822,
+        "duration": 3.841666666666667
+      },
+      {
+        "start": {
+          "x": -2.7,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 4,
+          "flipper": "left"
+        },
+        "outcome": "rollback",
+        "orderedGatesPassed": 1,
+        "maxY": 1.6952184438705444,
+        "duration": 3.183333333333333
+      },
+      {
+        "start": {
+          "x": -2.7,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 8,
+          "flipper": "left"
+        },
+        "outcome": "timeout",
+        "orderedGatesPassed": 1,
+        "maxY": 2.7106244564056396,
+        "duration": 12
+      }
+    ],
+    "unresolvedPreferredCases": [
+      {
+        "speed": 12,
+        "offset": 0,
+        "veer": -0.1,
+        "outcome": "drain",
+        "orderedGatesPassed": 1,
+        "final": {
+          "t": 8.591666666666667,
+          "x": -0.7477542161941528,
+          "y": 0.27971309423446655,
+          "z": 11.180816650390625,
+          "vx": -0.6842427253723145,
+          "vy": -0.027866873890161514,
+          "vz": 3.756821393966675,
+          "s": 27.44114287370099
+        }
+      },
+      {
+        "speed": 28,
+        "offset": -0.3,
+        "veer": -0.1,
+        "outcome": "drain",
+        "orderedGatesPassed": 4,
+        "final": {
+          "t": 2.3333333333333335,
+          "x": -1.1271389722824097,
+          "y": 3.7346034049987793,
+          "z": 11.180237770080566,
+          "vx": -6.647150039672852,
+          "vy": 2.973078727722168,
+          "vz": 7.914144515991211,
+          "s": 27.44114287370099
+        }
+      }
+    ],
+    "gravity": {
+      "boardLocal": [
+        0,
+        -9.81,
+        3
+      ],
+      "equivalentTiltDegrees": 17.004176876155448,
+      "verticalGravity": [
+        0,
+        -10.258464797424613,
+        8.326672684688674e-17
+      ],
+      "magnitude": 10.258464797424613
+    }
+  },
+  "camera": {
+    "result": "pass",
+    "basis": "actual completing flipper traces; board-up camera; analytic cross-section clearance only",
+    "results": [
+      {
+        "variant": "guarded-mesh",
+        "frames": 489,
+        "duration": 4.075,
+        "maxPitchDegrees": 16.29640373464205,
+        "maxPitchRateDegreesPerSec": 30.000000000000043,
+        "maxYawRateRadiansPerSec": 3.500000000000001,
+        "maxRollDegrees": 7.951386703658792e-16,
+        "minimumAnalyticClearance": 0.2744952572049346,
+        "retractedFrames": 0,
+        "minimumCameraHeight": 0.3
+      },
+      {
+        "variant": "baked-wire",
+        "frames": 280,
+        "duration": 2.3333333333333335,
+        "maxPitchDegrees": 15.289982926167918,
+        "maxPitchRateDegreesPerSec": 30.000000000000043,
+        "maxYawRateRadiansPerSec": 3.500000000000014,
+        "maxRollDegrees": 5.963540027744094e-16,
+        "minimumAnalyticClearance": 0.12523473329641852,
+        "retractedFrames": 0,
+        "minimumCameraHeight": 0.3
+      }
+    ]
+  },
+  "invariants": {
+    "result": "pass",
+    "gravity": {
+      "duration": 5,
+      "maxPositionDifference": 0.00013230351772088714,
+      "conclusion": "board-local gravity equals a 17.004-degree rotated table with vertical gravity within floating-point tolerance"
+    },
+    "underpasses": [
+      {
+        "start": {
+          "x": 1.2,
+          "z": -5.5,
+          "vx": 6,
+          "vz": 0
+        },
+        "duration": 0.4,
+        "maxPositionDifference": 0,
+        "score": 0
+      },
+      {
+        "start": {
+          "x": -3.9,
+          "z": -3.2,
+          "vx": 0,
+          "vz": -6
+        },
+        "duration": 0.4,
+        "maxPositionDifference": 0,
+        "score": 0
+      },
+      {
+        "start": {
+          "x": 0,
+          "z": -4.8,
+          "vx": 4,
+          "vz": -5
+        },
+        "duration": 0.4,
+        "maxPositionDifference": 0,
+        "score": 100
+      }
+    ],
+    "launchLaneExitWithin3Seconds": true
+  },
+  "browser": {
+    "result": "pass",
+    "scope": "isolated replay preview, desktop and mobile landscape; no production input/lifecycle changes",
+    "sampleTimes": {
+      "climb": 0.44167,
+      "bridge": 1.06667,
+      "tunnel": 1.85,
+      "exit": 2.33333
+    },
+    "geometry": {
+      "base": {
+        "calls": 113,
+        "triangles": 62584
+      },
+      "total": {
+        "calls": 147,
+        "triangles": 79478
+      },
+      "added": {
+        "calls": 34,
+        "triangles": 16894
+      }
+    },
+    "browserErrors": [],
+    "screenshots": [
+      "desktop-table.png",
+      "desktop-climb-fpv.png",
+      "desktop-bridge-fpv.png",
+      "desktop-tunnel-fpv.png",
+      "mobile-table.png",
+      "mobile-tunnel-fpv.png"
+    ],
+    "renderer": "Chromium software WebGL, not hardware FPS validation"
+  },
+  "limitations": [
+    "Synthetic placement of incoming balls at the flippers is not end-to-end human playtesting.",
+    "Gate completion stops near the return exit; it does not prove a subsequent player-controlled flipper return.",
+    "Timeout and drain classify the whole trial, not a confirmed collider defect.",
+    "Camera clearance uses an analytic route cross-section, not a swept scene query.",
+    "Tunnel ribs, bridge ties and outboard supports are visual concepts and were not included in the collision comparison.",
+    "Renderer measurements use software WebGL; no physical-device frame-rate or motion-comfort claim."
+  ]
+}
