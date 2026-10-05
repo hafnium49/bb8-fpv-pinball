@@ -33,7 +33,7 @@ function trial(variant: Variant, speed: number, offset: number, veer: number, st
     if (gate < gates.length && a.distance < 0.8 && a.s >= gates[gate] && a.s < gates[gate] + 0.8) gate++;
     trace.push({ t: (n + 1) * STEP, ...p, vx: v.x, vy: v.y, vz: v.z, s: a.s });
     if (gate === gates.length && a.s > length - 0.9 && p.y < 0.65) { outcome = 'complete'; break; }
-    if (maxS > 0.6 && maxS < samples[wireStart].s && p.z > 3.5 && v.z > 0) { outcome = 'rollback'; break; }
+    if (maxS > 0.6 && gate < 3 && p.x < -1 && p.z > 3.5 && v.z > 0) { outcome = 'rollback'; break; }
     if (maxY > 1 && a.c.y > 1.4 && p.y < a.c.y - 0.9) { outcome = 'escape'; break; }
     if (sim.phase !== 'playing') { outcome = 'drain'; break; }
   }
@@ -68,7 +68,7 @@ const angle = Math.atan2(3, 9.81), q = new THREE.Quaternion().setFromAxisAngle(n
 const transformed = new THREE.Vector3(0, -9.81, 3).applyQuaternion(q);
 const gravity = { boardLocal: [0, -9.81, 3], equivalentTiltDegrees: angle * 180 / Math.PI, verticalGravity: transformed.toArray(), magnitude: Math.hypot(9.81, 3) };
 mkdirSync('artifacts/elevated-circuit', { recursive: true });
-writeFileSync('artifacts/elevated-circuit/physics.json', JSON.stringify({ basis: 'Rapier 0.21.0, original table, 120 Hz, ball CCD, production flipper tuning, zero rail restitution combined by Min', routeLength: length, samples: samples.length, scannedFlipperSetups: 192, forwardCrossings: shots.length, candidateFlipperSetups: candidates.length, summary, gravity, injected, flipper }, null, 2));
+writeFileSync('artifacts/elevated-circuit/physics.json', JSON.stringify({ basis: 'Rapier 0.21.0, original table, 120 Hz, ball CCD, production flipper tuning, zero initial spin in both scan and trials, zero rail restitution combined by Min; rollback recognized after reversing from the bridge entrance', routeLength: length, samples: samples.length, scannedFlipperSetups: 192, forwardCrossings: shots.length, candidateFlipperSetups: candidates.length, summary, gravity, injected, flipper }, null, 2));
 writeFileSync('artifacts/elevated-circuit/traces.json', JSON.stringify(traces));
 writeFileSync('artifacts/elevated-circuit/layout.json', JSON.stringify({ samples: samples.map(a => ({ x: a.c.x, y: a.c.y, z: a.c.z, s: a.s })), wireStart, wireEnd, bumpers, flippers, rails, targets }));
 const replay = traces['flipper-baked-wire'];

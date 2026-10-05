@@ -28,10 +28,19 @@ The illustrated playfield has a ringed planet, circuit paths, reactor markings a
 
 **FX High** enables bloom and dynamic shadows and caps pixel density at 1.5. **FX Eco** skips those extra passes and caps pixel density at 1 while keeping the artwork, mechanical detail and collision effects. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
 
+## Elevated circuit
+
+Choose **Try elevated circuit** on the opening screen, or open the dev-server URL with `?circuit=1`. Aim at the left ramp, rise above the reactors on an open wire bridge, cross the short illuminated tunnel, and return to the right flipper. A full ordered traversal awards **750 points**. Weak attempts roll back naturally; the ball remains a free physics body throughout.
+
+The radar shows the route and marks elevated balls. FPV previews the path with bounded pitch and a level horizon; both FPV and Chase sweep against the real cabinet to clear guard wires and ceilings. Reduced motion limits pitch to 8° and 15°/s. The classic table remains the default while physical-device performance and human FPV comfort are evaluated.
+
+[Design](docs/elevated-circuit-design.md) · [Implementation](docs/elevated-circuit-implementation.md) · [Validation](docs/elevated-circuit-validation.md)
+
 ## Build and verify
 
 ```sh
 npm test
+npm run test:circuit
 npm run build
 npm run preview
 ```
@@ -40,7 +49,9 @@ For a single offline HTML file, run `npm run standalone` and open `artifacts/ORB
 
 For browser QA, run `npx playwright install chromium`, then `npm run test:browser`. It starts its own dev server. Screenshots and the check report go into `artifacts/`. Set `CHROME_PATH` to use an existing Chromium executable or `GAME_URL` to test a running dev server.
 
-`tests/physics.test.ts` checks launch controls and lane exit, high-speed collision detection, bumper scoring, flipper return, three-ball game lifecycle, pause, and render-rate independence. Browser QA also checks actual keyboard/pointer input, camera orientation, minimap, responsive layout and WebGL rendering.
+`npm run test:circuit` runs the 63-case entry sweep, 18 spin/partial-step variants and two input-only launch-to-flipper return trials. `npm run test:circuit:browser` adds playable route screenshots, camera/control checks, touch, resource stability and context recovery. These commands use the same Chromium configuration as `test:browser`.
+
+`tests/circuit.test.ts` checks ordered scoring, reversals, wrong-height crossings, rollbacks, real flipper returns, underpasses and swept camera clearance. `tests/physics.test.ts` checks launch controls and lane exit, high-speed collision detection, bumper scoring, flipper return, three-ball game lifecycle, pause, and render-rate independence. Browser QA also checks actual keyboard/pointer input, camera orientation, minimap, responsive layout and WebGL rendering.
 
 ## Architecture
 
@@ -65,6 +76,6 @@ The separate CI workflow tests and builds changes on pushes and pull requests. O
 
 ## Prototype scope
 
-One table, two flippers, three bumpers, two targets and three balls. Ramps, multiball, tilt rules and online scores are future extensions. FPV timing should be tuned with human playtesting; the radar helps when the flippers are behind the camera. This is a playable prototype, not a tournament pinball simulator.
+One table, two flippers, three bumpers, two targets and three balls. The connected elevated circuit is optional. Multiball, tilt rules and online scores are future extensions. FPV timing should be tuned with human playtesting; the radar helps when the flippers are behind the camera. This is a playable prototype, not a tournament pinball simulator.
 
 Licensed under MIT. `THIRD-PARTY-NOTICES.txt` includes the Three.js and Rapier licenses; the standalone HTML embeds those notices.

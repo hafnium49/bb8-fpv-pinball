@@ -10,6 +10,7 @@ export async function scanFlippers() {
       const sim = await PinballSimulation.create(); sim.start(); sim.launch(0.5);
       sim.ball.setTranslation({ x: side * x, y: 0.30, z }, true);
       sim.ball.setLinvel({ x: 0, y: 0, z: 2 }, true);
+      sim.ball.setAngvel({ x: 0, y: 0, z: 0 }, true);
       const trace: any[] = [];
       let entry: any;
       for (let n = 0; n < 360 && sim.phase === 'playing'; n++) {

@@ -1,5 +1,6 @@
 import type { PinballSimulation } from '../physics/simulation';
 import { FLIPPER_LENGTH, bumpers, flippers, rails, targets } from '../physics/table';
+import { bridgeEnd, bridgeStart, frames } from '../physics/route-geometry';
 
 export function drawMinimap(canvas: HTMLCanvasElement, sim: PinballSimulation, heading: number) {
   const c = canvas.getContext('2d')!;
@@ -11,14 +12,24 @@ export function drawMinimap(canvas: HTMLCanvasElement, sim: PinballSimulation, h
   for (const r of rails) { c.beginPath(); c.moveTo(x(r.ax), z(r.az)); c.lineTo(x(r.bx), z(r.bz)); c.stroke(); }
   for (const [i, b] of bumpers.entries()) { c.fillStyle = i === 1 ? '#74d9e6' : '#ffad55'; c.beginPath(); c.arc(x(b.x), z(b.z), b.radius * sx, 0, Math.PI * 2); c.fill(); }
   c.fillStyle = '#74d9e6'; for (const t of targets) c.fillRect(x(t.x) - 2, z(t.z) - sz * 0.7, 4, sz * 1.4);
+  if (sim.circuitEnabled) {
+    c.lineWidth = 5; c.lineCap = 'round'; c.strokeStyle = '#061225';
+    c.beginPath(); frames.forEach((f, i) => i ? c.lineTo(x(f.c.x), z(f.c.z)) : c.moveTo(x(f.c.x), z(f.c.z))); c.stroke();
+    c.lineWidth = 2; c.strokeStyle = '#6ef0ec'; c.beginPath();
+    frames.forEach((f, i) => i === 0 || i === bridgeEnd ? c.moveTo(x(f.c.x), z(f.c.z)) : i <= bridgeStart || i > bridgeEnd ? c.lineTo(x(f.c.x), z(f.c.z)) : undefined); c.stroke();
+    c.strokeStyle = '#dbccff'; c.beginPath();
+    for (let i = bridgeStart; i <= bridgeEnd; i++) { const f = frames[i]; if (i === bridgeStart) c.moveTo(x(f.c.x), z(f.c.z)); else c.lineTo(x(f.c.x), z(f.c.z)); } c.stroke();
+  }
   c.lineWidth = 4; c.lineCap = 'round';
   for (const [i, f] of flippers.entries()) {
     const angle = sim.flipperAngles[i]; c.strokeStyle = i === 0 ? '#74d9e6' : '#ffad55';
     c.beginPath(); c.moveTo(x(f.x), z(f.z)); c.lineTo(x(f.x + f.side * FLIPPER_LENGTH * Math.cos(angle)), z(f.z - f.side * FLIPPER_LENGTH * Math.sin(angle))); c.stroke();
   }
   if (sim.phase !== 'over' && sim.phase !== 'draining') {
-    const p = sim.position; c.fillStyle = '#ffffff'; c.shadowColor = '#ffffff'; c.shadowBlur = 8;
+    const p = sim.position, elevated = sim.circuitEnabled && p.y > 1.2;
+    c.fillStyle = elevated ? '#e8d8ff' : '#ffffff'; c.shadowColor = c.fillStyle; c.shadowBlur = 8;
     c.beginPath(); c.arc(x(p.x), z(p.z), 4, 0, Math.PI * 2); c.fill(); c.shadowBlur = 0;
+    if (elevated) { c.strokeStyle = '#e8d8ff'; c.lineWidth = 1; c.beginPath(); c.arc(x(p.x), z(p.z), 7, 0, Math.PI * 2); c.stroke(); }
     c.strokeStyle = '#ffffff88'; c.lineWidth = 1;
     c.beginPath(); c.moveTo(x(p.x), z(p.z)); c.lineTo(x(p.x + Math.sin(heading) * 1.3), z(p.z - Math.cos(heading) * 1.3)); c.stroke();
   }

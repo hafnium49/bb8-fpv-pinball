@@ -1,0 +1,577 @@
+{
+  "scope": "implemented opt-in circuit; free Rapier body and actual scene collision queries; classic remains default",
+  "runtime": {
+    "node": "v24.19.0",
+    "rapier": "0.21.0",
+    "three": "0.186.1",
+    "fixedStepHz": 120,
+    "ccd": true
+  },
+  "geometry": {
+    "length": 27.10436657135103,
+    "samples": 273,
+    "addedColliders": 4
+  },
+  "grid": {
+    "count": 63,
+    "counts": {
+      "returned": 36,
+      "rollback": 27,
+      "drain": 0,
+      "timeout": 0
+    },
+    "bySpeed": [
+      {
+        "speed": 4,
+        "counts": {
+          "returned": 0,
+          "rollback": 9,
+          "drain": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "speed": 8,
+        "counts": {
+          "returned": 0,
+          "rollback": 9,
+          "drain": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "speed": 12,
+        "counts": {
+          "returned": 0,
+          "rollback": 9,
+          "drain": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "speed": 16,
+        "counts": {
+          "returned": 9,
+          "rollback": 0,
+          "drain": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "speed": 20,
+        "counts": {
+          "returned": 9,
+          "rollback": 0,
+          "drain": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "speed": 24,
+        "counts": {
+          "returned": 9,
+          "rollback": 0,
+          "drain": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "speed": 28,
+        "counts": {
+          "returned": 9,
+          "rollback": 0,
+          "drain": 0,
+          "timeout": 0
+        }
+      }
+    ],
+    "maxTrialDuration": 12.241666666666612,
+    "maxBallHeight": 2.998870849609375,
+    "failures": []
+  },
+  "spinAndPartialStep": {
+    "count": 18,
+    "counts": {
+      "returned": 12,
+      "rollback": 6,
+      "drain": 0,
+      "timeout": 0
+    },
+    "basis": "three speeds, three angular velocity vectors, quarter/three-quarter-step entry advances, initial height +0.08",
+    "failures": []
+  },
+  "launches": [
+    {
+      "power": 0.7,
+      "leftZ": 6.3,
+      "rightZ": 6.4,
+      "laneExit": true,
+      "leftContact": true,
+      "awards": 1,
+      "rightReturn": true,
+      "phase": "playing",
+      "duration": 16.058333333333064,
+      "score": 1100,
+      "velocity": {
+        "x": 1.7923272848129272,
+        "y": 0.18839211761951447,
+        "z": -17.183135986328125
+      },
+      "changes": [
+        [
+          604,
+          true,
+          false
+        ],
+        [
+          613,
+          false,
+          false
+        ],
+        [
+          1104,
+          true,
+          false
+        ],
+        [
+          1113,
+          false,
+          false
+        ],
+        [
+          1432,
+          true,
+          false
+        ],
+        [
+          1440,
+          false,
+          false
+        ],
+        [
+          1538,
+          true,
+          false
+        ],
+        [
+          1545,
+          false,
+          false
+        ],
+        [
+          1836,
+          false,
+          true
+        ]
+      ]
+    },
+    {
+      "power": 0.7,
+      "leftZ": 6.6,
+      "rightZ": 6.4,
+      "laneExit": true,
+      "leftContact": true,
+      "awards": 1,
+      "rightReturn": true,
+      "phase": "playing",
+      "duration": 17.016666666666342,
+      "score": 850,
+      "velocity": {
+        "x": 2.97322416305542,
+        "y": 0.11580252647399902,
+        "z": -14.75686264038086
+      },
+      "changes": [
+        [
+          610,
+          true,
+          false
+        ],
+        [
+          616,
+          false,
+          false
+        ],
+        [
+          922,
+          true,
+          false
+        ],
+        [
+          929,
+          false,
+          false
+        ],
+        [
+          1238,
+          true,
+          false
+        ],
+        [
+          1247,
+          false,
+          false
+        ],
+        [
+          1630,
+          true,
+          false
+        ],
+        [
+          1636,
+          false,
+          false
+        ],
+        [
+          1951,
+          false,
+          true
+        ]
+      ]
+    }
+  ],
+  "browser": {
+    "result": "pass",
+    "checks": [
+      "normal keyboard launch; simultaneous flippers; blur clears input; pause freezes physics",
+      "actual ramp/bridge/tunnel/return contacts shown in FPV, Table, Chase and Spin; zero FPV/Chase roll; no spin leakage",
+      "browser input-only launch-to-left-flipper-to-circuit-to-moving-right-flipper; +750 score/toast",
+      "three-ball lifecycle; restart resets route and pooled effects; stable resources over four restarts; WebGL recovery",
+      "mobile landscape fit; Eco default; simultaneous real touch flippers; reduced-motion camera/effects"
+    ],
+    "metrics": {
+      "desktopTable": {
+        "position": {
+          "x": -0.6158900856971741,
+          "y": 2.479788303375244,
+          "z": -5.860058307647705
+        },
+        "phase": "bridge",
+        "s": 12.052156348492504,
+        "roll": 0,
+        "pitchDegrees": -66.68229161324496,
+        "calls": 196,
+        "triangles": 122772
+      },
+      "ecoGeometry": {
+        "withRoute": {
+          "frame": 997,
+          "calls": 129,
+          "triangles": 89370,
+          "points": 192,
+          "lines": 0
+        },
+        "withoutRoute": {
+          "frame": 998,
+          "calls": 114,
+          "triangles": 62584,
+          "points": 192,
+          "lines": 0
+        },
+        "addedCalls": 15,
+        "addedTriangles": 26786
+      },
+      "desktop-climb-fpv": {
+        "position": {
+          "x": -3.217268705368042,
+          "y": 1.5025737285614014,
+          "z": -1.4228105545043945
+        },
+        "phase": "ascent",
+        "s": 5.024077491119109,
+        "roll": 0,
+        "pitchDegrees": 12.75000000000001,
+        "calls": 64,
+        "triangles": 63244
+      },
+      "desktop-bridge-fpv": {
+        "position": {
+          "x": -0.6158900856971741,
+          "y": 2.479788303375244,
+          "z": -5.860058307647705
+        },
+        "phase": "bridge",
+        "s": 12.052156348492504,
+        "roll": 0,
+        "pitchDegrees": 0.08195942731088317,
+        "calls": 51,
+        "triangles": 52500
+      },
+      "desktop-tunnel-fpv": {
+        "position": {
+          "x": 3.643843173980713,
+          "y": 2.0265862941741943,
+          "z": 0.5709701180458069
+        },
+        "phase": "tunnel",
+        "s": 21.050703739384033,
+        "roll": 0,
+        "pitchDegrees": -7.208178465156965,
+        "calls": 63,
+        "triangles": 45188
+      },
+      "desktop-return-fpv": {
+        "position": {
+          "x": 3.0642969608306885,
+          "y": 0.3495332896709442,
+          "z": 5.379359722137451
+        },
+        "phase": "return",
+        "s": 26.204917865106392,
+        "roll": 1.3877787807814457e-17,
+        "pitchDegrees": -16.129720378573968,
+        "calls": 56,
+        "triangles": 26138
+      },
+      "desktopChase": {
+        "position": {
+          "x": 3.643843173980713,
+          "y": 2.0265862941741943,
+          "z": 0.5709701180458069
+        },
+        "phase": "tunnel",
+        "s": 21.050703739384033,
+        "roll": 1.734723475976807e-18,
+        "pitchDegrees": -6.008665031199182,
+        "calls": 66,
+        "triangles": 48672
+      },
+      "inputOnlyLaunch": {
+        "power": 0.7,
+        "leftZ": 6.3,
+        "rightZ": 6.4,
+        "laneExit": true,
+        "leftContact": true,
+        "awards": 1,
+        "rightReturn": true,
+        "phase": "playing",
+        "duration": 16.058333333333064,
+        "score": 1100,
+        "velocity": {
+          "x": 1.7923272848129272,
+          "y": 0.18839211761951447,
+          "z": -17.183135986328125
+        },
+        "changes": [
+          [
+            604,
+            true,
+            false
+          ],
+          [
+            613,
+            false,
+            false
+          ],
+          [
+            1104,
+            true,
+            false
+          ],
+          [
+            1113,
+            false,
+            false
+          ],
+          [
+            1432,
+            true,
+            false
+          ],
+          [
+            1440,
+            false,
+            false
+          ],
+          [
+            1538,
+            true,
+            false
+          ],
+          [
+            1545,
+            false,
+            false
+          ],
+          [
+            1836,
+            false,
+            true
+          ]
+        ]
+      },
+      "resources": {
+        "restarts": 4,
+        "before": {
+          "geometries": 130,
+          "textures": 24
+        },
+        "after": {
+          "geometries": 130,
+          "textures": 24
+        }
+      },
+      "mobileTable": {
+        "position": {
+          "x": -0.6158900856971741,
+          "y": 2.479788303375244,
+          "z": -5.860058307647705
+        },
+        "phase": "bridge",
+        "s": 12.052156348492504,
+        "roll": 0,
+        "pitchDegrees": -66.68229161324496,
+        "calls": 129,
+        "triangles": 89370
+      },
+      "mobileTunnel": {
+        "position": {
+          "x": 3.643843173980713,
+          "y": 2.0265862941741943,
+          "z": 0.5709701180458069
+        },
+        "phase": "tunnel",
+        "s": 21.050703739384033,
+        "roll": 0,
+        "pitchDegrees": -7.208178465156965,
+        "calls": 63,
+        "triangles": 45188
+      },
+      "reducedMotion": {
+        "position": {
+          "x": -3.217268705368042,
+          "y": 1.5025737285614014,
+          "z": -1.4228105545043945
+        },
+        "phase": "ascent",
+        "s": 5.024077491119109,
+        "roll": 3.469446951953614e-18,
+        "pitchDegrees": 6.359050026794477,
+        "calls": 67,
+        "triangles": 64144
+      }
+    },
+    "screenshots": [
+      "desktop-intro.png",
+      "desktop-table.png",
+      "desktop-climb-fpv.png",
+      "desktop-bridge-fpv.png",
+      "desktop-tunnel-fpv.png",
+      "desktop-return-fpv.png",
+      "desktop-tunnel-chase.png",
+      "mobile-intro.png",
+      "mobile-table.png",
+      "mobile-tunnel-fpv.png"
+    ],
+    "browserErrors": [],
+    "renderer": "Chromium software WebGL; physical device FPS and human comfort unmeasured"
+  },
+  "mobileLayout": {
+    "result": "pass",
+    "scope": "opening controls fit after landscape CSS correction",
+    "layouts": [
+      {
+        "width": 844,
+        "height": 390,
+        "buttons": [
+          {
+            "id": "start",
+            "left": 59.078125,
+            "right": 274.078125,
+            "top": 297.359375,
+            "bottom": 338.359375,
+            "width": 215,
+            "height": 41
+          },
+          {
+            "id": "table-variant",
+            "left": 59.078125,
+            "right": 131.078125,
+            "top": 345.359375,
+            "bottom": 375.359375,
+            "width": 72,
+            "height": 30
+          },
+          {
+            "id": "show-controls",
+            "left": 155.078125,
+            "right": 247.078125,
+            "top": 345.359375,
+            "bottom": 375.359375,
+            "width": 92,
+            "height": 30
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "buttons": [
+          {
+            "id": "start",
+            "left": 31.1875,
+            "right": 286.1875,
+            "top": 534.390625,
+            "bottom": 586.390625,
+            "width": 255,
+            "height": 52
+          },
+          {
+            "id": "table-variant",
+            "left": 31.1875,
+            "right": 118.1875,
+            "top": 637.390625,
+            "bottom": 669.390625,
+            "width": 87,
+            "height": 32
+          },
+          {
+            "id": "show-controls",
+            "left": 142.1875,
+            "right": 250.1875,
+            "top": 637.390625,
+            "bottom": 669.390625,
+            "width": 108,
+            "height": 32
+          }
+        ]
+      }
+    ],
+    "browserErrors": []
+  },
+  "classic": {
+    "result": "pass",
+    "checks": [
+      "boot",
+      "real keyboard launch",
+      "simultaneous keyboard flippers",
+      "pause freezes physics",
+      "blur releases controls and pauses",
+      "table/chase/FPV/spin cameras",
+      "FPV independent of ball rotation",
+      "game-over/restart/high score",
+      "rendered WebGL scene",
+      "High/Eco rendering and lower Eco draw calls",
+      "real bumper collision produces impact effects",
+      "restart clears effects",
+      "WebGL context recovery rebuilds reflections",
+      "touch defaults to Eco",
+      "simultaneous touch flippers",
+      "mobile landscape and portrait resize",
+      "reduced-motion suppresses impact animations"
+    ],
+    "browserErrors": []
+  },
+  "reviewFixes": [
+    "scan and trial angular velocities both start at zero",
+    "bridge-entrance reversal is classified as rollback before later ordinary-playfield drains",
+    "browser-launch failure closes the Vite server; missing executable exits with status 1 in under one second"
+  ],
+  "limitations": [
+    "Synthetic entry sweeps are not player completion rates.",
+    "The two launch trials use reproducible flipper inputs; human playtesting remains necessary.",
+    "Software WebGL does not establish device FPS.",
+    "Representative phone/desktop performance and human FPV motion comfort remain gates before default enablement.",
+    "Fullscreen and audible sound were not separately verified for this upgrade."
+  ]
+}

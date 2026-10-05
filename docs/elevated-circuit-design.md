@@ -2,7 +2,7 @@
 
 Add one connected physical shot: **left ascending ramp → open wire bridge above the reactors → short illuminated tunnel → right-flipper return**. The player sees the cabinet fall away beneath the ball, passes through a brief enclosure, then comes back to the flippers with a clear opportunity for another shot.
 
-**Decision: proceed to implementation using shared path geometry and a baked static wire mesh.** The spikes establish feasibility; they do not approve a production release. This PR contains the design, reproducible experiments and a trajectory preview. The deployed game and production source remain unchanged.
+**Implemented as an opt-in cabinet using shared path geometry and baked static wire meshes.** See [the implementation](elevated-circuit-implementation.md) and [implementation validation](elevated-circuit-validation.md). The evidence below records the original collision experiments; its geometry is retained for comparison. The playable source now includes the finished circuit at `?circuit=1`. Merging, deployment and default enablement are separate release steps.
 
 ![Measured route layout and height profile](assets/elevated-circuit-layout.svg)
 
@@ -16,11 +16,11 @@ Keep the current controls, three-ball lifecycle and existing camera choices. Add
 
 ## What the spikes established
 
-Experiments use the repository's original floor, bumpers, launch lane and flippers, Rapier 0.21.0, the 120 Hz step, ball CCD and existing speed cap. Each collision variant receives 63 injected entry shots: seven speeds × three lateral offsets × three approach angles. A separate scan places incoming balls at 192 flipper setups; 160 cross the middle line and eight approach the candidate mouth. These are synthetic setups, not a player's completion rate.
+Experiments use the repository's original floor, bumpers, launch lane and flippers, Rapier 0.21.0, the 120 Hz step, ball CCD and existing speed cap. Each collision variant receives 63 injected entry shots: seven speeds × three lateral offsets × three approach angles. A separate scan places incoming balls at 192 flipper setups; 160 cross the middle line and nine approach the candidate mouth. These are synthetic setups, not a player's completion rate.
 
 Completion requires **five ordered gates in 3D**. Merely reaching the right side or falling onto the playfield does not count. A trial runs for up to 12 seconds. “Drain” and “timeout” describe the whole trial; they do not by themselves identify a collider defect.
 
-| Collision experiment | Added colliders | Ordered completions / 63 | Flipper completions / 8 | Finding |
+| Collision experiment | Added colliders | Ordered completions / 63 | Flipper completions / 9 | Finding |
 | --- | ---: | ---: | ---: | --- |
 | Overlapping cuboid segments | 459 | 6 | 1 | Seams and stalls; reject |
 | Low-wall smooth channel | 1 | 17 | 1 | Better contact, inadequate fast-shot containment |
@@ -29,7 +29,9 @@ Completion requires **five ordered gates in 3D**. Merely reaching the right side
 | Flared, tapered capsule-wire cage | 450 | 34 | 5 | Reachable and better contained; expensive collider count |
 | **Flared, tapered baked-wire cage** | **3** | **37** | **5** | Preferred candidate: shared visible/collision tubes |
 
-For the preferred candidate, all 18 shots at speeds 4 and 8 roll back. All 27 cases at speeds 16, 20 and 24 complete. Speed 12 produces two completions, six rollbacks and one eventual drain; speed 28 produces eight completions and one eventual drain. Investigate those two drain cases before release. The eight flipper candidates produce five completions, two rollbacks and one timeout back on the lower playfield. Completed flipper traversals last roughly 2.0–3.9 seconds.
+For the preferred prototype, all 18 shots at speeds 4 and 8 roll back. All 27 cases at speeds 16, 20 and 24 complete. Speed 12 produces two completions and seven rollbacks; speed 28 produces eight completions and one eventual drain. The nine consistently zero-spin flipper candidates produce five completions and four rollbacks. Completed prototype flipper traversals last roughly 2.0–3.9 seconds.
+
+Review corrected the original scan/trial spin mismatch and a rollback classification that missed a ball reversing just beyond the bridge entrance. The remaining fast-shot defect was real: the ball descended airborne, struck the top of the resting right flipper and rebounded toward the drain. The implementation adds a monotone height profile, a lowering visible hold-down cover and an earlier flat exit before the flipper sweep. The production grid records 36 ordered completions followed by moving right-flipper returns and 27 rollbacks, with no drains or timeouts within 20 seconds. These are synthetic conditions, not a human success rate.
 
 Three short under-bridge trajectories match the original table exactly, including a bumper score. Launch-lane exit still works within three seconds. These are targeted checks, not full cabinet coverage.
 
@@ -47,7 +49,7 @@ Use board coordinates: X across the table, Y above its surface, Z toward the dra
 | --- | --- | --- |
 | Mouth | Centre approximately `(-2.75, 0.28, 3.0)`; 2.2-unit outside width | Smooth flare to 1.3-unit channel over 2 units; radius the wall ends and keep the floor flush |
 | Rise | Left side, passing near `(-3.8, 2.05, -3.0)` | Smooth tangent and slope; weak shots must reverse naturally |
-| Bridge | Nominal centre height 2.48; sampled peak about 2.51 | Two support wires, four side guides, two overhead guides; open space under the deck |
+| Bridge | Nominal centre height 2.48; prototype sampled peak about 2.51 | Two support wires, four side guides, two overhead guides; open space under the deck |
 | Wire transitions | 0.88-unit tapered channel; roughly 1-unit floor/wire overlap | Centre the ball before support changes; blend contact height and cap visible tube ends |
 | Tunnel | Right descent, starting near Z −0.6; length 2.4 | Partly open sides, short canopy and visible exit; inner roof about 1.65 above the local floor |
 | Return | Descend toward `(2.4, 0.28, 6.3)`, then `(2.2, 0.28, 6.9)` | Flush exit, no intersection with the launch divider; verify a usable right-flipper handoff |
@@ -86,9 +88,9 @@ The normal camera offset is 0.30 above the ball centre. Use a small swept camera
 
 Chase also needs obstacle-aware placement near the tunnel and bridge. Table view should keep the whole cabinet in frame and make elevated and ground-level balls distinguishable through shadows and the radar. Cap tunnel opacity and avoid safety wires across the central forward sight line where possible. Replace open tube ends with smooth collars; attach supports outside the main shot lanes.
 
-## Implementation sequence
+## Planned implementation sequence (now combined in this PR)
 
-1. **Geometry and simulation PR:** shared route definition, adaptive sampling, baked mesh colliders, explicit material/contact rules, flared lip, smooth transitions and ordered gate state. Enable only in a development configuration. Reproduce successful flipper shots and resolve the two injected drain cases.
+1. **Geometry and simulation PR:** shared route definition, adaptive sampling, baked mesh colliders, explicit material/contact rules, flared lip, smooth transitions and ordered gate state. Enable only in a development configuration. Reproduce successful flipper shots and resolve the recorded injected return defect.
 2. **Presentation and camera PR:** finished ramp/bridge/tunnel art generated from the same geometry, physically reachable supports, camera sweep and route heading, radar and completion feedback. Merge static materials and instance repeating ribs/ties. Aim for no more than 25 additional main-pass draw calls; the current 34-call prototype needs batching.
 3. **Release validation PR:** complete return-to-flipper tests, keyboard/touch/lifecycle regression, real-device playtests, performance capture and documented acceptance. Enable the route by default only after these gates pass. Keep the route configurable for a simple rollback.
 
@@ -99,7 +101,7 @@ Likely production boundaries are `src/physics/route-geometry.ts`, `route-state.t
 | Area | Required evidence |
 | --- | --- |
 | Physics | Re-run the speed/offset/angle grid, add angular-velocity and high-Y cases, more seeds and partial-step entry positions; no out-of-cabinet ejection or persistent seam stalls |
-| Weak and marginal shots | Safe natural rollback or return to the playable surface; diagnose both recorded injected drains and the flipper timeout |
+| Weak and marginal shots | Safe natural rollback or return to the playable surface; verify the corrected rollback classification and airborne-return defect |
 | Reachability | Launch-to-flipper-to-route playtests; several timing windows, not just placed incoming balls; no launch-lane regression |
 | Return | Ordered traversal followed by contact with the right flipper and a controllable upward shot; no forced straight drain |
 | Overpasses | Ground-level ball keeps interacting with the original bumpers; no ghost bonus, support obstruction or wrong-level route state |

@@ -23,7 +23,7 @@ export class ArcadeEffects {
   private trailTime = 0;
   private popups: Popup[] = [];
   private rings: Ring[] = [];
-  private scoreMaps = [scoreTexture(100), scoreTexture(250)];
+  private scoreMaps = [scoreTexture(100), scoreTexture(250), scoreTexture(750)];
   private color = new THREE.Color();
 
   constructor(scene: THREE.Scene) {
@@ -61,7 +61,7 @@ export class ArcadeEffects {
     ring.life = 0.85; ring.mesh.position.set(x, 0.04, z); ring.mesh.material.color.setHex(color); ring.mesh.visible = true;
     const popup = this.popups.find(p => p.life === 0) || this.popups[0];
     popup.life = 1.1; popup.origin = 2.0; popup.sprite.position.set(x, popup.origin, z);
-    popup.sprite.material.map = this.scoreMaps[points === 250 ? 1 : 0]; popup.sprite.material.color.setHex(color); popup.sprite.visible = true;
+    popup.sprite.material.map = this.scoreMaps[points === 750 ? 2 : points === 250 ? 1 : 0]; popup.sprite.material.color.setHex(color); popup.sprite.visible = true;
   }
 
   update(dt: number, position: Point, speed: number, playing: boolean) {

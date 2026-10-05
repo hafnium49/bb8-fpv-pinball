@@ -6,10 +6,11 @@ const assert = require('node:assert/strict');
   const { createServer } = await import('vite');
   const server = await createServer({ server: { host: '127.0.0.1', port: 5175 } });
   await server.listen();
-  const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] });
+  let browser;
   const errors = [], screenshots = [], out = 'artifacts/elevated-circuit';
   mkdirSync(out, { recursive: true });
   try {
+    browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] });
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
@@ -36,5 +37,5 @@ const assert = require('node:assert/strict');
     assert.ok(roll < 1e-8); assert.deepEqual(errors, []);
     const report = { result: 'pass', scope: 'isolated replay preview, desktop and mobile landscape; no production input/lifecycle changes', sampleTimes, geometry, browserErrors: errors, screenshots, renderer: 'Chromium software WebGL, not hardware FPS validation' };
     writeFileSync(`${out}/browser.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report, null, 2));
-  } finally { await browser.close(); await server.close(); }
+  } finally { if (browser) await browser.close(); await server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

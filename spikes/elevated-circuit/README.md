@@ -1,6 +1,6 @@
 # Elevated circuit design spikes
 
-Read [the implementation design](../../docs/elevated-circuit-design.md) and [captured results](../../docs/spikes/elevated-circuit-results.json). These experiments do not change `src/` or the deployed game. They use the existing dependencies installed by `npm ci`.
+Read [the implementation design](../../docs/elevated-circuit-design.md) and [captured results](../../docs/spikes/elevated-circuit-results.json). These experiments run on the classic simulation and preserve their candidate geometry for comparison. The finished opt-in implementation is in `src/`; see [its validation](../../docs/elevated-circuit-validation.md). They use the existing dependencies installed by `npm ci`.
 
 ## Reproduce
 
@@ -37,7 +37,7 @@ Open `/spikes/elevated-circuit/index.html` on the printed local server URL. Scru
 
 - `reach.ts` scans 192 synthetic incoming-ball poses and flipper timings on the original table.
 - `route.ts` generates one 3D route and six collider variants. Its wire tube geometry is shared with the preview.
-- `run.ts` compares 63 injected entry conditions per variant and eight candidate flipper setups per variant. Five ordered proximity gates prevent false completion from merely reaching the return area.
+- `run.ts` compares 63 injected entry conditions per variant and the candidate flipper setups selected by the consistent zero-spin scan. Five ordered proximity gates prevent false completion from merely reaching the return area.
 - `camera-check.ts` checks pitch/rate/roll and analytic clearance on two real completing traces.
 - `invariants.ts` compares board-local versus rotated vertical gravity, three short underpasses and launch-lane exit.
 - `preview.ts` and `browser-check.cjs` render the route on the existing cabinet and inspect desktop/mobile output.

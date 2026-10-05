@@ -4,45 +4,45 @@
     "mainCommit": "26ca301bfc3364bfeb7fe21bd7f151cc47d0719b",
     "tree": "fd73c0a42e48aa9bbb040260e75539e18a46f099"
   },
-  "scope": "experimental route added to the original simulation; production source and deployment are unchanged",
+  "scope": "historical candidate geometry on the classic simulation; finished implementation evidence is recorded separately",
   "physics": {
-    "basis": "Rapier 0.21.0, original table, 120 Hz, ball CCD, production flipper tuning, zero rail restitution combined by Min",
+    "basis": "Rapier 0.21.0, original table, 120 Hz, ball CCD, production flipper tuning, zero initial spin in both scan and trials, zero rail restitution combined by Min; rollback recognized after reversing from the bridge entrance",
     "routeLength": 27.44114287370099,
     "samples": 154,
     "scannedFlipperSetups": 192,
     "forwardCrossings": 160,
-    "candidateFlipperSetups": 8,
+    "candidateFlipperSetups": 9,
     "summary": [
       {
         "variant": "boxes",
         "colliders": 459,
         "injected": {
           "complete": 6,
-          "rollback": 27,
+          "rollback": 28,
           "escape": 10,
           "stuck": 1,
           "timeout": 1,
-          "drain": 18
+          "drain": 17
         },
         "flipper": {
           "complete": 1,
-          "rollback": 2,
+          "rollback": 3,
           "escape": 0,
-          "stuck": 2,
-          "timeout": 1,
+          "stuck": 3,
+          "timeout": 0,
           "drain": 2
         },
-        "maxStepP95Ms": 0.4231399999999894
+        "maxStepP95Ms": 0.4088570000000118
       },
       {
         "variant": "mesh",
         "colliders": 1,
         "injected": {
           "complete": 17,
-          "rollback": 18,
+          "rollback": 19,
           "escape": 5,
           "stuck": 0,
-          "timeout": 1,
+          "timeout": 0,
           "drain": 22
         },
         "flipper": {
@@ -51,93 +51,93 @@
           "escape": 0,
           "stuck": 0,
           "timeout": 1,
-          "drain": 2
+          "drain": 3
         },
-        "maxStepP95Ms": 0.051538000000164175
+        "maxStepP95Ms": 0.038157999999839376
       },
       {
         "variant": "wire",
         "colliders": 266,
         "injected": {
           "complete": 0,
-          "rollback": 40,
+          "rollback": 49,
           "escape": 13,
           "stuck": 0,
-          "timeout": 2,
-          "drain": 8
+          "timeout": 0,
+          "drain": 1
         },
         "flipper": {
           "complete": 0,
-          "rollback": 5,
+          "rollback": 6,
           "escape": 0,
-          "stuck": 1,
+          "stuck": 0,
           "timeout": 1,
-          "drain": 1
+          "drain": 2
         },
-        "maxStepP95Ms": 0.23956200000020544
+        "maxStepP95Ms": 0.2187699999999495
       },
       {
         "variant": "guarded-mesh",
         "colliders": 1,
         "injected": {
           "complete": 20,
-          "rollback": 18,
-          "escape": 9,
+          "rollback": 38,
+          "escape": 5,
           "stuck": 0,
-          "timeout": 2,
-          "drain": 14
+          "timeout": 0,
+          "drain": 0
         },
         "flipper": {
           "complete": 1,
-          "rollback": 5,
+          "rollback": 6,
           "escape": 1,
           "stuck": 0,
           "timeout": 0,
           "drain": 1
         },
-        "maxStepP95Ms": 0.06774299999960931
+        "maxStepP95Ms": 0.04199400000015885
       },
       {
         "variant": "guided-wire",
         "colliders": 450,
         "injected": {
           "complete": 34,
-          "rollback": 26,
-          "escape": 0,
-          "stuck": 0,
-          "timeout": 1,
-          "drain": 2
-        },
-        "flipper": {
-          "complete": 5,
-          "rollback": 3,
+          "rollback": 29,
           "escape": 0,
           "stuck": 0,
           "timeout": 0,
           "drain": 0
         },
-        "maxStepP95Ms": 0.18541000000004715
+        "flipper": {
+          "complete": 5,
+          "rollback": 4,
+          "escape": 0,
+          "stuck": 0,
+          "timeout": 0,
+          "drain": 0
+        },
+        "maxStepP95Ms": 0.137988000000405
       },
       {
         "variant": "baked-wire",
         "colliders": 3,
         "injected": {
           "complete": 37,
-          "rollback": 24,
+          "rollback": 25,
           "escape": 0,
           "stuck": 0,
           "timeout": 0,
-          "drain": 2
+          "drain": 1
         },
         "flipper": {
           "complete": 5,
-          "rollback": 2,
+          "rollback": 4,
           "escape": 0,
           "stuck": 0,
-          "timeout": 1,
+          "timeout": 0,
           "drain": 0
         },
-        "maxStepP95Ms": 0.0927400000000489
+        "maxStepP95Ms": 0.08535900000060792
       }
     ],
     "preferredVariantBySpeed": [
@@ -170,11 +170,11 @@
         "cases": 9,
         "outcomes": {
           "complete": 2,
-          "rollback": 6,
+          "rollback": 7,
           "escape": 0,
           "stuck": 0,
           "timeout": 0,
-          "drain": 1
+          "drain": 0
         }
       },
       {
@@ -326,30 +326,26 @@
           "delaySteps": 8,
           "flipper": "left"
         },
-        "outcome": "timeout",
+        "outcome": "rollback",
         "orderedGatesPassed": 1,
         "maxY": 2.7106244564056396,
-        "duration": 12
+        "duration": 4.875
+      },
+      {
+        "start": {
+          "x": -2.7,
+          "y": 0.3,
+          "z": 6.8,
+          "delaySteps": 12,
+          "flipper": "left"
+        },
+        "outcome": "rollback",
+        "orderedGatesPassed": 1,
+        "maxY": 2.278303861618042,
+        "duration": 3.9
       }
     ],
     "unresolvedPreferredCases": [
-      {
-        "speed": 12,
-        "offset": 0,
-        "veer": -0.1,
-        "outcome": "drain",
-        "orderedGatesPassed": 1,
-        "final": {
-          "t": 8.591666666666667,
-          "x": -0.7477542161941528,
-          "y": 0.27971309423446655,
-          "z": 11.180816650390625,
-          "vx": -0.6842427253723145,
-          "vy": -0.027866873890161514,
-          "vz": 3.756821393966675,
-          "s": 27.44114287370099
-        }
-      },
       {
         "speed": 28,
         "offset": -0.3,
