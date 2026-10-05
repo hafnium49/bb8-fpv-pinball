@@ -17,7 +17,7 @@ const report = {
   browser,
   mobileLayout,
   classic: { result: classic.result, checks: classic.checks, browserErrors: classic.browserErrors },
-  reviewFixes: ['scan and trial angular velocities both start at zero', 'bridge-entrance reversal is classified as rollback before later ordinary-playfield drains', 'browser-launch failure closes the Vite server; missing executable exits with status 1 in under one second'],
+  reviewFixes: ['scan and trial angular velocities both start at zero', 'bridge-entrance reversal is classified as rollback before later ordinary-playfield drains', 'browser-launch failure closes the Vite server; missing executable exits with status 1 in under one second', 'candidate and built route section bounds are checked before mesh generation', 'historical preview resizes only when dimensions change and links readout to scrubber', 'plotter executes with conventional indentation; reference replay versioning documented'],
   limitations: ['Synthetic entry sweeps are not player completion rates.', 'The two launch trials use reproducible flipper inputs; human playtesting remains necessary.', 'Software WebGL does not establish device FPS.', 'Representative phone/desktop performance and human FPV motion comfort remain gates before default enablement.', 'Fullscreen and audible sound were not separately verified for this upgrade.'],
 };
 mkdirSync('docs/validation', { recursive: true });

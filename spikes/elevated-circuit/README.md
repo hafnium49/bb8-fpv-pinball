@@ -17,7 +17,7 @@ node spikes/elevated-circuit/capture.cjs
 
 The browser check needs a Playwright-compatible Chromium with WebGL. Use an already installed browser with `CHROME_PATH=/absolute/path/to/chromium`, or install Playwright Chromium in an environment that permits its download. Extra browser arguments may be supplied as a JSON array in `CHROME_ARGS`. The check starts Vite itself and saves desktop/mobile landscape screenshots to `artifacts/elevated-circuit/`.
 
-Full physics cases, timings, traces, camera checks and invariant checks are saved under that ignored directory. `run.ts` also refreshes the committed `replay.json` from the first successful flipper shot of the preferred candidate. `capture.cjs` writes compact review evidence after all checks have run. Timings vary by machine; outcome counts are the useful contact comparison.
+Full physics cases, timings, traces, camera checks and invariant checks are saved under that ignored directory. `run.ts` also refreshes the committed `replay.json` from the first successful flipper shot of the preferred candidate. `capture.cjs` writes compact review evidence after all checks have run. The small committed replay is deliberately versioned for deterministic visual review: one successful reference shot, rounded to five decimal places. Regenerate it with `run.ts`; full-case traces stay in ignored artifacts. Timings vary by machine; outcome counts are the useful contact comparison.
 
 Generate the layout diagram with Python and matplotlib:
 

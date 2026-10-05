@@ -1,6 +1,7 @@
 """Plot actual sampled geometry. Run after run.ts; requires matplotlib."""
 import json
 import sys
+import math
 from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
@@ -22,8 +23,7 @@ ax.add_patch(Rectangle((-6, -11), 12, 22, facecolor='#101f31', edgecolor='#60728
 for rail in r['rails']: ax.plot([rail['ax'],rail['bx']], [rail['az'],rail['bz']], color='#71839a', linewidth=2)
 for b in r['bumpers']: ax.add_patch(Circle((b['x'],b['z']), b['radius'], facecolor='#283f57', edgecolor='#adbacd'))
 for f in r['flippers']:
- import math
- ax.plot([f['x'], f['x']+f['side']*3*math.cos(f['rest'])], [f['z'], f['z']-f['side']*3*math.sin(f['rest'])], linewidth=5, color='#cbd7e5', solid_capstyle='round')
+    ax.plot([f['x'], f['x']+f['side']*3*math.cos(f['rest'])], [f['z'], f['z']-f['side']*3*math.sin(f['rest'])], linewidth=5, color='#cbd7e5', solid_capstyle='round')
 segments = [(0,start,'#ffb56c','Ascending ramp'),(start,end,'#6ee6f6','Open wire bridge'),(end,tunnel_start,'#ffb56c','Descent'),(tunnel_start,tunnel_end,'#ae93ff','Lit tunnel'),(tunnel_end,len(p)-1,'#ffb56c','Right return')]
 for a,b,color,label in segments: ax.plot([v['x'] for v in p[a:b+1]], [v['z'] for v in p[a:b+1]], color=color, linewidth=5, solid_capstyle='round')
 for text,i,xy in [('Entry / flared mouth',0,(1.0,3.1)),('Wire bridge',(start+end)//2,(-4.7,-8.7)),('Lit tunnel',tunnel_start,(-4.5,.5)),('Right return',len(p)-3,(-5.0,9.4))]:

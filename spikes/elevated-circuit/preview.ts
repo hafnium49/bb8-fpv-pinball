@@ -75,7 +75,9 @@ function renderAt(t = time, nextMode = mode) {
   if (mode === 'fpv') { camera.fov = 82; camera.position.copy(pose.position); camera.lookAt(pose.target); }
   else if (mode === 'chase') { camera.fov = 65; camera.position.copy(pose.position).add(new THREE.Vector3(-Math.sin(pose.yaw) * 3.2, 2.6, Math.cos(pose.yaw) * 3.2)); camera.lookAt(f.x, f.y + 0.3, f.z); }
   else { camera.fov = 48; camera.position.set(0, Math.max(27, 17 / camera.aspect), 12); camera.lookAt(0, 0, -0.4); }
-  camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); renderer.render(scene, camera);
+  camera.updateProjectionMatrix();
+  if (canvas.width !== innerWidth || canvas.height !== innerHeight) renderer.setSize(innerWidth, innerHeight);
+  renderer.render(scene, camera);
   document.querySelector<HTMLOutputElement>('#readout')!.value = `${time.toFixed(2)}s · height ${f.y.toFixed(2)}`;
   const s = nearest(f).s;
   document.querySelector('#state')!.textContent = s < samples[wireStart].s ? 'ASCENDING RAMP' : s < samples[wireEnd].s ? 'WIRE BRIDGE' : s < samples[tunnelEnd].s ? 'LIT TUNNEL' : 'RIGHT RETURN';

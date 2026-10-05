@@ -23,7 +23,11 @@ for (let i = 0; i <= count; i++) {
   samples.push({ c, tangent, right, up, s: i ? samples[i - 1].s + c.distanceTo(samples[i - 1].c) : 0, u });
 }
 export const length = samples.at(-1)!.s;
-export const wireStart = samples.findIndex(p => p.c.z < -5.15), wireEnd = samples.findIndex((p, i) => i > wireStart && p.c.x > 3.2 && p.c.z > -3.5);
+export const wireStart = samples.findIndex(p => p.c.z < -5.15);
+export const wireEnd = samples.findIndex((p, i) => i > wireStart && p.c.x > 3.2 && p.c.z > -3.5);
+if (wireStart < 6 || wireEnd <= wireStart || wireEnd + 6 >= samples.length) {
+  throw new Error('Candidate route needs ordered bridge boundaries with six samples of transition overlap at each end.');
+}
 
 export function nearest(p: { x: number; y: number; z: number }) {
   const point = new THREE.Vector3(p.x, p.y, p.z);

@@ -55,14 +55,23 @@ for (let i = 1; i < frames.length; i++) frames[i].s = frames[i - 1].s + distance
 export const routeLength = frames.at(-1)!.s;
 export const bridgeStart = frames.findIndex(f => f.c.z < -5.15);
 export const bridgeEnd = frames.findIndex((f, i) => i > bridgeStart && f.c.x > 3.2 && f.c.z > -3.5);
+if (bridgeStart < 1 || bridgeEnd <= bridgeStart || bridgeEnd >= frames.length - 1) {
+  throw new Error('Circuit requires ordered bridge boundaries inside the sampled route.');
+}
 export const bridgeStartS = frames[bridgeStart].s, bridgeEndS = frames[bridgeEnd].s;
 export const tunnelStart = frames.findIndex((f, i) => i > bridgeEnd && f.c.z > -0.6);
 export const tunnelEnd = frames.findIndex((f, i) => i > tunnelStart && f.s >= frames[tunnelStart].s + 2.4);
 export const landingStart = frames.findIndex((f, i) => i > tunnelEnd && f.c.z > 5.6);
+if (tunnelStart <= bridgeEnd || tunnelEnd <= tunnelStart || landingStart <= tunnelEnd) {
+  throw new Error('Circuit requires a tunnel and landing after the bridge.');
+}
 const wireLeadIn = frames.findIndex(f => f.s >= bridgeStartS - 1.1);
 const wireLeadOut = frames.findIndex(f => f.s >= bridgeEndS + 1.1);
 export const ascentEnd = frames.findIndex(f => f.s >= bridgeStartS + 1.1);
 export const descentStart = frames.findIndex(f => f.s >= bridgeEndS - 1.1);
+if (wireLeadIn < 0 || wireLeadOut <= wireLeadIn || ascentEnd <= bridgeStart || descentStart <= wireLeadIn) {
+  throw new Error('Circuit transition overlap does not fit inside the sampled route.');
+}
 for (const f of frames) {
   const narrowed = Math.min(smooth((f.s - bridgeStartS + 2.7) / 2), smooth((bridgeEndS + 2.7 - f.s) / 2));
   f.width = 0.65 + 0.45 * (1 - smooth(f.s / 2)) - 0.21 * narrowed;

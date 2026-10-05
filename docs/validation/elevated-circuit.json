@@ -565,7 +565,10 @@
   "reviewFixes": [
     "scan and trial angular velocities both start at zero",
     "bridge-entrance reversal is classified as rollback before later ordinary-playfield drains",
-    "browser-launch failure closes the Vite server; missing executable exits with status 1 in under one second"
+    "browser-launch failure closes the Vite server; missing executable exits with status 1 in under one second",
+    "candidate and built route section bounds are checked before mesh generation",
+    "historical preview resizes only when dimensions change and links readout to scrubber",
+    "plotter executes with conventional indentation; reference replay versioning documented"
   ],
   "limitations": [
     "Synthetic entry sweeps are not player completion rates.",

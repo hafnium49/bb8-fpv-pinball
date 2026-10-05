@@ -6,7 +6,7 @@ The connected left ramp, wire bridge, illuminated tunnel and right-flipper retur
 
 ## Contact and geometry
 
-`table.ts` defines a ball-centre route. `route-geometry.ts` uses a centripetal horizontal curve and monotone Hermite height interpolation, with adaptive sampling limited by chord length, curvature and midpoint error. This prevents the prototype's height overshoot at the crest and landing. The finished path is 27.104 units long, sampled into 273 frames, with a nominal crest height of 2.48. Moving balls may rise above that path through real contact; the path is not a constraint on the body.
+`table.ts` defines a ball-centre route. `route-geometry.ts` uses a centripetal horizontal curve and monotone Hermite height interpolation, with adaptive sampling limited by chord length, curvature and midpoint error. Bridge, tunnel and transition boundaries are validated before generating meshes. This prevents the prototype's height overshoot at the crest and landing. The finished path is 27.104 units long, sampled into 273 frames, with a nominal crest height of 2.48. Moving balls may rise above that path through real contact; the path is not a constraint on the body.
 
 The ascent and descent meshes overlap the baked wire cage at their transitions. Two supporting wires, four side guides and two overhead guards leave the bridge deck open. Shared typed mesh data feeds Rapier and Three.js. Four fixed meshes cover the channel, wire cage/ties and outboard supports. Route contact uses low friction, zero restitution with the Min combine rule, and internal-edge correction. The original ball CCD, 120 Hz step, gravity, launch force, flippers and speed cap remain calibrated as before.
 

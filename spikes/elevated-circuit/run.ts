@@ -14,7 +14,9 @@ type Frame = { t: number; x: number; y: number; z: number; vx: number; vy: numbe
 
 function trial(variant: Variant, speed: number, offset: number, veer: number, start?: { x: number; y: number; z: number; delaySteps: number; flipper: string }) {
   const sim = new PinballSimulation(); sim.start(); sim.launch(0.5);
-  const colliderCount = addRoute(sim.world, variant), trace: Frame[] = [], costs: number[] = [];
+  const colliderCount = addRoute(sim.world, variant);
+  const trace: Frame[] = [];
+  const costs: number[] = [];
   const first = samples[0];
   sim.ball.setTranslation(start ?? first.c.clone().addScaledVector(first.right, offset).addScaledVector(first.tangent, -0.4), true);
   sim.ball.setLinvel(start ? { x: 0, y: 0, z: 2 } : first.tangent.clone().multiplyScalar(speed).addScaledVector(first.right, speed * veer), true);

@@ -17,6 +17,7 @@ The optional cabinet is verified against the original deployed table's rules wit
 | Resource lifecycle | 130 geometries and 24 textures remain stable over four restarts; route models are built once and own their disposal; pooled effects reset without constructing new tables |
 | Presentation | Desktop 1440 × 900 and mobile landscape 844 × 390 screenshots inspected; opening controls also checked at 390 × 844 for route height, open wire deck, visible guards, tunnel exit, flipper handoff, radar and readable controls |
 | Build | TypeScript and Vite production build pass; the existing large-bundle warning remains because the physics runtime is embedded |
+| Late spike review | Route boundaries validate before mesh generation; preview resizes only on dimension changes and passes desktop/mobile browser checks; plotter executes; scrubber/readout association and reference-trace generation documented |
 | Reviewed spike failure path | A missing Chromium executable exits with status 1 in under one second; the Vite server closes instead of keeping the process alive |
 
 Synthetic entry counts measure containment and contact behavior, not a player's completion percentage. The two launch tests use a deterministic two-button input policy and establish end-to-end reachability at two left-flipper timing thresholds; they do not replace human playtesting. The final return check requires a real contact event while the right flipper is pressed and a subsequent upward velocity.
