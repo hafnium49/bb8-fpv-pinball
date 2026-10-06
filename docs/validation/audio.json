@@ -11,6 +11,7 @@
         "flipper and launch event tones",
         "gesture resumes suspended context without recreating it",
         "sound-on preference restored without autoplay",
+        "injected saved-on startup failure clears UI/preference/session and allows retry",
         "mute stops output and releases session",
         "sound-off preference survives reload"
       ]
@@ -25,6 +26,7 @@
         "flipper and launch event tones",
         "gesture resumes suspended context without recreating it",
         "sound-on preference restored without autoplay",
+        "injected saved-on startup failure clears UI/preference/session and allows retry",
         "mute stops output and releases session",
         "sound-off preference survives reload"
       ]
@@ -40,8 +42,8 @@
     "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified."
   ],
   "sourceSha256": {
-    "src/main.ts": "d61af26a5d97ae37dfdb16bc8e32ae76ed9898af90c952c0bcc132eb3eda5971",
+    "src/main.ts": "10009b0c9a7b0574e1a878af5c01a286af1b2226645d5bd1e290e9e31f7ec8c6",
     "src/ui/audio.ts": "2f605be5ad849a3bc6eae3ac1d75ac1ffa08f53807743073510b30e03e2c76a6",
-    "scripts/audio-browser.cjs": "7e99499318efc835d4dd0475b01f585bb6441babc09f87fae7bced2b54e503b1"
+    "scripts/audio-browser.cjs": "80d95eefa17499375bba60e022bfdced08b93923b56e35909419021600425b03"
   }
 }

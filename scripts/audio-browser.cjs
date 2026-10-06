@@ -94,7 +94,16 @@ const out = 'artifacts/audio';
     console.log(`Captured ${name} sound-on`);
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND ON');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 0, 'Remembering preference must not autoplay');
+    await page.evaluate(() => {
+      window.restoreQAContext = window.AudioContext;
+      window.AudioContext = function () { throw new Error('Injected unavailable audio device'); };
+    });
     await activate(page.locator('#start'));
+    await page.waitForFunction(() => document.querySelector('#sound').textContent === 'SOUND OFF' && document.querySelector('#toast').textContent.startsWith('Sound could not start'));
+    assert.equal(await page.evaluate(() => localStorage.getItem('orbit-pinball-sound')), 'off');
+    assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
+    await page.evaluate(() => { window.AudioContext = window.restoreQAContext; });
+    await activate(page.locator('#sound'));
     await page.waitForFunction(() => window.audioProbe.contexts[0]?.state === 'running');
     await activate(page.locator('#sound')); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     await page.waitForTimeout(300); await page.evaluate(() => { window.audioProbe.peak = 0; });
@@ -103,7 +112,7 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => window.audioProbe.peak), 0, 'Muted audio still reaches output');
     assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
-    cases.push({ name, result: 'pass', confirmationPeak, checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones', 'gesture resumes suspended context without recreating it', 'sound-on preference restored without autoplay', 'mute stops output and releases session', 'sound-off preference survives reload'] });
+    cases.push({ name, result: 'pass', confirmationPeak, checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones', 'gesture resumes suspended context without recreating it', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     // Keep one page alive with single-process Chromium while opening the next.
   }
