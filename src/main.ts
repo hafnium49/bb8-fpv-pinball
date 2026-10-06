@@ -35,6 +35,7 @@ app.innerHTML = `
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const audio = new GameAudio();
+try { audio.setEnabled(localStorage.getItem('orbit-pinball-sound') === 'on'); } catch { /* Sound still works without storage. */ }
 let sim: PinballSimulation, view: PinballView;
 let best = 0;
 try { best = Number(localStorage.getItem('orbit-pinball-best') || 0) || 0; } catch { /* Private browsing still plays. */ }
@@ -44,6 +45,28 @@ let toastUntil = 0, previousPhase = 'intro', last = performance.now();
 function toast(message: string, seconds = 1.6) {
   $('toast').textContent = message; $('toast').classList.add('visible'); toastUntil = performance.now() + seconds * 1000;
 }
+function updateSound() {
+  $('sound').textContent = audio.enabled ? 'SOUND ON' : 'SOUND OFF';
+  $('sound').setAttribute('aria-pressed', String(audio.enabled));
+  $('sound').setAttribute('aria-label', audio.enabled ? 'Disable sound' : 'Enable sound');
+  try { localStorage.setItem('orbit-pinball-sound', audio.enabled ? 'on' : 'off'); } catch { /* Private browsing still plays. */ }
+}
+let soundChange = 0;
+updateSound();
+$('sound').addEventListener('click', async () => {
+  const change = ++soundChange;
+  audio.setEnabled(!audio.enabled); updateSound();
+  if (!audio.enabled) { toast('SOUND OFF'); return; }
+  const ready = await audio.unlock();
+  if (change !== soundChange) return;
+  if (ready) {
+    audio.tone(660, 0.22, 'triangle', 0.05, 990);
+    toast('SOUND ON · check media volume', 3);
+  } else {
+    audio.setEnabled(false); updateSound();
+    toast('Sound could not start · tap SOUND to retry', 4);
+  }
+});
 function setCamera(mode: CameraMode) {
   view.mode = mode;
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-camera]')) {
@@ -101,10 +124,6 @@ async function boot() {
     $('resume').addEventListener('click', resume); $('restart').addEventListener('click', begin);
     $('pause').addEventListener('click', () => sim.paused ? resume() : showPause());
     $('show-controls').addEventListener('click', () => { $('instructions').hidden = !$('instructions').hidden; });
-    $('sound').addEventListener('click', () => {
-      audio.enabled = !audio.enabled; audio.unlock(); $('sound').textContent = audio.enabled ? 'SOUND ON' : 'SOUND OFF';
-      $('sound').setAttribute('aria-pressed', String(audio.enabled)); $('sound').setAttribute('aria-label', audio.enabled ? 'Disable sound' : 'Enable sound');
-    });
     $('fullscreen').addEventListener('click', async () => {
       try { if (document.fullscreenElement) await document.exitFullscreen(); else await $('game').requestFullscreen(); }
       catch { toast('Fullscreen is unavailable in this browser'); }

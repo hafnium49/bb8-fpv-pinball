@@ -19,8 +19,9 @@ Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browse
 | Pause / resume | Esc | Pause / resume buttons |
 | Camera | 1 / 2 / 3 / 4 | FPV / Chase / Table / Spin |
 | Graphics | — | FX High / FX Eco |
+| Sound | — | Sound On / Sound Off |
 
-The radar shows the full table, ball and flippers. The two touch flippers support simultaneous presses. Sound is off until enabled. Spin view deliberately follows the rolling ball's rotation; stabilized FPV is the default. A game has three balls; bumper hits score 100 and target hits score 250. The best score is stored locally when a game ends.
+The radar shows the full table, ball and flippers. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable effects and hear a short confirmation beep. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. Spin view deliberately follows the rolling ball's rotation; stabilized FPV is the default. A game has three balls; bumper hits score 100 and target hits score 250. The best score is stored locally when a game ends.
 
 ## Orbital arcade visuals
 
@@ -48,6 +49,8 @@ npm run preview
 For a single offline HTML file, run `npm run standalone` and open `artifacts/ORBIT-FPV-Pinball.html` in a WebGL-capable browser. It embeds the renderer, physics runtime and stylesheet; no server or CDN is needed.
 
 For browser QA, run `npx playwright install chromium`, then `npm run test:browser`. It starts its own dev server. Screenshots and the check report go into `artifacts/`. Set `CHROME_PATH` to use an existing Chromium executable or `GAME_URL` to test a running dev server.
+
+`npm run test:audio:browser` checks real Web Audio waveforms, confirmation, launch/flipper tones, mute, reload preferences and suspended-context recovery in desktop classic and mobile circuit views. Safari audio-session behavior requires a physical iPhone check.
 
 `npm run test:circuit` runs the 63-case entry sweep, 18 spin/partial-step variants and two input-only launch-to-flipper return trials. `npm run test:circuit:browser` adds playable route screenshots, camera/control checks, touch, resource stability and context recovery. These commands use the same Chromium configuration as `test:browser`.
 
