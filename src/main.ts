@@ -4,6 +4,7 @@ import { PinballView, type CameraMode } from './render/view';
 import { drawMinimap } from './ui/minimap';
 import { GameAudio } from './ui/audio';
 
+const circuitEnabled = new URLSearchParams(location.search).get('circuit') === '1';
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
   <main id="game" aria-label="ORBIT FPV pinball game">
@@ -19,7 +20,7 @@ app.innerHTML = `
     <aside id="map-wrap" class="map-wrap" hidden><div class="map-label"><span>TABLE RADAR</span><i></i></div><canvas id="minimap" width="156" height="270" aria-label="Overhead map showing the ball, bumpers, and flippers"></canvas><div class="map-bottom">YOU ARE THE BALL</div></aside>
     <div id="toast" role="status" aria-live="polite"></div>
     <section id="intro" class="intro-panel">
-      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ORBITAL ARCADE</span><h1>Be the<br/><em>ball.</em></h1><p>Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p><p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
+      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
     <nav id="camera-controls" class="camera-controls" aria-label="Camera views" hidden><button class="selected" data-camera="fpv" aria-pressed="true">FPV</button><button data-camera="chase" aria-pressed="false">CHASE</button><button data-camera="table" aria-pressed="false">TABLE</button><button data-camera="spin" aria-pressed="false">SPIN ↻</button></nav>
@@ -84,7 +85,7 @@ function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
 
 async function boot() {
   try {
-    sim = await PinballSimulation.create(); view = new PinballView($('viewport'));
+    sim = await PinballSimulation.create({ circuit: circuitEnabled }); view = new PinballView($('viewport'), circuitEnabled);
     const updateQuality = () => {
       $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
       $('quality').setAttribute('aria-pressed', String(view.highQuality));
@@ -155,7 +156,8 @@ function frame(now: number) {
   if (sim.phase === 'ready') $('hint').textContent = 'HOLD SPACE · RELEASE TO LAUNCH';
   else if (sim.phase === 'playing') {
     const p = sim.position;
-    $('hint').textContent = p.z > 4 && p.x < 4.4 ? 'FLIPPERS APPROACHING · A / D' : 'BUMPER +100 · TARGET +250';
+    $('hint').textContent = sim.route.active ? ({ ascent: 'RAMP · CLIMB TO THE BRIDGE', bridge: 'WIRE BRIDGE · KEEP YOUR ORBIT', tunnel: 'TUNNEL · RIGHT FLIPPER NEXT', return: 'RIGHT RETURN · FLIP WITH D / →', free: '' }[sim.route.phase])
+      : p.z > 4 && p.x < 4.4 ? 'FLIPPERS APPROACHING · A / D' : circuitEnabled ? 'LEFT RAMP → CIRCUIT +750' : 'BUMPER +100 · TARGET +250';
   } else $('hint').textContent = sim.phase === 'draining' ? 'NEXT BALL INCOMING' : 'ORBIT COMPLETE';
   if (sim.phase !== previousPhase) {
     if (sim.phase === 'draining') toast('BALL LOST · next ball ready shortly');
@@ -165,6 +167,7 @@ function frame(now: number) {
   for (const e of sim.events) {
     if (e.type === 'bumper') { audio.tone(550 + e.index * 110, 0.12, 'sine', 0.04, 1000); toast('+100 · BUMPER', 0.8); }
     if (e.type === 'target') { audio.tone(880, 0.17, 'triangle', 0.04, 1300); toast('+250 · TARGET', 0.8); }
+    if (e.type === 'circuit') { audio.tone(660, 0.35, 'triangle', 0.04, 1320); toast('CIRCUIT +750 · RIGHT FLIPPER NEXT', 1.5); }
     if (e.type === 'flipper') audio.tone(130, 0.07, 'triangle', 0.025, 60);
     if (e.type === 'launch') audio.tone(110, 0.28, 'sawtooth', 0.02, 580);
     if (e.type === 'drain') audio.tone(300, 0.5, 'sine', 0.04, 60);

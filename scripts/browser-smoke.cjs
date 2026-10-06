@@ -10,7 +10,7 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   let url = process.env.GAME_URL;
   if (!url) {
     const { createServer } = await import('vite');
-    server = await createServer({ server: { host: '127.0.0.1', port: 5173 } });
+    server = await createServer({ server: { host: '127.0.0.1', port: 5173, watch: { ignored: () => true }, hmr: false } });
     await server.listen();
     url = server.resolvedUrls.local[0];
   }

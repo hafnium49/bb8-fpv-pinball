@@ -9,6 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/browser-smoke.cjs",
+    "test:circuit": "node --import tsx scripts/circuit-check.ts",
+    "test:circuit:browser": "node scripts/circuit-browser.cjs",
     "standalone": "npm run build && node scripts/standalone.mjs"
   },
   "dependencies": {

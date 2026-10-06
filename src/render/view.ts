@@ -8,6 +8,8 @@ import { bumpers, targets } from '../physics/table';
 import type { PinballSimulation } from '../physics/simulation';
 import { ArcadeTable } from './table-model';
 import { ArcadeEffects } from './effects';
+import { ElevatedCircuit } from './route-model';
+import { CameraClearance, RouteCamera } from './route-camera';
 
 export type CameraMode = 'fpv' | 'chase' | 'table' | 'spin';
 
@@ -17,14 +19,18 @@ export class PinballView {
   readonly renderer: THREE.WebGLRenderer;
   readonly effects: ArcadeEffects;
   mode: CameraMode = 'fpv';
-  heading = 0;
+  readonly routeCamera = new RouteCamera();
+  get heading() { return this.routeCamera.heading; }
+  set heading(value: number) { this.routeCamera.heading = value; }
   highQuality = !window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 760;
   private table: ArcadeTable;
   private composer: EffectComposer;
   private bloom: UnrealBloomPass;
   private output: OutputPass;
   private environment: THREE.WebGLRenderTarget;
-  private previousPhase = 'intro';
+  private circuit?: ElevatedCircuit;
+  private clearance = new CameraClearance();
+  private previousMode: CameraMode = 'fpv';
   private look = new THREE.Vector3();
   private position = new THREE.Vector3();
   private forward = new THREE.Vector3();
@@ -33,7 +39,7 @@ export class PinballView {
     this.scene.environment = this.environment.texture;
   };
 
-  constructor(readonly container: HTMLElement) {
+  constructor(readonly container: HTMLElement, circuitEnabled = false) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     this.renderer.setClearColor(0x080e24);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -55,6 +61,7 @@ export class PinballView {
     this.scene.environment = this.environment.texture; this.scene.environmentIntensity = 0.55;
     this.renderer.domElement.addEventListener('webglcontextrestored', this.restoreEnvironment);
     this.table = new ArcadeTable(this.scene); this.effects = new ArcadeEffects(this.scene);
+    if (circuitEnabled) this.circuit = new ElevatedCircuit(this.scene);
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.07, 0.1, 2.0);
@@ -87,24 +94,21 @@ export class PinballView {
     this.camera.aspect = w / h; this.camera.updateProjectionMatrix();
   }
 
-  resetEffects() { this.effects.reset(); }
+  resetEffects() { this.effects.reset(); this.routeCamera.reset(); this.clearance.reset(); }
 
   render(sim: PinballSimulation, dt: number) {
     const p = sim.position, v = sim.velocity, visualDt = sim.paused ? 0 : dt;
     this.table.update(sim, visualDt, this.mode);
+    this.circuit?.update(sim);
     if (!this.effects.reducedMotion) this.table.animate(visualDt);
     for (const event of sim.events) {
       if (event.type === 'bumper') { const b = bumpers[event.index]; this.effects.hit(b.x, b.z, b.color, 100); }
       if (event.type === 'target') { const t = targets[event.index]; this.effects.hit(t.x, t.z, t.color, 250); }
+      if (event.type === 'circuit') this.effects.hit(p.x, p.z, 0x79ecf7, event.points);
     }
     this.effects.update(visualDt, p, Math.hypot(v.x, v.z), sim.phase === 'playing' && !sim.paused);
-    if (sim.phase === 'ready' && this.previousPhase !== 'ready') this.heading = 0;
-    this.previousPhase = sim.phase;
-    if (Math.hypot(v.x, v.z) > 0.65 && sim.phase === 'playing' && !sim.paused) {
-      const target = Math.atan2(v.x, -v.z);
-      const delta = Math.atan2(Math.sin(target - this.heading), Math.cos(target - this.heading));
-      this.heading += Math.sign(delta) * Math.min(Math.abs(delta) * (1 - Math.exp(-5 * dt)), 3.5 * dt);
-    }
+    this.routeCamera.update(sim, visualDt, this.effects.reducedMotion);
+    if (this.mode !== this.previousMode) { this.clearance.reset(); this.previousMode = this.mode; }
     this.forward.set(Math.sin(this.heading), 0, -Math.cos(this.heading));
     this.camera.up.set(0, 1, 0);
     if (sim.phase === 'intro') {
@@ -117,15 +121,20 @@ export class PinballView {
       this.position.set(p.x, p.y + 2.6, p.z).addScaledVector(this.forward, -3.9);
       this.position.x = THREE.MathUtils.clamp(this.position.x, -5.45, 5.45);
       this.position.z = THREE.MathUtils.clamp(this.position.z, -10.1, 12.1);
-      this.camera.position.copy(this.position);
+      this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 72, visualDt);
       this.look.set(p.x, p.y + 0.2, p.z).addScaledVector(this.forward, 2.0); this.camera.lookAt(this.look);
     } else if (this.mode === 'spin') {
       this.camera.fov = 82; this.camera.position.set(p.x, p.y + 0.08, p.z);
       this.camera.quaternion.copy(this.table.ball.quaternion);
     } else {
-      this.camera.fov = 82; this.camera.position.set(p.x, p.y + 0.30, p.z);
-      this.look.copy(this.camera.position).addScaledVector(this.forward, 8); this.look.y -= 0.10; this.camera.lookAt(this.look);
+      this.camera.fov = 82; this.position.set(p.x, p.y + 0.30, p.z);
+      this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 82, visualDt);
+      this.look.copy(this.camera.position).addScaledVector(this.forward, 8 * Math.cos(this.routeCamera.pitch));
+      this.look.y += 8 * Math.sin(this.routeCamera.pitch); this.camera.lookAt(this.look);
     }
+    // Keep the near-plane corners within the swept envelope at extreme aspect ratios.
+    const tangent = Math.tan(this.camera.fov * Math.PI / 360);
+    this.camera.near = Math.min(0.06, 0.24 / Math.sqrt(1 + tangent * tangent * (1 + this.camera.aspect * this.camera.aspect)));
     this.camera.updateProjectionMatrix();
     this.renderer.info.reset();
     if (this.highQuality) this.composer.render(); else this.renderer.render(this.scene, this.camera);
@@ -133,7 +142,7 @@ export class PinballView {
 
   dispose() {
     this.renderer.domElement.removeEventListener('webglcontextrestored', this.restoreEnvironment);
-    this.effects.dispose(); this.table.dispose(); this.environment.dispose();
+    this.effects.dispose(); this.circuit?.dispose(); this.table.dispose(); this.environment.dispose();
     this.bloom.dispose(); this.output.dispose(); this.composer.dispose(); this.renderer.dispose();
   }
 }
