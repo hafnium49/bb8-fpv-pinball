@@ -21,7 +21,7 @@ app.innerHTML = `
     </div>
     <aside id="map-wrap" class="map-wrap" hidden><div class="map-label"><span>TABLE RADAR</span><i></i></div><canvas id="minimap" width="156" height="270" aria-label="Overhead map showing the ball, bumpers, and flippers"></canvas><div class="map-bottom">YOU ARE THE BALL</div></aside>
     <div id="toast" role="status" aria-live="polite"></div>
-    <aside id="droid-comms" class="droid-comms" role="status" aria-live="polite" hidden><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
+    <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
       <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
@@ -47,12 +47,17 @@ let toastUntil = 0, previousPhase = 'intro', last = performance.now();
 let commsUntil = 0;
 
 function clearComms() {
-  $('droid-comms').hidden = true;
+  const region = $('droid-comms');
+  if (region.classList.contains('sr-only')) return;
+  region.classList.add('sr-only'); region.setAttribute('aria-live', 'polite'); $('droid-line').textContent = '';
   $('left').classList.remove('warning'); $('right').classList.remove('warning');
 }
 function showComms(cue: SoundCue) {
   if (!cue.caption) return;
-  $('droid-line').textContent = cue.caption; $('droid-comms').hidden = false;
+  // The region stays in the accessibility tree between cues. Set priority
+  // before changing text so urgent advice can interrupt ordinary announcements.
+  $('droid-comms').setAttribute('aria-live', cue.kind === 'warning' ? 'assertive' : 'polite');
+  $('droid-line').textContent = cue.caption; $('droid-comms').classList.remove('sr-only');
   $('droid-comms').classList.toggle('urgent', cue.kind === 'warning');
   $('left').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'left' || cue.voice === 'both'));
   $('right').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'right' || cue.voice === 'both'));

@@ -24,7 +24,7 @@ The voice has one active slot. Urgent instructions replace flavour speech, lower
 
 The Web Audio graph mixes speech, effects and an original 108 BPM, eight-bar A-minor groove through a limiter and a master mute. It uses two continuous sources, at most twelve effect layers and ten music layers. Music scheduling has a two-step limit and discards overdue scheduling after a stall. Audio parameter targets avoid redundant frame updates. Source completion disconnects nodes; pause/blur/mute/restart cancel sources and pending notes. Audio-context interruptions discard active sounds rather than resuming a stale warning.
 
-Sound starts in a player gesture, preserves the existing local on/off preference and optional iPhone playback session, and shares startup-failure handling across all entry paths. Speech loads and decodes once per context. A failed or unfinished decode falls back to an immediate electronic vocal; completed loading never replays an old instruction. Captions keep critical advice available when muted.
+Sound starts in a player gesture, preserves the existing local on/off preference and optional iPhone playback session, and shares startup-failure handling across all entry paths. Speech loads and decodes once per context. A failed or unfinished decode falls back to an immediate electronic vocal; completed loading never replays an old instruction. Captions keep critical advice available when muted. The caption region remains in the accessibility tree between cues, using polite announcements for ordinary lines and assertive, atomic announcements for urgent instructions. Priority is set before warning text changes.
 
 ## Original assets
 
