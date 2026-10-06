@@ -1,16 +1,49 @@
 const { chromium } = require('playwright');
-const { mkdirSync, writeFileSync } = require('node:fs');
+const { mkdirSync, readFileSync, writeFileSync } = require('node:fs');
+const { createHash } = require('node:crypto');
 const assert = require('node:assert/strict');
 
 let browser, server;
 const out = 'artifacts/circuit';
 const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] };
+const groundInputs = [
+  { start: { x: 2.8, y: 0.31, z: 1.8 }, velocity: { x: 2, y: 0, z: 0.5 }, spin: { x: 0, y: 0, z: 0 } },
+  { start: { x: -2.8, y: 0.31, z: -2.4 }, velocity: { x: 0, y: 0, z: 0.5 }, spin: { x: -30, y: 0, z: 0 } },
+];
+const harnessSha256 = createHash('sha256').update(readFileSync('scripts/circuit-harness.ts')).digest('hex');
+const groundProbes = async p => {
+  const reports = await p.evaluate(async inputs => {
+    const { groundTrial } = await import('/scripts/circuit-harness.ts');
+    const { PinballSimulation } = await import('/src/physics/simulation.ts');
+    const live = window.orbitDebug;
+    const sim = live?.sim ?? await PinballSimulation.create({ circuit: true });
+    try {
+      live?.view.resetEffects();
+      const results = inputs.map(input => groundTrial(sim, input));
+      sim.paused = true; return results;
+    } finally { if (!live) sim.dispose(); }
+  }, groundInputs);
+  assert.equal(reports.length, groundInputs.length);
+  reports.forEach((r, i) => {
+    assert.deepEqual(r.initialVelocity, groundInputs[i].velocity);
+    assert.equal(r.outcome, 'cleared', JSON.stringify(r));
+    assert.equal(r.awards, 0); assert.equal(r.completions, 0);
+  });
+  return reports;
+};
 
 (async () => {
   mkdirSync(out, { recursive: true });
   const { createServer } = await import('vite');
-  server = await createServer({ server: { host: '127.0.0.1', port: 5177, watch: { ignored: () => true }, hmr: false } }); await server.listen();
+  const groundOnly = process.env.CIRCUIT_GROUND_REPORT_ONLY === '1';
+  const plugins = groundOnly ? [{ name: 'ground-probe-page', configureServer(s) {
+    s.middlewares.use((req, res, next) => {
+      if (req.url !== '/__ground_probe__') return next();
+      res.setHeader('Content-Type', 'text/html'); res.end('<!doctype html><title>Ground physics probe</title>');
+    });
+  } }] : [];
+  server = await createServer({ plugins, server: { host: '127.0.0.1', port: 5177, watch: { ignored: () => true }, hmr: false } }); await server.listen();
   browser = await chromium.launch(launchOptions);
   const errors = [], screenshots = [], checks = [], metrics = {};
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -30,6 +63,26 @@ const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH 
     for (const b of layout.buttons) assert.ok(b.width > 0 && b.height > 0 && b.top >= 0 && b.bottom <= layout.height - 4 && b.left >= 0 && b.right <= layout.width, `Opening control clipped: ${JSON.stringify(b)}`);
     return layout;
   };
+  // A report-schema-only rerun executes the same Rapier probes without a renderer.
+  // It retains the full gameplay/screenshots from the unchanged production game.
+  if (groundOnly) {
+    const previous = JSON.parse(readFileSync(`${out}/browser.json`, 'utf8'));
+    assert.equal(previous.result, 'pass');
+    assert.equal(previous.metrics.ecoGeometry.addedTriangles, 27138);
+    assert.ok(previous.metrics.groundApproaches && previous.metrics.mobileGroundApproaches);
+    const probeUrl = server.resolvedUrls.local[0] + '__ground_probe__';
+    await page.goto(probeUrl, { waitUntil: 'networkidle' });
+    const desktop = await groundProbes(page);
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+    const phone = await mobile.newPage(); monitor(phone);
+    await phone.goto(probeUrl, { waitUntil: 'networkidle' });
+    const portrait = await groundProbes(phone); assert.deepEqual(errors, []);
+    previous.metrics.groundApproaches = desktop;
+    previous.metrics.mobileGroundApproaches = portrait;
+    previous.groundReportValidation = { result: 'pass', harnessSha256, scope: 'focused desktop and portrait browser Rapier probes after the initialVelocity report field was added; full gameplay and screenshots retained from the unchanged production game', browserErrors: errors };
+    writeFileSync(`${out}/browser.json`, JSON.stringify(previous, null, 2));
+    console.log(JSON.stringify({ groundReportValidation: previous.groundReportValidation, desktop, portrait }, null, 2)); return;
+  }
   // Focused rerun after a CSS change; keeps the full gameplay report intact.
   if (process.env.CIRCUIT_MOBILE_LAYOUT_ONLY === '1') {
     const mobile = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
@@ -57,17 +110,7 @@ const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH 
   await page.locator('#restart').click();
   checks.push('normal keyboard launch; simultaneous flippers; blur clears input; pause freezes physics');
 
-  const groundProbes = async p => p.evaluate(async () => {
-    const { groundTrial } = await import('/scripts/circuit-harness.ts');
-    const { sim, view } = window.orbitDebug; view.resetEffects();
-    const reports = [
-      { start: { x: 2.8, y: 0.31, z: 1.8 }, velocity: { x: 2, y: 0, z: 0.5 }, spin: { x: 0, y: 0, z: 0 } },
-      { start: { x: -2.8, y: 0.31, z: -2.4 }, velocity: { x: 0, y: 0, z: 0.5 }, spin: { x: -30, y: 0, z: 0 } },
-    ].map(input => groundTrial(sim, input));
-    sim.paused = true; return reports;
-  });
   metrics.groundApproaches = await groundProbes(page);
-  for (const r of metrics.groundApproaches) { assert.equal(r.outcome, 'cleared', JSON.stringify(r)); assert.equal(r.awards, 0); }
   checks.push('real ground approaches clear both low-ramp deflectors without recovery forces or elevated awards');
 
   // Advance an actual free-physics entry to a section, then freeze it for a
@@ -166,11 +209,10 @@ const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH 
   await phone.locator('#start').tap();
   metrics.mobilePortraitTable = await stage(phone, 12, 'table'); await capture(phone, 'mobile-table-portrait');
   metrics.mobileGroundApproaches = await groundProbes(phone);
-  for (const r of metrics.mobileGroundApproaches) { assert.equal(r.outcome, 'cleared', JSON.stringify(r)); assert.equal(r.awards, 0); }
   await phone.locator('[data-camera="fpv"]').tap(); await capture(phone, 'mobile-ground-clearance');
   checks.push('portrait table and actual ground-approach recovery rendered at 390 × 844');
   assert.deepEqual(errors, []);
   writeFileSync(`${out}/mobile-layout.json`, JSON.stringify({ result: 'pass', scope: 'opening controls fit in landscape and portrait', layouts: [metrics.mobileIntroLayout, metrics.mobilePortraitIntroLayout], browserErrors: errors }, null, 2));
-  const report = { result: 'pass', checks, metrics, screenshots, browserErrors: errors, renderer: 'Chromium software WebGL; physical device FPS and human comfort unmeasured' };
+  const report = { result: 'pass', checks, metrics, screenshots, browserErrors: errors, groundReportValidation: { result: 'pass', harnessSha256, scope: 'ground probes included in this full gameplay browser run' }, renderer: 'Chromium software WebGL; physical device FPS and human comfort unmeasured' };
   writeFileSync(`${out}/browser.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report, null, 2));
 })().catch(e => { console.error(e); process.exitCode = 1; }).finally(async () => { if (browser) await browser.close(); if (server) await server.close(); });
