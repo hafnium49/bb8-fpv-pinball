@@ -40,6 +40,10 @@ python spikes/elevated-circuit/plot-layout.py --production
 
 Browser checks start their own isolated Vite servers. Supply `CHROME_PATH` for an installed WebGL-capable Chromium; additional arguments may be supplied as a JSON array in `CHROME_ARGS`. They write full reports and screenshots under ignored `artifacts/`. Browser checks should run sequentially when using software rendering. The plot command additionally requires matplotlib.
 
+After the full low-ramp fix run, the harness gained an `initialVelocity` report field. Both ground probes were rerun against that final harness in desktop and portrait browser contexts; their outcomes and final poses match the full run. This focused rerun uses actual browser Rapier physics without a renderer. The existing full gameplay, layout and screenshot evidence was retained because production game code was unchanged. The compact report identifies this scope and records the harness SHA-256; capture rejects missing input velocities or a stale harness hash.
+
+For a report-only harness change with unchanged game code and an existing successful full report, run `CIRCUIT_GROUND_REPORT_ONLY=1 npm run test:circuit:browser`, then `node scripts/circuit-capture.cjs`. Physics, rendering or interaction changes require the full browser run instead.
+
 For optional playtesting, start `npm run dev` and choose **Try elevated circuit**, or append `?circuit=1`. The classic opening-screen link returns to the original table. The development inspection hook is stripped from production builds. After an opening-layout-only CSS change, `CIRCUIT_MOBILE_LAYOUT_ONLY=1 npm run test:circuit:browser` runs a focused landscape/portrait capture without replacing the full gameplay report.
 
 Representative phone and desktop frame-time measurements and human FPV motion comfort remain unmeasured. Software WebGL verifies scene output and interactions; it cannot establish a hardware FPS result. Fullscreen and audible playback were not separately verified for this upgrade. The route remains opt-in, and this PR does not deploy itself.

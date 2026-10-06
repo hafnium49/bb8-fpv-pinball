@@ -216,6 +216,11 @@
             "y": 0,
             "z": 0
           },
+          "initialVelocity": {
+            "x": 2,
+            "y": 0,
+            "z": 0.5
+          },
           "outcome": "cleared",
           "duration": 3.7499999999999893,
           "maxQuiet": 0.26666666666666666,
@@ -242,6 +247,11 @@
             "x": -30,
             "y": 0,
             "z": 0
+          },
+          "initialVelocity": {
+            "x": 0,
+            "y": 0,
+            "z": 0.5
           },
           "outcome": "cleared",
           "duration": 2.7666666666666595,
@@ -541,6 +551,11 @@
             "y": 0,
             "z": 0
           },
+          "initialVelocity": {
+            "x": 2,
+            "y": 0,
+            "z": 0.5
+          },
           "outcome": "cleared",
           "duration": 3.7499999999999893,
           "maxQuiet": 0.26666666666666666,
@@ -567,6 +582,11 @@
             "x": -30,
             "y": 0,
             "z": 0
+          },
+          "initialVelocity": {
+            "x": 0,
+            "y": 0,
+            "z": 0.5
           },
           "outcome": "cleared",
           "duration": 2.7666666666666595,
@@ -597,7 +617,13 @@
       "mobile-ground-clearance.png"
     ],
     "browserErrors": [],
-    "renderer": "Chromium software WebGL; physical device FPS and human comfort unmeasured"
+    "renderer": "Chromium software WebGL; physical device FPS and human comfort unmeasured",
+    "groundReportValidation": {
+      "result": "pass",
+      "harnessSha256": "9abf79edca1cd51a616d62ea545a8d88a14ad2f88c39577a611c6a2f88ec8323",
+      "scope": "focused desktop and portrait browser Rapier probes after the initialVelocity report field was added; full gameplay and screenshots retained from the unchanged production game",
+      "browserErrors": []
+    }
   },
   "mobileLayout": {
     "result": "pass",

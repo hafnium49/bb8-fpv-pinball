@@ -1,10 +1,20 @@
 // Compact review evidence; full physical cases and screenshots stay in artifacts/.
 const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
+const { createHash } = require('node:crypto');
 const assert = require('node:assert/strict');
 const read = file => JSON.parse(readFileSync(file, 'utf8'));
 const physics = read('artifacts/circuit/physics.json'), browser = read('artifacts/circuit/browser.json');
 const classic = read('artifacts/browser-report.json'), mobileLayout = read('artifacts/circuit/mobile-layout.json');
 for (const r of [physics, browser, classic, mobileLayout]) assert.equal(r.result, 'pass');
+assert.equal(browser.groundReportValidation?.result, 'pass', 'Rerun browser ground probes before capturing evidence');
+assert.equal(browser.groundReportValidation.harnessSha256, createHash('sha256').update(readFileSync('scripts/circuit-harness.ts')).digest('hex'), 'Browser ground reports must use the current harness');
+for (const records of [browser.metrics.groundApproaches, browser.metrics.mobileGroundApproaches]) {
+  assert.equal(records.length, 2);
+  for (const r of records) {
+    assert.ok(r.initialVelocity && ['x', 'y', 'z'].every(k => Number.isFinite(r.initialVelocity[k])), 'Ground report missing initial velocity');
+    assert.equal(r.outcome, 'cleared'); assert.equal(r.awards, 0); assert.equal(r.completions, 0);
+  }
+}
 const counts = rows => Object.fromEntries(['returned', 'rollback', 'drain', 'timeout'].map(k => [k, rows.filter(r => r.outcome === k).length]));
 const report = {
   scope: 'implemented opt-in circuit; free Rapier body and actual scene collision queries; classic remains default',
