@@ -43,3 +43,5 @@ export const flippers = [
   { x: -3.2, z: 7.35, side: 1, rest: -0.43, raised: 0.48 },
   { x: 3.2, z: 7.35, side: -1, rest: 0.43, raised: -0.48 },
 ] as const;
+// Forecast plane ahead of the flipper tips, used by the audible return advice.
+export const FLIPPER_APPROACH_Z = flippers[0].z - 0.9;

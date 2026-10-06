@@ -1,0 +1,133 @@
+{
+  "result": "pass",
+  "cases": [
+    {
+      "name": "desktop-classic",
+      "result": "pass",
+      "confirmationPeak": 0.013036484830081463,
+      "voiceReady": true,
+      "wallPeak": 0.15360677242279053,
+      "bedPeak": 0.08379758894443512,
+      "warningStarted": 1.1900226757369614,
+      "bounded": {
+        "voiceReady": true,
+        "voiceFailed": false,
+        "effects": 12,
+        "music": 1,
+        "speaking": false,
+        "priority": 0,
+        "loops": 2,
+        "musicSteps": 9,
+        "warnings": 1,
+        "lastVoice": "left"
+      },
+      "checks": [
+        "first visit muted with no AudioContext",
+        "explicit click/tap requests playback and emits nonzero audio",
+        "flipper and launch event tones with keyboard/simultaneous touch",
+        "bundled speech decodes in the real audio context",
+        "real Rapier wall/bumper/target sound events",
+        "forecasted left instruction interrupts flavour speech and blocks lower-priority chatter",
+        "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+        "gesture resumes suspended context without recreating it",
+        "blur stops all layers and outputs zero; resume rebuilds the mix",
+        "three drains stop music/loops and restart resets lives/audio",
+        "sound-on preference restored without autoplay",
+        "injected saved-on startup failure clears UI/preference/session and allows retry",
+        "injected speech-decoding failure retains audible procedural warning fallback",
+        "mute stops output and releases session",
+        "sound-off preference survives reload"
+      ]
+    },
+    {
+      "name": "mobile-circuit",
+      "result": "pass",
+      "confirmationPeak": 0.019357556477189064,
+      "voiceReady": true,
+      "wallPeak": 0.10028082877397537,
+      "bedPeak": 0.08001167327165604,
+      "warningStarted": 5.662766439909297,
+      "bounded": {
+        "voiceReady": true,
+        "voiceFailed": false,
+        "effects": 12,
+        "music": 1,
+        "speaking": false,
+        "priority": 0,
+        "loops": 2,
+        "musicSteps": 26,
+        "warnings": 2,
+        "lastVoice": "left"
+      },
+      "checks": [
+        "first visit muted with no AudioContext",
+        "explicit click/tap requests playback and emits nonzero audio",
+        "flipper and launch event tones with keyboard/simultaneous touch",
+        "bundled speech decodes in the real audio context",
+        "real Rapier wall/bumper/target sound events",
+        "live ramp/bridge/tunnel/circuit cues and early right-return instruction",
+        "forecasted left instruction interrupts flavour speech and blocks lower-priority chatter",
+        "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+        "gesture resumes suspended context without recreating it",
+        "blur stops all layers and outputs zero; resume rebuilds the mix",
+        "three drains stop music/loops and restart resets lives/audio",
+        "sound-on preference restored without autoplay",
+        "injected saved-on startup failure clears UI/preference/session and allows retry",
+        "injected speech-decoding failure retains audible procedural warning fallback",
+        "mute stops output and releases session",
+        "sound-off preference survives reload"
+      ]
+    }
+  ],
+  "screenshots": [
+    "desktop-classic-sound-on.png",
+    "mobile-circuit-sound-on.png"
+  ],
+  "browserErrors": [],
+  "limitations": [
+    "Chromium waveform measurements verify generated audio, not speaker audibility.",
+    "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified."
+  ],
+  "verified_at_utc": "2026-10-06T19:54:15.877493+00:00",
+  "source_sha256": {
+    "src/main.ts": "848d7596eea485e87d6aaea7c7a951d8ef93925d5f723fe262b78f68b6b3e806",
+    "src/style.css": "c4bb629501def78415cd74e11b9534c42b9325154516c6cda671c0027b08a137",
+    "src/ui/audio.ts": "1bf96dd37b1728b9f2ccbacc68a937d0c8c61ba886eed142d458cdd5c31bbd36",
+    "src/ui/sound-director.ts": "328c2ac30d9197deaac7c090dda76719eb82942f38a5291be14fa778b8a49039",
+    "src/ui/voice-bank.ts": "0b15b381c443c27a21475d530297a909031ac004497d3da1717afa62969a6fd5",
+    "src/assets/droid-voice.wav": "110d380637c30542cdd7a687b48cd4353f3ab6f537fcbaefc83843aabcb0a2b8",
+    "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
+    "src/physics/table.ts": "569ba34bc2b2f8f0adccd822a5af2e55e10c9ca6c6a8d838ecc0187306cd2fc4",
+    "scripts/audio-browser.cjs": "b4a29f52addce4fa738023b5dabd64c8fad0a911530df10aff37fa9982d5b631",
+    "scripts/generate-droid-voice.py": "9f3ee7c8b6ecf687db7198c04ea3b99bf7edf16e7064a7498fa5dd863839563f",
+    "tests/audio.test.ts": "30d4b15c8bc903585e111fb18cc770814d1e5b1aacefbc3ec221da431c158234",
+    "tests/sound-director.test.ts": "88875df38e6d24a59b6dc0dbb1137ab6d8591fb92db19543f4051c0df3d5ccb0"
+  },
+  "screenshots_inspected": {
+    "mobile-circuit-sound-on.png": "3236985eccfba53cfe389a3a3f2d869c6db4d913b936c7c7cd6de49c70549111",
+    "desktop-classic-sound-on.png": "22ed3a9928abfce1f718ae8dfbd7e39795b2a480cd28685bf1317eb29633c98a"
+  },
+  "additional_checks": {
+    "unit_tests": 30,
+    "route_entries": 63,
+    "spin_partial_variants": 18,
+    "ground_approaches": 96,
+    "input_only_launch_returns": 2,
+    "typescript_production_build": "pass",
+    "standalone_generation": "pass",
+    "production_and_standalone_voice_bytes_match": true,
+    "physical_circuit_warning_probe": {
+      "speed": 20,
+      "outcome": "returned",
+      "warning_phase": "tunnel",
+      "warning_at_sim_seconds": 1.6416666666666633,
+      "right_flipper_contact_at_sim_seconds": 2.66666666666666,
+      "lead_seconds": 1.0249999999999966
+    }
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "browser": "Chromium 153, headless software WebGL",
+    "audio": "real Web Audio; optional Safari session API stubbed"
+  }
+}
