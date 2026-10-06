@@ -4,18 +4,19 @@ The optional cabinet is verified against the original deployed table's rules wit
 
 | Check | Evidence |
 | --- | --- |
-| Unit and regression tests | 16 pass: original eight plus swept/ordered gates, wrong-height and lateral crossings, reversal/reset, high-speed completion, weak rollback, underpasses, two normal launches, camera sweep/rates and complete flipper-volume clearance |
+| Unit and regression tests | 17 pass: original eight plus swept/ordered gates, wrong-height and lateral crossings, reversal/reset, high-speed completion, weak rollback, underpasses, low-ramp ground clearance, two normal launches, camera sweep/rates and complete flipper-volume clearance |
 | Standard physical grid | 63 entries: seven speeds × three offsets × three approach angles; 36 ordered completions followed by contact with a moving right flipper and upward return, 27 safe rollbacks, zero drains/timeouts within a 20-second limit |
 | Spin and entry timing | 18 variants with three speeds, three angular velocity vectors, quarter/three-quarter-step entry advances and initial height +0.08; 12 moving-flipper returns and six rollbacks; zero drains/timeouts |
+| Low-ramp ground approaches | 96 collision-free starts around both heels, four lateral positions, three lateral velocities, two downhill speeds and two spins; all reach Z=6.5 within 20 seconds, no circuit awards; slowest 11.408 seconds, longest continuous low-speed interval 1.025 seconds; [reported stall and fix](low-ramp-stall-fix.md) |
 | Input-only reachability | Two runs charge/release the normal launcher, leave the launch lane, make a left-flipper contact, cross all five gates, award 750 once and return off the moving right flipper; no ball placement during these runs |
 | Weak/marginal behavior | The slowest accepted grid trial lasts 12.242 seconds; it is a slow crest crossing, not a persistent stall. No scripted recovery or steering force is used |
 | Ground underpasses | Three 0.4-second trajectories match classic within 0.001 units, including an original 100-point bumper contact; no elevated progress or bonus |
 | Camera geometry | Actual FPV/Chase envelopes checked against Rapier colliders at landscape and extreme 6:1 aspect ratios; pitch ≤18°, rate ≤30°/s, yaw ≤3.5 rad/s; reduced-motion pitch ≤8° and rate ≤15°/s; pause freezes orientation |
 | Classic browser regression | Normal keyboard launch, simultaneous flippers, pause/blur, all four views, high score/restart, High/Eco, impact effects, context recovery, touch, landscape/portrait resize and reduced motion pass with zero browser errors |
 | Playable route browser | Normal keyboard launch, simultaneous keys, pause/blur, physical section captures, FPV/Chase horizon and Spin independence, normal-launch traversal, actual final-gate score/toast, three-ball lifecycle, restart, context recovery and mobile simultaneous touch checked |
-| Static rendering cost | 15 additional main-pass draw calls and 26,786 triangles in Eco Table view; 114 → 129 calls, 62,584 → 89,370 triangles; below the 25-call design target |
+| Static rendering cost | 15 additional main-pass draw calls and 27,138 triangles in Eco Table view; 114 → 129 calls, 62,584 → 89,722 triangles; below the 25-call design target |
 | Resource lifecycle | 130 geometries and 24 textures remain stable over four restarts; route models are built once and own their disposal; pooled effects reset without constructing new tables |
-| Presentation | Desktop 1440 × 900 and mobile landscape 844 × 390 screenshots inspected; opening controls also checked at 390 × 844 for route height, open wire deck, visible guards, tunnel exit, flipper handoff, radar and readable controls |
+| Presentation | Desktop 1440 × 900 and mobile landscape 844 × 390 screenshots inspected; opening controls, Table view and ground FPV recovery also checked at 390 × 844 for route height, open wire deck, visible guards, tunnel exit, flipper handoff, radar and readable controls |
 | Build | TypeScript and Vite production build pass; the existing large-bundle warning remains because the physics runtime is embedded |
 | Late spike review | Route boundaries validate before mesh generation; preview resizes only on dimension changes and passes desktop/mobile browser checks; plotter executes; scrubber/readout association and reference-trace generation documented |
 | Reviewed spike failure path | A missing Chromium executable exits with status 1 in under one second; the Vite server closes instead of keeping the process alive |

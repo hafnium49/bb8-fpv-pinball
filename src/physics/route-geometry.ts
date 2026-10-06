@@ -142,6 +142,46 @@ export function tubeData(points: Vec3[], radius: number, sides = 10, capped = tr
 }
 export const wireData = mergeData(cageWires.map(([x, y]) => tubeData(frames.slice(wireLeadIn, wireLeadOut + 1).map(f => localPoint(f, x, y)), WIRE_RADIUS)));
 export const ascentFloor = channelData(0, ascentEnd, 'floor'), descentFloor = channelData(descentStart, frames.length - 1, 'floor');
+
+// A ball must not enter the narrowing space between a low ramp and the board.
+// Ground-height skirts close its sides; a skewed rear face guides a ground ball
+// sideways instead of balancing it against a wall perpendicular to gravity.
+// The higher deck remains open underneath. These faces are rendered as well.
+function rampApronData(mouth: number, highEnd: number): MeshData {
+  const direction = Math.sign(highEnd - mouth), shortSide = direction > 0 ? -1 : 1;
+  let shortEnd = mouth;
+  while (shortEnd !== highEnd && frames[shortEnd].c.y < 1.15) shortEnd += direction;
+  let longEnd = shortEnd;
+  while (longEnd !== highEnd && Math.abs(frames[longEnd].s - frames[shortEnd].s) < 1.1) longEnd += direction;
+  if (shortEnd === highEnd || longEnd === highEnd) throw new Error('Low ramp needs room for its diagonal ground deflector.');
+  const vertices: number[] = [], indices: number[] = [];
+  const edge = (i: number, side: number) => {
+    const p = localPoint(frames[i], side * frames[i].width, -BALL_RADIUS);
+    p.y = Math.max(-0.01, p.y - 0.012); return p;
+  };
+  const wall = (points: Vec3[], flip = false) => {
+    for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1], b = points[i], v = vertices.length / 3;
+      vertices.push(a.x, -0.01, a.z, a.x, a.y, a.z, b.x, -0.01, b.z, b.x, b.y, b.z);
+      // FIX_INTERNAL_EDGES uses face orientation at shared edges. Both skirts
+      // must face the outside of the closed heel, rather than into its gap.
+      if (flip) indices.push(v, v + 2, v + 1, v + 1, v + 2, v + 3);
+      else indices.push(v, v + 1, v + 2, v + 1, v + 3, v + 2);
+    }
+  };
+  for (const side of [-1, 1]) {
+    const end = side === shortSide ? shortEnd : longEnd, points: Vec3[] = [];
+    for (let i = mouth; ; i += direction) { points.push(edge(i, side)); if (i === end) break; }
+    wall(points, side !== shortSide);
+  }
+  const diagonal: Vec3[] = [], count = Math.abs(longEnd - shortEnd);
+  for (let n = 0; n <= count; n++) diagonal.push(edge(shortEnd + n * direction, shortSide * (1 - 2 * n / count)));
+  wall(diagonal);
+  return { vertices: new Float32Array(vertices), indices: new Uint32Array(indices) };
+}
+export const ascentApron = rampApronData(0, ascentEnd);
+export const descentApron = rampApronData(frames.length - 1, descentStart);
+export const apronData = mergeData([ascentApron, descentApron]);
 export const sideData = mergeData([channelData(0, ascentEnd, 'sides'), channelData(descentStart, frames.length - 1, 'sides')]);
 export const roofData = mergeData([channelData(0, ascentEnd, 'roof'), channelData(descentStart, frames.length - 1, 'roof')]);
 export const supportData = mergeData([bridgeStart, Math.floor((bridgeStart + bridgeEnd) / 2), bridgeEnd].map(i => {
@@ -150,7 +190,7 @@ export const supportData = mergeData([bridgeStart, Math.floor((bridgeStart + bri
 }));
 export const tiesData = mergeData(frames.filter((_, i) => i > bridgeStart + 5 && i < bridgeEnd - 5 && i % 16 === 0).map(f => tubeData([localPoint(f, -0.51, -0.37), localPoint(f, 0.51, -0.37)], 0.025, 6)));
 export const collisionData = [
-  mergeData([ascentFloor, channelData(0, ascentEnd, 'sides'), channelData(0, ascentEnd, 'roof')]),
-  mergeData([descentFloor, channelData(descentStart, frames.length - 1, 'sides'), channelData(descentStart, frames.length - 1, 'roof')]),
+  mergeData([ascentFloor, ascentApron, channelData(0, ascentEnd, 'sides'), channelData(0, ascentEnd, 'roof')]),
+  mergeData([descentFloor, descentApron, channelData(descentStart, frames.length - 1, 'sides'), channelData(descentStart, frames.length - 1, 'roof')]),
   mergeData([wireData, tiesData]), supportData,
 ];

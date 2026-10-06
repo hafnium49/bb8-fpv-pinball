@@ -6,7 +6,7 @@ import { CIRCUIT_BONUS, STEP } from '../src/physics/table';
 import { frames, localPoint, type Vec3 } from '../src/physics/route-geometry';
 import { crossesGate, gates, RouteState } from '../src/physics/route-state';
 import { CameraClearance, RouteCamera } from '../src/render/route-camera';
-import { entryTrial, launchTrial } from '../scripts/circuit-harness';
+import { entryTrial, groundTrial, launchTrial } from '../scripts/circuit-harness';
 
 const offset = (p: Vec3, direction: Vec3, amount: number) => ({ x: p.x + direction.x * amount, y: p.y + direction.y * amount, z: p.z + direction.z * amount });
 
@@ -80,6 +80,22 @@ test('input-only launch traverses the circuit and returns off the right flipper 
       assert.ok(report.laneExit && report.leftContact && report.rightReturn, JSON.stringify(report)); assert.equal(report.awards, 1); assert.ok(report.velocity.z < -3);
     } finally { sim.dispose(); }
   }
+});
+
+test('ground approaches cannot wedge beneath either low ramp heel', async () => {
+  const sim = await PinballSimulation.create({ circuit: true });
+  try {
+    for (const input of [
+      { start: { x: -2.8, y: 0.31, z: -2.4 }, velocity: { x: 0, y: 0, z: 0.5 }, spin: { x: -30, y: 0, z: 0 } },
+      // Before the skirt fix this valid approach slept indefinitely beneath
+      // the return deck at (3.24, 0.274, 4.778), without any flipper contact.
+      { start: { x: 2.8, y: 0.31, z: 1.8 }, velocity: { x: 2, y: 0, z: 0.5 }, spin: { x: 0, y: 0, z: 0 } },
+    ]) {
+      const report = groundTrial(sim, input);
+      assert.equal(report.outcome, 'cleared', JSON.stringify(report));
+      assert.equal(report.awards, 0); assert.equal(report.completions, 0);
+    }
+  } finally { sim.dispose(); }
 });
 
 test('route cameras bound pitch/rates and sweep FPV/Chase envelopes against real colliders', async () => {
