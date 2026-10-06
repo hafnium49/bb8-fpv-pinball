@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { PinballSimulation } from '../physics/simulation';
 import { BALL_RADIUS } from '../physics/table';
 import {
-  ascentFloor, descentFloor, sideData, roofData, wireData, tiesData, supportData,
+  ascentFloor, descentFloor, apronData, sideData, roofData, wireData, tiesData, supportData,
   channelData, frames, localPoint, mergeData, tubeData, tunnelStart, tunnelEnd,
   ascentEnd, descentStart, type MeshData,
 } from '../physics/route-geometry';
@@ -21,7 +21,7 @@ export class ElevatedCircuit {
     const deck = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x16394b, metalness: 0.6, roughness: 0.32, clearcoat: 0.7, side: THREE.DoubleSide }));
     const glass = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x76d6e8, metalness: 0.12, roughness: 0.23, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide }));
     const canopy = this.keep(new THREE.MeshStandardMaterial({ color: 0x10243c, metalness: 0.7, roughness: 0.35, side: THREE.DoubleSide }));
-    this.mesh(mergeData([ascentFloor, descentFloor]), deck);
+    this.mesh(mergeData([ascentFloor, descentFloor, apronData]), deck);
     this.mesh(mergeData([wireData, tiesData, supportData]), chrome);
     this.mesh(sideData, glass, false);
     this.mesh(roofData, glass, false);

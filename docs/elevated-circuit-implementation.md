@@ -10,6 +10,8 @@ The connected left ramp, wire bridge, illuminated tunnel and right-flipper retur
 
 The ascent and descent meshes overlap the baked wire cage at their transitions. Two supporting wires, four side guides and two overhead guards leave the bridge deck open. Shared typed mesh data feeds Rapier and Three.js. Four fixed meshes cover the channel, wire cage/ties and outboard supports. Route contact uses low friction, zero restitution with the Min combine rule, and internal-edge correction. The original ball CCD, 120 Hz step, gravity, launch force, flippers and speed cap remain calibrated as before.
 
+The low ascent and return heels have ground-height skirts with diagonal rear deflectors, merged into the same collision and deck batches. They prevent a ground ball from entering the closing underside gap while higher underpasses stay open. [The stall fix and reproduction](low-ramp-stall-fix.md) document this follow-up and its 96 ground-approach checks.
+
 The fast-shot spike failed because the descending ball struck the top of the right flipper while airborne. A visible clear hold-down cover now lowers smoothly toward a flat landing; the channel ends at `(2.55, 0.28, 6.2)`, before the flipper sweep. A physics query checks the entire rest-to-raised-and-back flipper volume against the new structures. Weak shots reverse and roll back naturally. No force steers the ball along the route, and no ball is repositioned to recover a miss.
 
 ## Rules and presentation

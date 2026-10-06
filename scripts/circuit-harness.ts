@@ -1,7 +1,32 @@
 import type { PinballSimulation } from '../src/physics/simulation';
+import RAPIER from '@dimforge/rapier3d-compat';
+import { BALL_RADIUS, STEP } from '../src/physics/table';
 import { frames, localPoint, type Vec3 } from '../src/physics/route-geometry';
 
 export interface EntryCase { speed: number; offset: number; veer: number; spin?: Vec3; advance?: number; height?: number }
+export interface GroundCase { start: Vec3; velocity: Vec3; spin: Vec3 }
+
+/** Valid ground approaches must pass both low ramp heels without a recovery force. */
+export function groundTrial(sim: PinballSimulation, input: GroundCase) {
+  sim.start(); sim.launch(0.5); sim.step();
+  const overlap = sim.world.intersectionWithShape(input.start, { x: 0, y: 0, z: 0, w: 1 }, new RAPIER.Ball(BALL_RADIUS), undefined, undefined, undefined, sim.ball);
+  if (overlap) throw new Error(`Ground probe starts in a collider: ${JSON.stringify(input)}`);
+  sim.ball.setTranslation(input.start, true); sim.ball.setLinvel(input.velocity, true); sim.ball.setAngvel(input.spin, true); sim.events.length = 0;
+  let quiet = 0, maxQuiet = 0, awards = 0, outcome = 'timeout';
+  for (let n = 0; n < 2400; n++) {
+    sim.step();
+    for (const event of sim.events) if (event.type === 'circuit') awards++;
+    sim.events.length = 0;
+    const p = sim.position, v = sim.velocity;
+    quiet = Math.hypot(v.x, v.y, v.z) < 0.15 ? quiet + STEP : 0; maxQuiet = Math.max(maxQuiet, quiet);
+    // Stop before the flipper pivots: reaching the playable flipper region is
+    // success here; a ball there is controlled by the player's two buttons.
+    if (p.z >= 6.5) { outcome = 'cleared'; break; }
+    if (sim.phase !== 'playing') { outcome = 'drained'; break; }
+    if (quiet >= 3) { outcome = 'stalled'; break; }
+  }
+  return { ...input, initialVelocity: input.velocity, outcome, duration: sim.time, maxQuiet, awards, completions: sim.route.completions, position: sim.position, velocity: sim.velocity };
+}
 
 /** Synthetic entry sweeps isolate contact defects; these are not player success rates. */
 export function entryTrial(sim: PinballSimulation, input: EntryCase, sample?: (sim: PinballSimulation) => void) {

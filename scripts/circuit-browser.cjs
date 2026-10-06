@@ -57,6 +57,19 @@ const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH 
   await page.locator('#restart').click();
   checks.push('normal keyboard launch; simultaneous flippers; blur clears input; pause freezes physics');
 
+  const groundProbes = async p => p.evaluate(async () => {
+    const { groundTrial } = await import('/scripts/circuit-harness.ts');
+    const { sim, view } = window.orbitDebug; view.resetEffects();
+    const reports = [
+      { start: { x: 2.8, y: 0.31, z: 1.8 }, velocity: { x: 2, y: 0, z: 0.5 }, spin: { x: 0, y: 0, z: 0 } },
+      { start: { x: -2.8, y: 0.31, z: -2.4 }, velocity: { x: 0, y: 0, z: 0.5 }, spin: { x: -30, y: 0, z: 0 } },
+    ].map(input => groundTrial(sim, input));
+    sim.paused = true; return reports;
+  });
+  metrics.groundApproaches = await groundProbes(page);
+  for (const r of metrics.groundApproaches) { assert.equal(r.outcome, 'cleared', JSON.stringify(r)); assert.equal(r.awards, 0); }
+  checks.push('real ground approaches clear both low-ramp deflectors without recovery forces or elevated awards');
+
   // Advance an actual free-physics entry to a section, then freeze it for a
   // screenshot. This is a contact test, distinct from the input-only launch QA.
   const stage = async (p, s, mode) => {
@@ -150,6 +163,12 @@ const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH 
   checks.push('mobile landscape fit; Eco default; simultaneous real touch flippers; reduced-motion camera/effects');
   await phone.setViewportSize({ width: 390, height: 844 }); await boot(phone);
   metrics.mobilePortraitIntroLayout = await introFits(phone); await capture(phone, 'mobile-intro-portrait');
+  await phone.locator('#start').tap();
+  metrics.mobilePortraitTable = await stage(phone, 12, 'table'); await capture(phone, 'mobile-table-portrait');
+  metrics.mobileGroundApproaches = await groundProbes(phone);
+  for (const r of metrics.mobileGroundApproaches) { assert.equal(r.outcome, 'cleared', JSON.stringify(r)); assert.equal(r.awards, 0); }
+  await phone.locator('[data-camera="fpv"]').tap(); await capture(phone, 'mobile-ground-clearance');
+  checks.push('portrait table and actual ground-approach recovery rendered at 390 × 844');
   assert.deepEqual(errors, []);
   writeFileSync(`${out}/mobile-layout.json`, JSON.stringify({ result: 'pass', scope: 'opening controls fit in landscape and portrait', layouts: [metrics.mobileIntroLayout, metrics.mobilePortraitIntroLayout], browserErrors: errors }, null, 2));
   const report = { result: 'pass', checks, metrics, screenshots, browserErrors: errors, renderer: 'Chromium software WebGL; physical device FPS and human comfort unmeasured' };
