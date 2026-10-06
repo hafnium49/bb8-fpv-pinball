@@ -1,5 +1,7 @@
 # Sound activation and iPhone playback
 
+The later [expressive droid soundscape](droid-soundscape.md) adds character speech, continuous layers and prioritized flipper instructions on top of the activation behavior described here.
+
 The 6 October 2026 report followed a screenshot with **SOUND OFF**. The original app started muted after every reload, had no audible confirmation when sound was enabled, and did not request a media playback audio session. This does not establish which setting caused silence on the reported device.
 
 Enabling sound now requests `navigator.audioSession.type = 'playback'` when supported, creates/resumes Web Audio inside the player's gesture, and plays a short confirmation tone after the context is running. WebKit documents this session choice for playback when an iPhone's ringer switch is silent: [WebKit issue 237322, comment 6](https://bugs.webkit.org/show_bug.cgi?id=237322#c6). The optional API is feature-detected and configuration errors fall back to ordinary Web Audio.

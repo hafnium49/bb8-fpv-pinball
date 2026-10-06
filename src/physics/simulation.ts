@@ -12,6 +12,7 @@ export type GameEvent =
   | { type: 'target'; index: number; points: number }
   | { type: 'circuit'; points: number }
   | { type: 'flipper-hit'; index: number }
+  | { type: 'wall'; speed: number }
   | { type: 'launch' | 'drain' | 'over' | 'flipper' };
 
 export class PinballSimulation {
@@ -38,6 +39,7 @@ export class PinballSimulation {
   private previousFlips = [false, false];
   private scoringColliders = new Map<number, { type: 'bumper' | 'target'; index: number }>();
   private flipperColliders = new Map<number, number>();
+  private wallColliders = new Map<number, { nx: number; nz: number }>();
 
   static async create(options: SimulationOptions = {}) { await RAPIER.init(); return new PinballSimulation(options); }
 
@@ -51,10 +53,12 @@ export class PinballSimulation {
     for (const rail of rails) {
       const dx = rail.bx - rail.ax, dz = rail.bz - rail.az;
       const angle = -Math.atan2(dz, dx);
-      this.world.createCollider(RAPIER.ColliderDesc.cuboid(Math.hypot(dx, dz) / 2, 0.75, 0.13)
+      const collider = this.world.createCollider(RAPIER.ColliderDesc.cuboid(Math.hypot(dx, dz) / 2, 0.75, 0.13)
         .setTranslation((rail.ax + rail.bx) / 2, 0.55, (rail.az + rail.bz) / 2)
         .setRotation({ x: 0, y: Math.sin(angle / 2), z: 0, w: Math.cos(angle / 2) })
         .setRestitution(0.8).setFriction(0.02));
+      const length = Math.hypot(dx, dz);
+      this.wallColliders.set(collider.handle, { nx: -dz / length, nz: dx / length });
     }
     for (const [index, bumper] of bumpers.entries()) {
       const collider = this.world.createCollider(RAPIER.ColliderDesc.cylinder(0.52, bumper.radius)
@@ -156,12 +160,17 @@ export class PinballSimulation {
       if (pressed && !this.previousFlips[i]) this.events.push({ type: 'flipper' });
       this.previousFlips[i] = pressed;
     }
-    const previousPosition = this.position;
+    const previousPosition = this.position, previousVelocity = this.velocity;
     this.world.step(this.queue);
     this.queue.drainCollisionEvents((a, b, started) => {
       if (!started || this.phase !== 'playing') return;
       const other = a === this.ballCollider.handle ? b : b === this.ballCollider.handle ? a : undefined;
       if (other === undefined) return;
+      const wall = this.wallColliders.get(other);
+      if (wall) {
+        const speed = Math.abs(previousVelocity.x * wall.nx + previousVelocity.z * wall.nz);
+        if (speed > 1.4) this.events.push({ type: 'wall', speed });
+      }
       const flipper = this.flipperColliders.get(other);
       if (flipper !== undefined) this.events.push({ type: 'flipper-hit', index: flipper });
       const item = this.scoringColliders.get(other);

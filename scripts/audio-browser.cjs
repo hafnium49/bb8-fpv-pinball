@@ -26,6 +26,8 @@ const out = 'artifacts/audio';
       window.AudioContext = class extends Native {
         constructor(...args) {
           super(...args); window.audioProbe.contexts.push(this);
+          const decode = this.decodeAudioData.bind(this);
+          this.decodeAudioData = (...args) => window.audioProbe.failDecode ? Promise.reject(new Error('Injected voice decoding failure')) : decode(...args);
           const analyser = this.createAnalyser(); analyser.fftSize = 1024;
           const samples = new Float32Array(1024), gain = this.createGain.bind(this), oscillator = this.createOscillator.bind(this);
           this.createGain = () => {
@@ -63,6 +65,8 @@ const out = 'artifacts/audio';
     const confirmationPeak = await page.evaluate(() => window.audioProbe.peak);
     console.log(`${name}: real confirmation signal ${confirmationPeak}`);
     await activate(page.locator('#start'));
+    await page.waitForFunction(() => document.querySelector('#droid-line').textContent === 'Ready to roll!');
+    assert.equal(await page.locator('#droid-comms').getAttribute('aria-live'), 'polite');
     if (options.hasTouch) {
       const left = await page.locator('#left').boundingBox(), right = await page.locator('#right').boundingBox();
       const cdp = await context.newCDPSession(page);
@@ -84,14 +88,99 @@ const out = 'artifacts/audio';
     }
     await page.waitForFunction(() => window.audioProbe.voices.includes(110));
     console.log(`${name}: flipper and launch tones`);
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.voiceReady);
+    const voiceReady = await page.evaluate(() => window.orbitDebug.audio.diagnostics.voiceReady);
+    // Exercise actual Rapier collisions while observing the real audio mixer.
+    const place = async (position, velocity) => page.evaluate(({ position, velocity }) => {
+      const { sim, audio, soundDirector } = window.orbitDebug;
+      sim.start(); sim.launch(0.5); sim.events.length = 0; soundDirector.reset(); audio.reset(); audio.history.length = 0;
+      sim.ball.setTranslation(position, true); sim.ball.setLinvel(velocity, true); sim.ball.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      window.audioProbe.peak = 0;
+    }, { position, velocity });
+    await place({ x: -4.8, y: 0.31, z: -2 }, { x: -9, y: 0, z: 0 });
+    await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'wall'));
+    await page.waitForFunction(() => window.audioProbe.peak > 0.001);
+    const wallPeak = await page.evaluate(() => window.audioProbe.peak);
+    await place({ x: -1.8, y: 0.305, z: -6.4 }, { x: 9, y: 0, z: 0 });
+    await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'bumper'));
+    await place({ x: -3.9, y: 0.305, z: 0 }, { x: -9, y: 0, z: 0 });
+    await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'target'));
+    console.log(`${name}: real wall, bumper and target reactions`);
+    if (search) {
+      await page.evaluate(async () => {
+        const { frames } = await import('/src/physics/route-geometry.ts');
+        const { sim, audio, soundDirector } = window.orbitDebug, f = frames[0];
+        sim.start(); sim.launch(); sim.events.length = 0; soundDirector.reset(); audio.reset(); audio.history.length = 0;
+        sim.ball.setTranslation({ x: f.c.x - f.tangent.x * 0.4, y: f.c.y, z: f.c.z - f.tangent.z * 0.4 }, true);
+        sim.ball.setLinvel({ x: f.tangent.x * 20, y: 0, z: f.tangent.z * 20 }, true); sim.ball.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      });
+      await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'circuit'));
+      const routeHistory = await page.evaluate(() => window.orbitDebug.audio.history);
+      for (const kind of ['ascent', 'bridge', 'tunnel', 'circuit']) assert.ok(routeHistory.some(c => c.kind === kind), `Missing ${kind} sound`);
+      assert.ok(routeHistory.some(c => c.kind === 'warning' && c.voice === 'right' && c.accepted));
+      console.log(`${name}: live ramp/bridge/tunnel/return sound cues`);
+    }
+    // Interrupt a long flavour line with an urgent, forecasted left warning.
+    await place({ x: -1.7, y: 0.305, z: 2 }, { x: 0, y: 0, z: 4 });
+    await page.evaluate(() => {
+      const { audio, soundDirector } = window.orbitDebug;
+      audio.reset(); audio.history.length = 0; soundDirector.resume();
+      audio.play({ kind: 'tunnel', voice: 'tunnel', priority: 55 });
+    });
+    await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'warning' && c.voice === 'left' && c.accepted));
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.priority), 100);
+    assert.equal(await page.locator('#droid-line').textContent(), 'Left flipper!');
+    assert.equal(await page.locator('#droid-comms').getAttribute('aria-live'), 'assertive');
+    assert.equal(await page.locator('#droid-comms').getAttribute('aria-atomic'), 'true');
+    assert.ok(await page.locator('#left').evaluate(el => el.classList.contains('warning')));
+    const warningStarted = await page.evaluate(() => window.orbitDebug.audio.history.find(c => c.kind === 'warning').at);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'chatter', strength: 1, priority: 20 })), false);
+    // Resetting a peak window while rolling proves ongoing sound, not just a
+    // remembered confirmation spike. Notes and continuous nodes stay bounded.
+    await place({ x: -4, y: 0.305, z: -9 }, { x: 0, y: 0, z: 3 });
+    const stepsBefore = await page.evaluate(() => window.orbitDebug.audio.diagnostics.musicSteps);
+    await page.waitForFunction(before => window.orbitDebug.audio.diagnostics.musicSteps >= before + 3, stepsBefore);
+    await page.evaluate(() => { window.audioProbe.peak = 0; }); await page.waitForTimeout(200);
+    const bedPeak = await page.evaluate(() => window.audioProbe.peak); assert.ok(bedPeak > 0.001);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.speaking), false, 'Measure the bed without voice contamination');
+    await page.evaluate(() => { for (let i = 0; i < 100; i++) window.orbitDebug.audio.play({ kind: 'wall', strength: 1 }); });
+    const bounded = await page.evaluate(() => window.orbitDebug.audio.diagnostics);
+    assert.ok(bounded.effects <= 12 && bounded.music <= 10); assert.equal(bounded.loops, 2);
+    console.log(`${name}: voice priority, sustained mix and bounded effects`);
     await page.evaluate(async () => { await window.audioProbe.contexts[0].suspend(); });
     await activate(page.locator('#pause')); await activate(page.locator('#resume'));
     await page.waitForFunction(() => window.audioProbe.contexts[0].state === 'running');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 1);
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), true);
+    assert.deepEqual(await page.evaluate(() => {
+      const d = window.orbitDebug.audio.diagnostics; return [d.effects, d.music, d.loops, d.speaking];
+    }), [0, 0, 0, false]);
+    await page.waitForTimeout(150); await page.evaluate(() => { window.audioProbe.peak = 0; }); await page.waitForTimeout(120);
+    assert.equal(await page.evaluate(() => window.audioProbe.peak), 0, 'Blur must stop every sound layer');
+    await activate(page.locator('#resume'));
+    // Preserve an actual warning frame while freezing physics for screenshots.
+    await place({ x: -1.7, y: 0.305, z: 2 }, { x: 0, y: 0, z: 4 });
+    await page.waitForFunction(() => document.querySelector('#droid-line').textContent === 'Left flipper!' && !document.querySelector('#droid-comms').classList.contains('sr-only'));
     await page.evaluate(() => { window.orbitDebug.sim.paused = true; window.orbitDebug.view.render = window.restoreAudioRender; });
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     await page.screenshot({ path: `${out}/${name}-sound-on.png`, timeout: 90000 }); screenshots.push(`${name}-sound-on.png`);
     console.log(`Captured ${name} sound-on`);
+    await page.evaluate(() => { window.orbitDebug.sim.paused = false; window.orbitDebug.view.render = () => {}; });
+    for (let ball = 0; ball < 3; ball++) {
+      await page.evaluate(() => {
+        const s = window.orbitDebug.sim; if (s.phase === 'ready') s.launch(0.5);
+        s.ball.setTranslation({ x: 0, y: 0.4, z: 11.6 }, true);
+      });
+      await page.waitForFunction(expected => window.orbitDebug.sim.balls === expected, 2 - ball);
+      if (ball < 2) await page.waitForFunction(() => window.orbitDebug.sim.phase === 'ready');
+    }
+    await page.waitForFunction(() => !window.orbitDebug.audio.diagnostics.speaking);
+    assert.deepEqual(await page.evaluate(() => { const d = window.orbitDebug.audio.diagnostics; return [d.music, d.loops]; }), [0, 0]);
+    await activate(page.locator('#restart'));
+    assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 3);
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.loops === 2);
+    console.log(`${name}: pause/blur and three-ball audio lifecycle`);
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND ON');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 0, 'Remembering preference must not autoplay');
     await page.evaluate(() => {
@@ -103,8 +192,17 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => localStorage.getItem('orbit-pinball-sound')), 'off');
     assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
     await page.evaluate(() => { window.AudioContext = window.restoreQAContext; });
+    await page.evaluate(() => { window.audioProbe.failDecode = true; });
     await activate(page.locator('#sound'));
     await page.waitForFunction(() => window.audioProbe.contexts[0]?.state === 'running');
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.voiceFailed);
+    assert.equal(await page.locator('#sound').textContent(), 'SOUND ON');
+    await page.evaluate(() => {
+      window.audioProbe.peak = 0;
+      window.orbitDebug.audio.play({ kind: 'warning', voice: 'left', priority: 100 });
+    });
+    await page.waitForFunction(() => window.audioProbe.peak > 0.001);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.lastVoice), undefined);
     await activate(page.locator('#sound')); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     await page.waitForTimeout(300); await page.evaluate(() => { window.audioProbe.peak = 0; });
     if (options.hasTouch) { await activate(page.locator('#left')); } else { await page.keyboard.press('KeyA'); }
@@ -112,13 +210,14 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => window.audioProbe.peak), 0, 'Muted audio still reaches output');
     assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
-    cases.push({ name, result: 'pass', confirmationPeak, checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones', 'gesture resumes suspended context without recreating it', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'mute stops output and releases session', 'sound-off preference survives reload'] });
+    cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, bounded,
+      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'bundled speech decodes in the real audio context', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return instruction'] : []), 'forecasted left instruction interrupts flavour speech and blocks lower-priority chatter', 'persistent caption region is polite for ordinary speech and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected speech-decoding failure retains audible procedural warning fallback', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     // Keep one page alive with single-process Chromium while opening the next.
   }
   assert.deepEqual(errors, []);
   const report = { result: 'pass', cases, screenshots, browserErrors: errors,
-    limitations: ['Chromium waveform measurements verify generated audio, not speaker audibility.', 'Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.'] };
+    limitations: ['Chromium waveform measurements verify generated audio, not speaker audibility.', 'Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.', 'Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured.'] };
   writeFileSync(`${out}/browser.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report, null, 2));
 })().catch(async e => {
   console.error(e); process.exitCode = 1;

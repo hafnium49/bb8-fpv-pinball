@@ -3,6 +3,8 @@ import { PinballSimulation } from './physics/simulation';
 import { PinballView, type CameraMode } from './render/view';
 import { drawMinimap } from './ui/minimap';
 import { GameAudio } from './ui/audio';
+import { SoundDirector, type SoundCue } from './ui/sound-director';
+import voiceUrl from './assets/droid-voice.wav?inline';
 
 const circuitEnabled = new URLSearchParams(location.search).get('circuit') === '1';
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -19,6 +21,7 @@ app.innerHTML = `
     </div>
     <aside id="map-wrap" class="map-wrap" hidden><div class="map-label"><span>TABLE RADAR</span><i></i></div><canvas id="minimap" width="156" height="270" aria-label="Overhead map showing the ball, bumpers, and flippers"></canvas><div class="map-bottom">YOU ARE THE BALL</div></aside>
     <div id="toast" role="status" aria-live="polite"></div>
+    <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
       <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
@@ -34,13 +37,32 @@ app.innerHTML = `
   </main>`;
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
-const audio = new GameAudio();
+const audio = new GameAudio(voiceUrl), soundDirector = new SoundDirector();
 try { audio.setEnabled(localStorage.getItem('orbit-pinball-sound') === 'on'); } catch { /* Sound still works without storage. */ }
 let sim: PinballSimulation, view: PinballView;
 let best = 0;
 try { best = Number(localStorage.getItem('orbit-pinball-best') || 0) || 0; } catch { /* Private browsing still plays. */ }
 $('best-score').textContent = String(best).padStart(5, '0');
 let toastUntil = 0, previousPhase = 'intro', last = performance.now();
+let commsUntil = 0;
+
+function clearComms() {
+  const region = $('droid-comms');
+  if (region.classList.contains('sr-only')) return;
+  region.classList.add('sr-only'); region.setAttribute('aria-live', 'polite'); $('droid-line').textContent = '';
+  $('left').classList.remove('warning'); $('right').classList.remove('warning');
+}
+function showComms(cue: SoundCue) {
+  if (!cue.caption) return;
+  // The region stays in the accessibility tree between cues. Set priority
+  // before changing text so urgent advice can interrupt ordinary announcements.
+  $('droid-comms').setAttribute('aria-live', cue.kind === 'warning' ? 'assertive' : 'polite');
+  $('droid-line').textContent = cue.caption; $('droid-comms').classList.remove('sr-only');
+  $('droid-comms').classList.toggle('urgent', cue.kind === 'warning');
+  $('left').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'left' || cue.voice === 'both'));
+  $('right').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'right' || cue.voice === 'both'));
+  commsUntil = performance.now() + (cue.kind === 'warning' ? 1400 : 1800);
+}
 
 function toast(message: string, seconds = 1.6) {
   $('toast').textContent = message; $('toast').classList.add('visible'); toastUntil = performance.now() + seconds * 1000;
@@ -61,6 +83,7 @@ async function activateSound(confirm = false) {
     ++soundChange; audio.setEnabled(false); updateSound();
     toast('Sound could not start · tap SOUND to retry', 4);
   } else if (confirm) {
+    soundDirector.resume();
     audio.tone(660, 0.22, 'triangle', 0.05, 990);
     toast('SOUND ON · check media volume', 3);
   }
@@ -80,20 +103,21 @@ function setCamera(mode: CameraMode) {
   else if (mode === 'fpv') toast('FPV · horizon stabilized');
 }
 function begin() {
-  sim.start(); view.heading = 0; view.resetEffects(); void activateSound();
+  sim.start(); soundDirector.reset(); audio.reset(); clearComms(); view.heading = 0; view.resetEffects(); void activateSound();
   $('score').textContent = '00000';
   $('intro').hidden = true; $('modal').hidden = true;
   for (const id of ['hud', 'map-wrap', 'camera-controls', 'play-controls']) $(id).hidden = false;
   setCamera('fpv'); toast('Hold SPACE, then release to launch');
 }
 function showPause() {
+  audio.setPaused(true); clearComms();
   if (sim.phase === 'intro' || sim.phase === 'over') return;
   sim.paused = true; sim.releaseControls();
   $('modal-kicker').textContent = 'TAKE A BREATHER'; $('modal-title').textContent = 'Paused.';
   $('modal-copy').textContent = 'Your orbit will be right here.'; $('resume').hidden = false;
   $('restart').textContent = 'Start a new game'; $('modal').hidden = false;
 }
-function resume() { sim.paused = false; sim.releaseControls(); $('modal').hidden = true; last = performance.now(); void activateSound(); }
+function resume() { sim.paused = false; sim.releaseControls(); soundDirector.resume(); audio.setPaused(false); $('modal').hidden = true; last = performance.now(); void activateSound(); }
 function gameOver() {
   if (sim.score > best) { best = sim.score; try { localStorage.setItem('orbit-pinball-best', String(best)); } catch {} }
   $('best-score').textContent = String(best).padStart(5, '0');
@@ -156,7 +180,7 @@ async function boot() {
     view.renderer.domElement.addEventListener('webglcontextrestored', () => { toast('Graphics restored · resume when ready'); });
 
     // A development-only inspection hook supports browser QA without changing the production UI.
-    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view } });
+    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector } });
     requestAnimationFrame(frame);
   } catch (error) {
     $('loading-error').hidden = false;
@@ -188,14 +212,19 @@ function frame(now: number) {
     previousPhase = sim.phase;
   }
   for (const e of sim.events) {
-    if (e.type === 'bumper') { audio.tone(550 + e.index * 110, 0.12, 'sine', 0.04, 1000); toast('+100 · BUMPER', 0.8); }
-    if (e.type === 'target') { audio.tone(880, 0.17, 'triangle', 0.04, 1300); toast('+250 · TARGET', 0.8); }
-    if (e.type === 'circuit') { audio.tone(660, 0.35, 'triangle', 0.04, 1320); toast('CIRCUIT +750 · RIGHT FLIPPER NEXT', 1.5); }
-    if (e.type === 'flipper') audio.tone(130, 0.07, 'triangle', 0.025, 60);
-    if (e.type === 'launch') audio.tone(110, 0.28, 'sawtooth', 0.02, 580);
-    if (e.type === 'drain') audio.tone(300, 0.5, 'sine', 0.04, 60);
+    if (e.type === 'bumper') toast('+100 · BUMPER', 0.8);
+    if (e.type === 'target') toast('+250 · TARGET', 0.8);
+    if (e.type === 'circuit') toast('CIRCUIT +750 · RIGHT FLIPPER NEXT', 1.5);
+  }
+  const soundFrame = soundDirector.update(sim, sim.events);
+  audio.update(soundFrame);
+  for (const cue of soundFrame.cues) {
+    const spoken = audio.play(cue);
+    // Critical instructions remain visible when the player chooses mute.
+    if (cue.caption && (spoken || cue.kind === 'warning')) showComms(cue);
   }
   sim.events.length = 0;
+  if (now > commsUntil && !sim.paused) clearComms();
   if (now > toastUntil) $('toast').classList.remove('visible');
   requestAnimationFrame(frame);
 }
