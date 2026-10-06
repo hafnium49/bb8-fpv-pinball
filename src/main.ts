@@ -35,6 +35,7 @@ app.innerHTML = `
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const audio = new GameAudio();
+try { audio.setEnabled(localStorage.getItem('orbit-pinball-sound') === 'on'); } catch { /* Sound still works without storage. */ }
 let sim: PinballSimulation, view: PinballView;
 let best = 0;
 try { best = Number(localStorage.getItem('orbit-pinball-best') || 0) || 0; } catch { /* Private browsing still plays. */ }
@@ -44,6 +45,32 @@ let toastUntil = 0, previousPhase = 'intro', last = performance.now();
 function toast(message: string, seconds = 1.6) {
   $('toast').textContent = message; $('toast').classList.add('visible'); toastUntil = performance.now() + seconds * 1000;
 }
+function updateSound() {
+  $('sound').textContent = audio.enabled ? 'SOUND ON' : 'SOUND OFF';
+  $('sound').setAttribute('aria-pressed', String(audio.enabled));
+  $('sound').setAttribute('aria-label', audio.enabled ? 'Disable sound' : 'Enable sound');
+  try { localStorage.setItem('orbit-pinball-sound', audio.enabled ? 'on' : 'off'); } catch { /* Private browsing still plays. */ }
+}
+let soundChange = 0;
+async function activateSound(confirm = false) {
+  if (!audio.enabled) return;
+  const change = soundChange;
+  const ready = await audio.unlock();
+  if (change !== soundChange || !audio.enabled) return;
+  if (!ready) {
+    ++soundChange; audio.setEnabled(false); updateSound();
+    toast('Sound could not start · tap SOUND to retry', 4);
+  } else if (confirm) {
+    audio.tone(660, 0.22, 'triangle', 0.05, 990);
+    toast('SOUND ON · check media volume', 3);
+  }
+}
+updateSound();
+$('sound').addEventListener('click', () => {
+  ++soundChange; audio.setEnabled(!audio.enabled); updateSound();
+  if (!audio.enabled) { toast('SOUND OFF'); return; }
+  void activateSound(true);
+});
 function setCamera(mode: CameraMode) {
   view.mode = mode;
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-camera]')) {
@@ -53,7 +80,7 @@ function setCamera(mode: CameraMode) {
   else if (mode === 'fpv') toast('FPV · horizon stabilized');
 }
 function begin() {
-  sim.start(); view.heading = 0; view.resetEffects(); audio.unlock();
+  sim.start(); view.heading = 0; view.resetEffects(); void activateSound();
   $('score').textContent = '00000';
   $('intro').hidden = true; $('modal').hidden = true;
   for (const id of ['hud', 'map-wrap', 'camera-controls', 'play-controls']) $(id).hidden = false;
@@ -66,7 +93,7 @@ function showPause() {
   $('modal-copy').textContent = 'Your orbit will be right here.'; $('resume').hidden = false;
   $('restart').textContent = 'Start a new game'; $('modal').hidden = false;
 }
-function resume() { sim.paused = false; sim.releaseControls(); $('modal').hidden = true; last = performance.now(); audio.unlock(); }
+function resume() { sim.paused = false; sim.releaseControls(); $('modal').hidden = true; last = performance.now(); void activateSound(); }
 function gameOver() {
   if (sim.score > best) { best = sim.score; try { localStorage.setItem('orbit-pinball-best', String(best)); } catch {} }
   $('best-score').textContent = String(best).padStart(5, '0');
@@ -78,7 +105,7 @@ function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
   const button = $<HTMLButtonElement>(id);
   button.addEventListener('pointerdown', e => {
     e.preventDefault(); if (sim.paused || sim.phase === 'intro' || sim.phase === 'over') return;
-    button.setPointerCapture(e.pointerId); sim.controls[key] = true; audio.unlock();
+    button.setPointerCapture(e.pointerId); sim.controls[key] = true; void activateSound();
   });
   for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => { sim.controls[key] = false; });
 }
@@ -101,10 +128,6 @@ async function boot() {
     $('resume').addEventListener('click', resume); $('restart').addEventListener('click', begin);
     $('pause').addEventListener('click', () => sim.paused ? resume() : showPause());
     $('show-controls').addEventListener('click', () => { $('instructions').hidden = !$('instructions').hidden; });
-    $('sound').addEventListener('click', () => {
-      audio.enabled = !audio.enabled; audio.unlock(); $('sound').textContent = audio.enabled ? 'SOUND ON' : 'SOUND OFF';
-      $('sound').setAttribute('aria-pressed', String(audio.enabled)); $('sound').setAttribute('aria-label', audio.enabled ? 'Disable sound' : 'Enable sound');
-    });
     $('fullscreen').addEventListener('click', async () => {
       try { if (document.fullscreenElement) await document.exitFullscreen(); else await $('game').requestFullscreen(); }
       catch { toast('Fullscreen is unavailable in this browser'); }
@@ -115,7 +138,7 @@ async function boot() {
       if (['ArrowLeft', 'ArrowRight', 'Space', 'Escape'].includes(e.code)) e.preventDefault();
       if (e.code === 'Escape') { if (sim.paused) resume(); else showPause(); return; }
       if (sim.paused || sim.phase === 'intro' || sim.phase === 'over') return;
-      audio.unlock();
+      void activateSound();
       if (e.code === 'KeyA' || e.code === 'ArrowLeft') sim.controls.left = true;
       if (e.code === 'KeyD' || e.code === 'ArrowRight') sim.controls.right = true;
       if (e.code === 'Space') sim.controls.launch = true;

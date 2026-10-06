@@ -1,0 +1,49 @@
+{
+  "result": "pass",
+  "cases": [
+    {
+      "name": "desktop-classic",
+      "result": "pass",
+      "confirmationPeak": 0.048455093055963516,
+      "checks": [
+        "first visit muted with no AudioContext",
+        "explicit click/tap requests playback and emits nonzero audio",
+        "flipper and launch event tones",
+        "gesture resumes suspended context without recreating it",
+        "sound-on preference restored without autoplay",
+        "injected saved-on startup failure clears UI/preference/session and allows retry",
+        "mute stops output and releases session",
+        "sound-off preference survives reload"
+      ]
+    },
+    {
+      "name": "mobile-circuit",
+      "result": "pass",
+      "confirmationPeak": 0.04850964993238449,
+      "checks": [
+        "first visit muted with no AudioContext",
+        "explicit click/tap requests playback and emits nonzero audio",
+        "flipper and launch event tones",
+        "gesture resumes suspended context without recreating it",
+        "sound-on preference restored without autoplay",
+        "injected saved-on startup failure clears UI/preference/session and allows retry",
+        "mute stops output and releases session",
+        "sound-off preference survives reload"
+      ]
+    }
+  ],
+  "screenshots": [
+    "desktop-classic-sound-on.png",
+    "mobile-circuit-sound-on.png"
+  ],
+  "browserErrors": [],
+  "limitations": [
+    "Chromium waveform measurements verify generated audio, not speaker audibility.",
+    "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified."
+  ],
+  "sourceSha256": {
+    "src/main.ts": "10009b0c9a7b0574e1a878af5c01a286af1b2226645d5bd1e290e9e31f7ec8c6",
+    "src/ui/audio.ts": "2f605be5ad849a3bc6eae3ac1d75ac1ffa08f53807743073510b30e03e2c76a6",
+    "scripts/audio-browser.cjs": "80d95eefa17499375bba60e022bfdced08b93923b56e35909419021600425b03"
+  }
+}
