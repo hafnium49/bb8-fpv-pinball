@@ -1,7 +1,7 @@
 import './style.css';
 import { PinballSimulation } from './physics/simulation';
 import { PinballView } from './render/view';
-import { HeadLossCamera, HEAD_LOSS_CAPTION, HEAD_LOSS_SECONDS } from './render/head-loss';
+import { HeadLossCamera, HEAD_LOSS_CAPTION } from './render/head-loss';
 import { drawMinimap } from './ui/minimap';
 import { GameAudio } from './ui/audio';
 import { SoundDirector, type SoundCue } from './ui/sound-director';
@@ -62,7 +62,9 @@ function showComms(cue: SoundCue) {
   $('droid-comms').classList.toggle('urgent', cue.kind === 'warning');
   $('left').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'left' || cue.voice === 'both'));
   $('right').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'right' || cue.voice === 'both'));
-  commsUntil = performance.now() + (cue.kind === 'head-loss' ? HEAD_LOSS_SECONDS * 1000 : cue.kind === 'warning' ? 1400 : 1800);
+  // The spin follows simulation time, which can lag wall time on a slow device.
+  // Its end/cancellation clears this caption; warnings keep their own timeout.
+  commsUntil = cue.kind === 'head-loss' ? Infinity : performance.now() + (cue.kind === 'warning' ? 1400 : 1800);
 }
 
 function toast(message: string, seconds = 1.6) {

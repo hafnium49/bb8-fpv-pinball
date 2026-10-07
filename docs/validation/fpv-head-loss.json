@@ -1,6 +1,6 @@
 {
   "result": "pass",
-  "verifiedAt": "2026-10-07T21:04:30.678012+00:00",
+  "verifiedAt": "2026-10-07T21:16:24.260443+00:00",
   "baseCommit": "274490240f72354ace66d7d38633eb8a7dce4c65",
   "behavior": {
     "playerCamera": "FPV only",
@@ -44,11 +44,11 @@
       {
         "name": "desktop-classic",
         "result": "pass",
-        "confirmationPeak": 0.010188447311520576,
+        "confirmationPeak": 0.013036484830081463,
         "voiceReady": true,
-        "wallPeak": 0.0991707369685173,
-        "bedPeak": 0.053166069090366364,
-        "warningStarted": 17.37142857142857,
+        "wallPeak": 0.051666297018527985,
+        "bedPeak": 0.0660933405160904,
+        "warningStarted": 18.500498866213153,
         "warningPans": [
           {
             "voice": "left",
@@ -117,22 +117,24 @@
           "voiceReady": true,
           "voiceFailed": false,
           "effects": 12,
-          "music": 1,
+          "music": 0,
           "speaking": false,
           "priority": 0,
           "loops": 2,
-          "musicSteps": 52,
+          "musicSteps": 66,
           "warnings": 7,
           "lastVoice": "left"
         },
         "headLoss": {
           "spinUp": -1.3435885648505064e-07,
-          "spinDuration": 3.049999999999992,
+          "spinDuration": 3.0083333333333253,
           "cue": "nonverbal ouch cry",
           "caption": "Oh no, BB-8 lost its head!",
+          "captionTracksSimulationTime": true,
           "automaticFpvReturn": true,
           "pauseCancels": true,
           "reducedMotionCancelsAndSuppressesDraw": true,
+          "reducedMotionClearsExistingEffects": true,
           "warningsTakePrecedence": true,
           "cameraControlsAndShortcutsRemoved": true
         },
@@ -162,9 +164,9 @@
         "result": "pass",
         "confirmationPeak": 0.010188447311520576,
         "voiceReady": true,
-        "wallPeak": 0.14568853378295898,
-        "bedPeak": 0.08791463077068329,
-        "warningStarted": 10.881451247165533,
+        "wallPeak": 0.02431952767074108,
+        "bedPeak": 0.08411476761102676,
+        "warningStarted": 14.500861678004535,
         "warningPans": [
           {
             "voice": "left",
@@ -237,18 +239,20 @@
           "speaking": false,
           "priority": 0,
           "loops": 2,
-          "musicSteps": 50,
+          "musicSteps": 62,
           "warnings": 8,
           "lastVoice": "left"
         },
         "headLoss": {
           "spinUp": -1.3435885648505064e-07,
-          "spinDuration": 3.0416666666666585,
+          "spinDuration": 3.0083333333333253,
           "cue": "nonverbal ouch cry",
           "caption": "Oh no, BB-8 lost its head!",
+          "captionTracksSimulationTime": true,
           "automaticFpvReturn": true,
           "pauseCancels": true,
           "reducedMotionCancelsAndSuppressesDraw": true,
+          "reducedMotionClearsExistingEffects": true,
           "warningsTakePrecedence": true,
           "cameraControlsAndShortcutsRemoved": true
         },
@@ -706,13 +710,13 @@
   "sourceSha256": {
     "AGENTS.md": "7751bf82aeecb40557694a010cff9c2a060ddde719a4ea33afba4eae561dbb26",
     "README.md": "c9cd314d89c90820769a5800cc03ee77d2fb837d86ab6ebdd410ef8db8655335",
-    "docs/fpv-head-loss.md": "7b407250247d5bee2a97bb090451a86308dda1d51e56453e4377c448d5b2f17c",
-    "scripts/audio-browser.cjs": "c62db7e28c757c8e45416aae5896dc9342334ddd66301568e7f843d864c8a173",
+    "docs/fpv-head-loss.md": "644e6ca800247388faabc871e2ecc718e428104b7b1e4343bf8784b5cda92783",
+    "scripts/audio-browser.cjs": "405d13b4b900235902e3f937f40547862f9d2eabc962322f5fc9596a9a6e1779",
     "scripts/browser-smoke.cjs": "e3b2f07bf5b95ebd6d568ce22a22d869afc8e7309bcfb6727c212725b980e1e0",
     "scripts/circuit-browser.cjs": "f4a244f3ee67d20779d6a3bd108dd9239e4d1e3089a71fe21fbc38daae0186c9",
     "scripts/flipper-guide-browser.cjs": "409993b20264478257425a964548db098f0fe420a93e139c2934ace49755d0d7",
-    "src/main.ts": "b7f7c61742af0a40108e9eee341ea54d96a0963e4cafa896274c63654346cef4",
-    "src/render/effects.ts": "e7fdd79495dca99a1757527a63a54b8b87042c8c230f821c93da26a1af5788fe",
+    "src/main.ts": "fa56ceb9094e87887a15624a506fa7509991b75eab1b73eada4e2dbc98d10aa4",
+    "src/render/effects.ts": "75c858572ea06cac5318563ff208bde89c4742cfebb97b49d781ee927c422080",
     "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
     "src/render/table-model.ts": "1dcedc766eca9a2dec124143421de87f322ab2aa81f08798dd6c19ec80a5faa8",
     "src/render/view.ts": "7b152c79401df78607c670200044c2e9e98b7893229800e1219164794bab2614",
@@ -725,28 +729,28 @@
   "inspectedScreenshots": [
     {
       "path": "artifacts/audio/desktop-classic-head-loss.png",
-      "bytes": 737635,
-      "sha256": "b55fd10c0c4ebece5ea7f4fea129e6de9119447e99e9463012b09d5db8dc25f4"
+      "bytes": 736804,
+      "sha256": "86e0c352629bfc12d41e3e265a8edce5784a25ed7b18acb95dd27370cee32aa0"
     },
     {
       "path": "artifacts/audio/mobile-circuit-head-loss.png",
-      "bytes": 236327,
-      "sha256": "66da28e88d0274cf66e76c8da603eaca249025eb9d3ac44478baaf6b7a77f11b"
+      "bytes": 234187,
+      "sha256": "c6a99e7b852527ae96ce0676a00b4a291eb1d94bc3e18d7e8cfb4703b1989928"
     },
     {
       "path": "artifacts/audio/desktop-classic-sound-on.png",
-      "bytes": 850280,
-      "sha256": "eac162a2f98030915e68c27c16177d19c2676d05cd3cfcc6ac4a694555c62b41"
+      "bytes": 857291,
+      "sha256": "e8987f1aa1f128b821aa8b4a0f44e0e4f238c402b847b2d1629e101021451072"
     },
     {
       "path": "artifacts/audio/mobile-circuit-sound-on.png",
-      "bytes": 313196,
-      "sha256": "c2120e749d1a7b30942059c7fc72ae8706e594e9bec30439eaab8ece9dae8b0c"
+      "bytes": 313149,
+      "sha256": "ac7aac97ef03d8439342d23fb939055d3ecc6928d20a89b44e744e204f08f34f"
     },
     {
       "path": "artifacts/mobile-portrait.png",
-      "bytes": 251170,
-      "sha256": "1812d8545ddc7fcb27d623deb0cbea46b542c0c40a2edb5ea096048829c9d5eb"
+      "bytes": 251051,
+      "sha256": "70d141f6233607a05ceb72bc6fbaf398a761c18e94fb8d37b1e7ad26c74adb67"
     },
     {
       "path": "artifacts/circuit/mobile-bridge-fpv-portrait.png",
@@ -761,9 +765,9 @@
   ],
   "production": {
     "javascript": {
-      "path": "dist/assets/index-Bcovjyb-.js",
-      "bytes": 5598434,
-      "sha256": "79a51336b72be6b8c85efe1d0083c480a4b177497a53201ed7b037c3704ddd29"
+      "path": "dist/assets/index-B8Tn7OoH.js",
+      "bytes": 5598592,
+      "sha256": "e377990a43651c8460083f466e5053afdfa0812da98599ca6b2203e7016ea372"
     },
     "stylesheet": {
       "path": "dist/assets/index-xNmsoNmG.css",
@@ -773,12 +777,12 @@
     "index": {
       "path": "dist/index.html",
       "bytes": 661,
-      "sha256": "902d019a2c302435bcf764ff91b9bae2ff5f08382f20c746d0adcb24e189174f"
+      "sha256": "0d3430abc4108543ff20ebdc462cd8fb4c698139e9aca5ffad51d4175b10fbf0"
     },
     "offline": {
       "path": "artifacts/ORBIT-FPV-Pinball.html",
-      "bytes": 5623513,
-      "sha256": "cef5c0b83c37bb5e8453a54d7cd94c61e41c661a805ca5549707038cc42c1225"
+      "bytes": 5623671,
+      "sha256": "8a2ae0514d21c5cec53a1dc4dab7657203c77039557e4500dd3e8ee1b2a2e180"
     },
     "unchangedBeepSprite": {
       "path": "src/assets/droid-beeps.wav",
@@ -794,5 +798,19 @@
     "Episode selection is deterministic through the development hook. Unit tests verify the probability boundary and exactly one selected result over twenty uniform mock draws; no claim of observed one-in-twenty natural launches.",
     "Camera poses are held for spin screenshots; automatic return is measured with live simulation time. Existing audio assertions can suppress rendering to avoid software-GPU timing variability.",
     "Human spin comfort, accessibility announcement timing and actual device speaker/mute routing remain unverified."
-  ]
+  ],
+  "verificationRounds": [
+    {
+      "revision": "92c786d39b357b0455fc49c3024f13bc569e85cb",
+      "scope": "Full initial feature verification: clean install, 40 tests, production/offline build, circuit and guide physics sweeps, and all four browser harnesses."
+    },
+    {
+      "revision": "follow-up in this PR",
+      "scope": "Caption lifetime and live reduced-motion pool fixes: rerun all 40 tests, production/offline build, audio browser and gameplay smoke. The circuit and guide geometry and their harnesses are unchanged; their full browser results above were captured on the initial feature revision."
+    }
+  ],
+  "reviewFixes": {
+    "captionTracksSimulationTime": "pass: caption remains visible after 3.2 wall seconds with simulation held, then clears at automatic FPV return",
+    "liveReducedMotionClearsEffects": "pass: active particle lifetimes, ring/popup visibility and particle upload version reset immediately; old effects do not return when the preference is disabled"
+  }
 }
