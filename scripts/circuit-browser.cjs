@@ -54,7 +54,7 @@ const groundProbes = async p => {
   };
   monitor(page);
   const url = server.resolvedUrls.local[0] + '?circuit=1';
-  const boot = async p => { await p.goto(url, { waitUntil: 'networkidle' }); await p.locator('#start:not([disabled])').waitFor({ timeout: 60000 }); };
+  const boot = async p => { await p.goto(url, { waitUntil: 'networkidle' }); await p.locator('#start:not([disabled])').waitFor({ timeout: 60000 }); await p.evaluate(() => { window.orbitDebug.headLoss.draw = () => 1; }); };
   const capture = async (p, name) => { await rendered(p); await p.screenshot({ path: `${out}/${name}.png`, timeout: 60000 }); screenshots.push(`${name}.png`); console.log(`Captured ${name}`); };
   const introFits = async p => {
     const layout = await p.evaluate(() => ({ width: innerWidth, height: innerHeight, buttons: ['start', 'table-variant', 'show-controls'].map(id => {
@@ -115,7 +115,7 @@ const groundProbes = async p => {
 
   // Advance an actual free-physics entry to a section, then freeze it for a
   // screenshot. This is a contact test, distinct from the input-only launch QA.
-  const stage = async (p, s, mode) => {
+  const stage = async (p, s) => {
     await p.evaluate(async s => {
       const { frames, localPoint } = await import('/src/physics/route-geometry.ts');
       const { sim, view } = window.orbitDebug; sim.start(); sim.launch(0.5); view.resetEffects();
@@ -126,13 +126,13 @@ const groundProbes = async p => {
       if (!sim.route.active) throw new Error('Physical shot did not reach requested stage');
       sim.paused = true;
     }, s);
-    await p.locator(`[data-camera="${mode}"]`).click(); await rendered(p);
+    assert.equal(await p.locator('[data-camera], #camera-controls').count(), 0); await rendered(p);
     return p.evaluate(() => {
       const { sim, view } = window.orbitDebug, m = view.camera.matrixWorld.elements;
       return { position: sim.position, phase: sim.route.phase, s: sim.route.projection.s, roll: Math.abs(m[1]), pitchDegrees: Math.asin(-m[9]) * 180 / Math.PI, calls: view.renderer.info.render.calls, triangles: view.renderer.info.render.triangles };
     });
   };
-  metrics.desktopTable = await stage(page, 12, 'table'); await capture(page, 'desktop-table');
+  metrics.desktopBridge = await stage(page, 12); await capture(page, 'desktop-bridge-ready-fpv');
   await page.locator('#quality').click(); await rendered(page);
   const measured = await page.evaluate(() => {
     const { view } = window.orbitDebug, circuit = view.scene.getObjectByName('Elevated circuit');
@@ -142,15 +142,12 @@ const groundProbes = async p => {
   });
   assert.ok(measured.addedCalls > 0 && measured.addedCalls <= 25, JSON.stringify(measured)); metrics.ecoGeometry = measured;
   for (const [name, s] of [['desktop-climb-fpv', 5], ['desktop-bridge-fpv', 12], ['desktop-tunnel-fpv', 21], ['desktop-return-fpv', 26.2]]) {
-    const result = await stage(page, s, 'fpv'); assert.ok(result.roll < 1e-6); assert.ok(Math.abs(result.pitchDegrees) <= 18.001); metrics[name] = result; await capture(page, name);
+    const result = await stage(page, s); assert.ok(result.roll < 1e-6); assert.ok(Math.abs(result.pitchDegrees) <= 18.001); metrics[name] = result; await capture(page, name);
   }
-  metrics.desktopChase = await stage(page, 21, 'chase'); assert.ok(metrics.desktopChase.roll < 1e-6); await capture(page, 'desktop-tunnel-chase');
   await page.evaluate(() => window.orbitDebug.sim.ball.setRotation({ x: 0, y: 0, z: Math.SQRT1_2, w: Math.SQRT1_2 }, true));
-  await page.locator('[data-camera="spin"]').click(); await rendered(page);
-  assert.ok(Math.abs(await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5])) < 0.1);
-  await page.locator('[data-camera="fpv"]').click(); await rendered(page);
+  await rendered(page);
   assert.ok(await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5] > 0.95));
-  checks.push('actual ramp/bridge/tunnel/return contacts shown in FPV, Table, Chase and Spin; zero FPV/Chase roll; no spin leakage');
+  checks.push('actual ramp/bridge/tunnel/return contacts shown in stabilized FPV; ball rotation never leaks into FPV');
 
   // Run the same input-only launch completion in the browser's Rapier build.
   const launch = await page.evaluate(async () => {
@@ -159,7 +156,7 @@ const groundProbes = async p => {
   });
   assert.ok(launch.leftContact && launch.rightReturn && launch.awards === 1); metrics.inputOnlyLaunch = launch;
   await rendered(page); assert.equal(await page.locator('#score').textContent(), String(launch.score).padStart(5, '0'));
-  await stage(page, 26.6, 'table');
+  await stage(page, 26.6);
   const actualAward = await page.evaluate(() => {
     const { sim } = window.orbitDebug; sim.paused = false;
     for (let i = 0; i < 120; i++) { sim.events.length = 0; sim.step(); const award = sim.events.find(e => e.type === 'circuit'); if (award) { sim.paused = true; return award.points; } }
@@ -190,8 +187,8 @@ const groundProbes = async p => {
   assert.equal(await phone.locator('#quality').textContent(), 'FX ECO');
   metrics.mobileIntroLayout = await introFits(phone);
   await capture(phone, 'mobile-intro'); await phone.locator('#start').tap();
-  metrics.mobileTable = await stage(phone, 12, 'table'); await capture(phone, 'mobile-table');
-  metrics.mobileTunnel = await stage(phone, 21, 'fpv'); await capture(phone, 'mobile-tunnel-fpv');
+  metrics.mobileBridge = await stage(phone, 12); await capture(phone, 'mobile-bridge-fpv');
+  metrics.mobileTunnel = await stage(phone, 21); await capture(phone, 'mobile-tunnel-fpv');
   assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   await phone.evaluate(() => { window.orbitDebug.sim.start(); window.orbitDebug.view.resetEffects(); });
   const left = await phone.locator('#left').boundingBox(), right = await phone.locator('#right').boundingBox();
@@ -201,16 +198,16 @@ const groundProbes = async p => {
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   assert.deepEqual(await phone.evaluate(() => [window.orbitDebug.sim.controls.left, window.orbitDebug.sim.controls.right]), [false, false]);
   await phone.emulateMedia({ reducedMotion: 'reduce' }); await boot(phone); await phone.locator('#start').tap();
-  metrics.reducedMotion = await stage(phone, 5, 'fpv'); assert.ok(Math.abs(metrics.reducedMotion.pitchDegrees) <= 8.001);
+  metrics.reducedMotion = await stage(phone, 5); assert.ok(Math.abs(metrics.reducedMotion.pitchDegrees) <= 8.001);
   assert.equal(await phone.evaluate(() => window.orbitDebug.view.effects.reducedMotion), true);
   checks.push('mobile landscape fit; Eco default; simultaneous real touch flippers; reduced-motion camera/effects');
   await phone.setViewportSize({ width: 390, height: 844 }); await boot(phone);
   metrics.mobilePortraitIntroLayout = await introFits(phone); await capture(phone, 'mobile-intro-portrait');
   await phone.locator('#start').tap();
-  metrics.mobilePortraitTable = await stage(phone, 12, 'table'); await capture(phone, 'mobile-table-portrait');
+  metrics.mobilePortraitBridge = await stage(phone, 12); await capture(phone, 'mobile-bridge-fpv-portrait');
   metrics.mobileGroundApproaches = await groundProbes(phone);
-  await phone.locator('[data-camera="fpv"]').tap(); await capture(phone, 'mobile-ground-clearance');
-  checks.push('portrait table and actual ground-approach recovery rendered at 390 × 844');
+  await capture(phone, 'mobile-ground-clearance');
+  checks.push('portrait FPV and actual ground-approach recovery rendered at 390 × 844');
   assert.deepEqual(errors, []);
   writeFileSync(`${out}/mobile-layout.json`, JSON.stringify({ result: 'pass', scope: 'opening controls fit in landscape and portrait', layouts: [metrics.mobileIntroLayout, metrics.mobilePortraitIntroLayout], browserErrors: errors }, null, 2));
   const report = { result: 'pass', checks, metrics, screenshots, browserErrors: errors, groundReportValidation: { result: 'pass', harnessSha256, scope: 'ground probes included in this full gameplay browser run' }, renderer: 'Chromium software WebGL; physical device FPS and human comfort unmeasured' };

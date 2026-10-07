@@ -1,0 +1,798 @@
+{
+  "result": "pass",
+  "verifiedAt": "2026-10-07T21:04:30.678012+00:00",
+  "baseCommit": "274490240f72354ace66d7d38633eb8a7dce4c65",
+  "behavior": {
+    "playerCamera": "FPV only",
+    "chancePerLaunch": 0.05,
+    "durationSimulationSeconds": 3,
+    "beginsAfterLaneExitX": 4.4,
+    "caption": "Oh no, BB-8 lost its head!",
+    "voice": "existing original ouch beep; procedural electronic cry fallback",
+    "warningPriority": 100,
+    "headLossPriority": 85,
+    "cancelOn": [
+      "pause",
+      "blur",
+      "drain",
+      "game over",
+      "restart",
+      "simulation time rewind",
+      "live reduced-motion preference"
+    ]
+  },
+  "commands": {
+    "npm ci": "pass",
+    "npm test": {
+      "result": "pass",
+      "tests": 40,
+      "failures": 0,
+      "headLossTests": 4
+    },
+    "npm run standalone": "pass; includes tsc --noEmit, vite build, offline HTML",
+    "npm run test:circuit": "pass",
+    "npm run test:guides": "pass",
+    "npm run test:audio:browser": "pass",
+    "npm run test:browser": "pass",
+    "npm run test:circuit:browser": "pass",
+    "npm run test:guides:browser": "pass",
+    "git diff --check": "pass"
+  },
+  "audioBrowser": {
+    "result": "pass",
+    "cases": [
+      {
+        "name": "desktop-classic",
+        "result": "pass",
+        "confirmationPeak": 0.010188447311520576,
+        "voiceReady": true,
+        "wallPeak": 0.0991707369685173,
+        "bedPeak": 0.053166069090366364,
+        "warningStarted": 17.37142857142857,
+        "warningPans": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "pan": 0
+          }
+        ],
+        "fallbackMotifs": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "frequencies": [
+              690,
+              580
+            ],
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "frequencies": [
+              1050,
+              1210,
+              1370
+            ],
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "frequencies": [
+              620,
+              1320,
+              620,
+              1320
+            ],
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "frequencies": [
+              1500,
+              1600,
+              1800
+            ],
+            "pan": 0
+          }
+        ],
+        "bounded": {
+          "voiceReady": true,
+          "voiceFailed": false,
+          "effects": 12,
+          "music": 1,
+          "speaking": false,
+          "priority": 0,
+          "loops": 2,
+          "musicSteps": 52,
+          "warnings": 7,
+          "lastVoice": "left"
+        },
+        "headLoss": {
+          "spinUp": -1.3435885648505064e-07,
+          "spinDuration": 3.049999999999992,
+          "cue": "nonverbal ouch cry",
+          "caption": "Oh no, BB-8 lost its head!",
+          "automaticFpvReturn": true,
+          "pauseCancels": true,
+          "reducedMotionCancelsAndSuppressesDraw": true,
+          "warningsTakePrecedence": true,
+          "cameraControlsAndShortcutsRemoved": true
+        },
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "gesture resumes suspended context without recreating it",
+          "blur stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      },
+      {
+        "name": "mobile-circuit",
+        "result": "pass",
+        "confirmationPeak": 0.010188447311520576,
+        "voiceReady": true,
+        "wallPeak": 0.14568853378295898,
+        "bedPeak": 0.08791463077068329,
+        "warningStarted": 10.881451247165533,
+        "warningPans": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "pan": 0
+          }
+        ],
+        "fallbackMotifs": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "frequencies": [
+              690,
+              580
+            ],
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "frequencies": [
+              1050,
+              1210,
+              1370
+            ],
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "frequencies": [
+              620,
+              1320,
+              620,
+              1320
+            ],
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "frequencies": [
+              1500,
+              1600,
+              1800
+            ],
+            "pan": 0
+          }
+        ],
+        "bounded": {
+          "voiceReady": true,
+          "voiceFailed": false,
+          "effects": 12,
+          "music": 1,
+          "speaking": false,
+          "priority": 0,
+          "loops": 2,
+          "musicSteps": 50,
+          "warnings": 8,
+          "lastVoice": "left"
+        },
+        "headLoss": {
+          "spinUp": -1.3435885648505064e-07,
+          "spinDuration": 3.0416666666666585,
+          "cue": "nonverbal ouch cry",
+          "caption": "Oh no, BB-8 lost its head!",
+          "automaticFpvReturn": true,
+          "pauseCancels": true,
+          "reducedMotionCancelsAndSuppressesDraw": true,
+          "warningsTakePrecedence": true,
+          "cameraControlsAndShortcutsRemoved": true
+        },
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "gesture resumes suspended context without recreating it",
+          "blur stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      }
+    ],
+    "screenshots": [
+      "desktop-classic-head-loss.png",
+      "desktop-classic-sound-on.png",
+      "mobile-circuit-head-loss.png",
+      "mobile-circuit-sound-on.png"
+    ],
+    "browserErrors": [],
+    "limitations": [
+      "Chromium waveform measurements verify generated audio, not speaker audibility.",
+      "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.",
+      "Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured."
+    ]
+  },
+  "generalBrowser": {
+    "result": "pass",
+    "checks": [
+      "boot",
+      "real keyboard launch",
+      "simultaneous keyboard flippers",
+      "pause freezes physics",
+      "blur releases controls and pauses",
+      "FPV-only player camera and removed number-key shortcuts",
+      "FPV independent of ball rotation",
+      "game-over/restart/high score",
+      "rendered WebGL scene",
+      "High/Eco rendering and lower Eco draw calls",
+      "real bumper collision produces impact effects",
+      "restart clears effects",
+      "WebGL context recovery rebuilds reflections",
+      "touch defaults to Eco",
+      "simultaneous touch flippers",
+      "mobile landscape and portrait resize",
+      "reduced-motion suppresses impact animations"
+    ],
+    "browserErrors": [],
+    "screenshots": [
+      "desktop-intro.png",
+      "desktop-fpv.png",
+      "desktop-fpv-ready.png",
+      "desktop-eco.png",
+      "desktop-impact.png",
+      "mobile-landscape.png",
+      "mobile-portrait.png"
+    ]
+  },
+  "circuitPhysics": {
+    "result": "pass",
+    "scope": "actual free Rapier body, fixed 120 Hz, CCD; synthetic entries separated from input-only launch trials",
+    "geometry": {
+      "length": 27.10436657135103,
+      "samples": 273,
+      "addedColliders": 4
+    },
+    "entryGrid": {
+      "count": 63,
+      "counts": {
+        "returned": 36,
+        "rollback": 27,
+        "drain": 0,
+        "timeout": 0
+      }
+    },
+    "spinAndPartialStep": {
+      "count": 18,
+      "counts": {
+        "returned": 12,
+        "rollback": 6,
+        "drain": 0,
+        "timeout": 0
+      }
+    },
+    "groundApproaches": {
+      "count": 96,
+      "cleared": 96,
+      "maxDuration": 11.408333333333326,
+      "maxQuiet": 1.0249999999999988,
+      "failures": []
+    },
+    "launches": [
+      {
+        "power": 0.7,
+        "leftZ": 6.3,
+        "rightZ": 6.4,
+        "laneExit": true,
+        "leftContact": true,
+        "awards": 1,
+        "rightReturn": true,
+        "phase": "playing",
+        "duration": 10.891666666666689,
+        "score": 1100,
+        "velocity": {
+          "x": 1.8025131225585938,
+          "y": -0.026665296405553818,
+          "z": -16.340906143188477
+        }
+      },
+      {
+        "power": 0.7,
+        "leftZ": 6.6,
+        "rightZ": 6.4,
+        "laneExit": true,
+        "leftContact": true,
+        "awards": 1,
+        "rightReturn": true,
+        "phase": "playing",
+        "duration": 10.57500000000004,
+        "score": 1100,
+        "velocity": {
+          "x": 1.9826079607009888,
+          "y": 0.102276511490345,
+          "z": -16.03177261352539
+        }
+      }
+    ]
+  },
+  "guidePhysics": {
+    "result": "pass",
+    "scope": "synthetic nonoverlapping ground arrivals outside closed ramp heels, both tables/sides, 120 Hz CCD, released/hold-release/pulsed flippers, spin and fast approaches",
+    "groups": [
+      {
+        "table": "classic",
+        "attempted": 2196,
+        "valid": 1431,
+        "cleared": 1431,
+        "exclusions": {
+          "overlap": 765,
+          "closedHeel": 0
+        },
+        "left": 783,
+        "right": 648,
+        "maxQuiet": 0.09999999999999999,
+        "maxDuration": 4.033333333333337,
+        "failures": []
+      },
+      {
+        "table": "circuit",
+        "attempted": 2196,
+        "valid": 1179,
+        "cleared": 1179,
+        "exclusions": {
+          "overlap": 954,
+          "closedHeel": 63
+        },
+        "left": 756,
+        "right": 423,
+        "maxQuiet": 0.09999999999999999,
+        "maxDuration": 4.033333333333337,
+        "failures": []
+      }
+    ]
+  },
+  "circuitBrowser": {
+    "result": "pass",
+    "checks": [
+      "normal keyboard launch; simultaneous flippers; blur clears input; pause freezes physics",
+      "real ground approaches clear both low-ramp deflectors without recovery forces or elevated awards",
+      "actual ramp/bridge/tunnel/return contacts shown in stabilized FPV; ball rotation never leaks into FPV",
+      "browser input-only launch-to-left-flipper-to-circuit-to-moving-right-flipper; +750 score/toast",
+      "three-ball lifecycle; restart resets route and pooled effects; stable resources over four restarts; WebGL recovery",
+      "mobile landscape fit; Eco default; simultaneous real touch flippers; reduced-motion camera/effects",
+      "portrait FPV and actual ground-approach recovery rendered at 390 \u00d7 844"
+    ],
+    "inputOnlyLaunch": {
+      "power": 0.7,
+      "leftZ": 6.3,
+      "rightZ": 6.4,
+      "laneExit": true,
+      "leftContact": true,
+      "awards": 1,
+      "rightReturn": true,
+      "phase": "playing",
+      "duration": 10.658333333333369,
+      "score": 1100,
+      "velocity": {
+        "x": -1.2422339916229248,
+        "y": 0.011538027785718441,
+        "z": -15.982236862182617
+      },
+      "changes": [
+        [
+          643,
+          true,
+          false
+        ],
+        [
+          658,
+          false,
+          false
+        ],
+        [
+          939,
+          true,
+          false
+        ],
+        [
+          946,
+          false,
+          false
+        ],
+        [
+          1189,
+          false,
+          true
+        ]
+      ]
+    },
+    "routeCameraSamples": {
+      "desktop-climb-fpv": {
+        "position": {
+          "x": -3.217268705368042,
+          "y": 1.5025737285614014,
+          "z": -1.4228105545043945
+        },
+        "phase": "ascent",
+        "s": 5.024077491119109,
+        "roll": 0,
+        "pitchDegrees": 12.75000000000001,
+        "calls": 64,
+        "triangles": 63596
+      },
+      "desktop-bridge-fpv": {
+        "position": {
+          "x": -0.6158900856971741,
+          "y": 2.479788303375244,
+          "z": -5.860058307647705
+        },
+        "phase": "bridge",
+        "s": 12.052156348492504,
+        "roll": 0,
+        "pitchDegrees": 0.08195942731088317,
+        "calls": 51,
+        "triangles": 52852
+      },
+      "desktop-tunnel-fpv": {
+        "position": {
+          "x": 3.643843173980713,
+          "y": 2.0265862941741943,
+          "z": 0.5709701180458069
+        },
+        "phase": "tunnel",
+        "s": 21.050703739384033,
+        "roll": 0,
+        "pitchDegrees": -7.208178465156965,
+        "calls": 81,
+        "triangles": 50940
+      },
+      "desktop-return-fpv": {
+        "position": {
+          "x": 3.0642969608306885,
+          "y": 0.3495332896709442,
+          "z": 5.379359722137451
+        },
+        "phase": "return",
+        "s": 26.204917865106392,
+        "roll": 1.3877787807814457e-17,
+        "pitchDegrees": -16.129720378573968,
+        "calls": 68,
+        "triangles": 30090
+      },
+      "mobileBridge": {
+        "position": {
+          "x": -0.6158900856971741,
+          "y": 2.479788303375244,
+          "z": -5.860058307647705
+        },
+        "phase": "bridge",
+        "s": 12.052156348492504,
+        "roll": 0,
+        "pitchDegrees": 0.08195942731088317,
+        "calls": 52,
+        "triangles": 56452
+      },
+      "mobileTunnel": {
+        "position": {
+          "x": 3.643843173980713,
+          "y": 2.0265862941741943,
+          "z": 0.5709701180458069
+        },
+        "phase": "tunnel",
+        "s": 21.050703739384033,
+        "roll": 0,
+        "pitchDegrees": -7.208178465156965,
+        "calls": 81,
+        "triangles": 50940
+      },
+      "mobilePortraitBridge": {
+        "position": {
+          "x": -0.6158900856971741,
+          "y": 2.479788303375244,
+          "z": -5.860058307647705
+        },
+        "phase": "bridge",
+        "s": 12.052156348492504,
+        "roll": 0,
+        "pitchDegrees": 0.9825571424947694,
+        "calls": 44,
+        "triangles": 47312
+      },
+      "reducedMotion": {
+        "position": {
+          "x": -3.217268705368042,
+          "y": 1.5025737285614014,
+          "z": -1.4228105545043945
+        },
+        "phase": "ascent",
+        "s": 5.024077491119109,
+        "roll": 3.469446951953614e-18,
+        "pitchDegrees": 6.359050026794477,
+        "calls": 67,
+        "triangles": 64496
+      }
+    },
+    "screenshots": [
+      "desktop-intro.png",
+      "desktop-bridge-ready-fpv.png",
+      "desktop-climb-fpv.png",
+      "desktop-bridge-fpv.png",
+      "desktop-tunnel-fpv.png",
+      "desktop-return-fpv.png",
+      "mobile-intro.png",
+      "mobile-bridge-fpv.png",
+      "mobile-tunnel-fpv.png",
+      "mobile-intro-portrait.png",
+      "mobile-bridge-fpv-portrait.png",
+      "mobile-ground-clearance.png"
+    ],
+    "browserErrors": []
+  },
+  "guideBrowser": {
+    "result": "pass",
+    "cases": [
+      {
+        "name": "desktop-classic",
+        "result": "pass",
+        "laneExit": {
+          "phase": "playing",
+          "position": {
+            "x": 4.097517013549805,
+            "y": 0.27818551659584045,
+            "z": -8.720909118652344
+          }
+        },
+        "arrivals": [
+          {
+            "name": "left hinge",
+            "result": "cleared",
+            "duration": 1.5916666666666626
+          },
+          {
+            "name": "right hinge",
+            "result": "cleared",
+            "duration": 1.5999999999999959
+          },
+          {
+            "name": "left lower guide head",
+            "result": "cleared",
+            "duration": 1.2583333333333304
+          },
+          {
+            "name": "right lower guide head",
+            "result": "cleared",
+            "duration": 1.0499999999999978
+          },
+          {
+            "name": "right upper guide / ramp heel",
+            "result": "cleared",
+            "duration": 1.0083333333333313
+          }
+        ],
+        "fit": {
+          "width": 1440,
+          "scrollWidth": 1440,
+          "height": 900,
+          "scrollHeight": 900,
+          "quality": true,
+          "drawCalls": 166
+        }
+      },
+      {
+        "name": "mobile-circuit",
+        "result": "pass",
+        "laneExit": {
+          "phase": "playing",
+          "position": {
+            "x": 3.8932974338531494,
+            "y": 0.2782093286514282,
+            "z": -8.713079452514648
+          }
+        },
+        "arrivals": [
+          {
+            "name": "left hinge",
+            "result": "cleared",
+            "duration": 1.6166666666666625
+          },
+          {
+            "name": "right hinge",
+            "result": "cleared",
+            "duration": 1.5916666666666626
+          },
+          {
+            "name": "left lower guide head",
+            "result": "cleared",
+            "duration": 1.2666666666666637
+          },
+          {
+            "name": "right lower guide head",
+            "result": "cleared",
+            "duration": 1.0916666666666643
+          },
+          {
+            "name": "right upper guide / ramp heel",
+            "result": "cleared",
+            "duration": 1.6666666666666623
+          }
+        ],
+        "fit": {
+          "width": 844,
+          "scrollWidth": 844,
+          "height": 390,
+          "scrollHeight": 390,
+          "quality": false,
+          "drawCalls": 106
+        }
+      }
+    ],
+    "browserErrors": []
+  },
+  "sourceSha256": {
+    "AGENTS.md": "7751bf82aeecb40557694a010cff9c2a060ddde719a4ea33afba4eae561dbb26",
+    "README.md": "c9cd314d89c90820769a5800cc03ee77d2fb837d86ab6ebdd410ef8db8655335",
+    "docs/fpv-head-loss.md": "7b407250247d5bee2a97bb090451a86308dda1d51e56453e4377c448d5b2f17c",
+    "scripts/audio-browser.cjs": "c62db7e28c757c8e45416aae5896dc9342334ddd66301568e7f843d864c8a173",
+    "scripts/browser-smoke.cjs": "e3b2f07bf5b95ebd6d568ce22a22d869afc8e7309bcfb6727c212725b980e1e0",
+    "scripts/circuit-browser.cjs": "f4a244f3ee67d20779d6a3bd108dd9239e4d1e3089a71fe21fbc38daae0186c9",
+    "scripts/flipper-guide-browser.cjs": "409993b20264478257425a964548db098f0fe420a93e139c2934ace49755d0d7",
+    "src/main.ts": "b7f7c61742af0a40108e9eee341ea54d96a0963e4cafa896274c63654346cef4",
+    "src/render/effects.ts": "e7fdd79495dca99a1757527a63a54b8b87042c8c230f821c93da26a1af5788fe",
+    "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
+    "src/render/table-model.ts": "1dcedc766eca9a2dec124143421de87f322ab2aa81f08798dd6c19ec80a5faa8",
+    "src/render/view.ts": "7b152c79401df78607c670200044c2e9e98b7893229800e1219164794bab2614",
+    "src/style.css": "035ea0ba1fa94dd4cf69e2472d6a6de41d5c24a63b1d550a51193309b38d8a52",
+    "src/ui/audio.ts": "03554c0ab7e0f90712fbfbb83de82bc619d9102e54580072249a1e811c37707b",
+    "src/ui/sound-director.ts": "a0876a7af27903c0343acbefffcd4bb36d04f40e08a1c30fa03f58c6af3762bf",
+    "tests/circuit.test.ts": "f11332b987ddf67ffed0b663e2d3d42e82657813c0b9dfe5a5f953eca544ce2c",
+    "tests/head-loss.test.ts": "0a60165ec7a435307d5a23845201744798882d7b783189708665855844affeba"
+  },
+  "inspectedScreenshots": [
+    {
+      "path": "artifacts/audio/desktop-classic-head-loss.png",
+      "bytes": 737635,
+      "sha256": "b55fd10c0c4ebece5ea7f4fea129e6de9119447e99e9463012b09d5db8dc25f4"
+    },
+    {
+      "path": "artifacts/audio/mobile-circuit-head-loss.png",
+      "bytes": 236327,
+      "sha256": "66da28e88d0274cf66e76c8da603eaca249025eb9d3ac44478baaf6b7a77f11b"
+    },
+    {
+      "path": "artifacts/audio/desktop-classic-sound-on.png",
+      "bytes": 850280,
+      "sha256": "eac162a2f98030915e68c27c16177d19c2676d05cd3cfcc6ac4a694555c62b41"
+    },
+    {
+      "path": "artifacts/audio/mobile-circuit-sound-on.png",
+      "bytes": 313196,
+      "sha256": "c2120e749d1a7b30942059c7fc72ae8706e594e9bec30439eaab8ece9dae8b0c"
+    },
+    {
+      "path": "artifacts/mobile-portrait.png",
+      "bytes": 251170,
+      "sha256": "1812d8545ddc7fcb27d623deb0cbea46b542c0c40a2edb5ea096048829c9d5eb"
+    },
+    {
+      "path": "artifacts/circuit/mobile-bridge-fpv-portrait.png",
+      "bytes": 284365,
+      "sha256": "664fd6eb05e24c3be19cbcf93428cd9bcb5f8ab8a4b74869132d42f6c13a8607"
+    },
+    {
+      "path": "artifacts/circuit/desktop-tunnel-fpv.png",
+      "bytes": 774514,
+      "sha256": "04dd0ccece08609cf0be59993949c2a4053e4e2c46eef591c9b19ab5fd6a02b4"
+    }
+  ],
+  "production": {
+    "javascript": {
+      "path": "dist/assets/index-Bcovjyb-.js",
+      "bytes": 5598434,
+      "sha256": "79a51336b72be6b8c85efe1d0083c480a4b177497a53201ed7b037c3704ddd29"
+    },
+    "stylesheet": {
+      "path": "dist/assets/index-xNmsoNmG.css",
+      "bytes": 12021,
+      "sha256": "bfe59b569b8907d1dfa028ff9bab131d2fa607e70c350a3cb6a894b1e8f0d791"
+    },
+    "index": {
+      "path": "dist/index.html",
+      "bytes": 661,
+      "sha256": "902d019a2c302435bcf764ff91b9bae2ff5f08382f20c746d0adcb24e189174f"
+    },
+    "offline": {
+      "path": "artifacts/ORBIT-FPV-Pinball.html",
+      "bytes": 5623513,
+      "sha256": "cef5c0b83c37bb5e8453a54d7cd94c61e41c661a805ca5549707038cc42c1225"
+    },
+    "unchangedBeepSprite": {
+      "path": "src/assets/droid-beeps.wav",
+      "bytes": 465302,
+      "sha256": "9f6f5177ff8882a1737bce58ad1035bbd7a792b4a91e7ad93ccbc13938a1ad68"
+    },
+    "embeddedBeepBytesVerified": true,
+    "developmentHookRemoved": true,
+    "cameraChooserRemoved": true
+  },
+  "limitations": [
+    "Chromium software WebGL and mobile touch emulation; physical iPhone Safari and frame rate unmeasured.",
+    "Episode selection is deterministic through the development hook. Unit tests verify the probability boundary and exactly one selected result over twenty uniform mock draws; no claim of observed one-in-twenty natural launches.",
+    "Camera poses are held for spin screenshots; automatic return is measured with live simulation time. Existing audio assertions can suppress rendering to avoid software-GPU timing variability.",
+    "Human spin comfort, accessibility announcement timing and actual device speaker/mute routing remain unverified."
+  ]
+}

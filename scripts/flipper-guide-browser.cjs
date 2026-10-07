@@ -23,6 +23,7 @@ const out = 'artifacts/pivot';
     await page.goto(server.resolvedUrls.local[0] + search, { waitUntil: 'networkidle' });
     await page.locator('#start:not([disabled])').waitFor();
     const activate = locator => options.hasTouch ? locator.tap() : locator.click();
+    await page.evaluate(() => { window.orbitDebug.headLoss.draw = () => 1; });
     await activate(page.locator('#start'));
     // Keep the real rAF simulation and input handlers. Avoid slow software-GPU
     // frames during physics arrivals; restore actual rendering for captures.
@@ -82,19 +83,19 @@ const out = 'artifacts/pivot';
       sim.ball.setLinvel({ x: 0, y: 0, z: 0 }, true);
       sim.paused = true; view.resetEffects(); view.render = window.restoreGuideRender;
     });
-    await activate(page.locator('[data-camera="table"]'));
+    assert.equal(await page.locator('[data-camera], #camera-controls').count(), 0);
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     const fit = await page.evaluate(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
       height: innerHeight, scrollHeight: document.documentElement.scrollHeight,
       quality: window.orbitDebug.view.highQuality, drawCalls: window.orbitDebug.view.renderer.info.render.calls }));
     assert.ok(fit.scrollWidth <= fit.width && fit.scrollHeight <= fit.height, JSON.stringify(fit));
     assert.ok(fit.drawCalls > 0);
-    await page.screenshot({ path: `${out}/${name}-guide-table.png`, timeout: 90000 });
-    screenshots.push(`${name}-guide-table.png`);
-    await activate(page.locator('[data-camera="chase"]'));
+    await page.screenshot({ path: `${out}/${name}-guide-fpv.png`, timeout: 90000 });
+    screenshots.push(`${name}-guide-fpv.png`);
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-    await page.screenshot({ path: `${out}/${name}-guide-hinge.png`, timeout: 90000 });
-    screenshots.push(`${name}-guide-hinge.png`);
+    await page.screenshot({ path: `${out}/${name}-guide-return.png`, timeout: 90000 });
+    screenshots.push(`${name}-guide-return.png`);
     cases.push({ name, result: 'pass', laneExit, arrivals, fit });
     await page.evaluate(() => { window.orbitDebug.view.render = () => {}; });
     console.log(`${name}: real input launch exit and all five ground arrivals pass; screenshots captured`);

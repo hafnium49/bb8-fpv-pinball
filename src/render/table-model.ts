@@ -133,9 +133,9 @@ export class ArcadeTable {
     }
   }
 
-  update(sim: PinballSimulation, dt: number, mode: string) {
+  update(sim: PinballSimulation, dt: number) {
     const p = sim.position; this.ball.position.set(p.x, p.y, p.z); this.ball.quaternion.copy(sim.ball.rotation() as THREE.Quaternion);
-    this.ball.visible = mode === 'table' || mode === 'chase' || sim.phase === 'intro';
+    this.ball.visible = sim.phase === 'intro';
     this.flipperGroups.forEach((group, i) => { group.rotation.y = sim.flipperAngles[i]; });
     for (const e of sim.events) { if (e.type === 'bumper') this.flashes[e.index] = 1; if (e.type === 'target') this.targetFlashes[e.index] = 1; }
     for (const [i, cap] of this.caps.entries()) {

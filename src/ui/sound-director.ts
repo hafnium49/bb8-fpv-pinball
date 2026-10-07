@@ -15,7 +15,7 @@ export interface SoundState {
   route: { phase: RoutePhase; active: boolean; projection: { s: number; vertical: number } };
 }
 export type CueKind = 'ready' | 'launch' | 'bumper' | 'target' | 'wall' | 'flipper' | 'save'
-  | 'ascent' | 'bridge' | 'tunnel' | 'circuit' | 'drain' | 'over' | 'chatter' | 'warning';
+  | 'ascent' | 'bridge' | 'tunnel' | 'circuit' | 'drain' | 'over' | 'chatter' | 'warning' | 'head-loss';
 export interface SoundCue {
   kind: CueKind;
   strength?: number;

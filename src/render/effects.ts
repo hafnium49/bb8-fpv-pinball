@@ -9,7 +9,8 @@ interface Ring { mesh: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
 /** A bounded visual pool; these effects never apply forces or change game rules. */
 export class ArcadeEffects {
   readonly group = new THREE.Group();
-  readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  private motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  get reducedMotion() { return this.motionPreference.matches; }
   private positions = new Float32Array(capacity * 3).fill(1000);
   private colors = new Float32Array(capacity * 3);
   private velocities = new Float32Array(capacity * 3);

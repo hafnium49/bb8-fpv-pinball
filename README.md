@@ -17,23 +17,22 @@ Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browse
 | Right flipper | D or right arrow | Hold right flipper |
 | Launch | Hold Space, then release | Hold Launch, then release |
 | Pause / resume | Esc | Pause / resume buttons |
-| Camera | 1 / 2 / 3 / 4 | FPV / Chase / Table / Spin |
 | Graphics | — | FX High / FX Eco |
 | Sound | — | Sound On / Sound Off |
 
-The radar shows the full table, ball and flippers. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. Spin view deliberately follows the rolling ball's rotation; stabilized FPV is the default. A game has three balls; bumper hits score 100 and target hits score 250. The best score is stored locally when a game ends.
+The radar shows the full table, ball and flippers. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. FPV is the only player camera. Each launch has a 5% chance of a three-second **lost head** spin after leaving the launcher: **Oh no, BB-8 lost its head!** A startled electronic cry accompanies the caption; the camera follows the real ball rotation, then restores upright FPV. Pause, drain and restart cancel it, and reduced-motion settings disable it. A game has three balls; bumper hits score 100 and target hits score 250. The best score is stored locally when a game ends.
 
 ## Orbital arcade visuals
 
-The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels. A short ball trail helps in Table and Chase views.
+The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels.
 
-**FX High** enables bloom and dynamic shadows and caps pixel density at 1.5. **FX Eco** skips those extra passes and caps pixel density at 1 while keeping the artwork, mechanical detail and collision effects. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
+**FX High** enables bloom and dynamic shadows and caps pixel density at 1.5. **FX Eco** skips those extra passes and caps pixel density at 1 while keeping the artwork, mechanical detail and collision effects. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable the random spin, decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
 
 ## Elevated circuit
 
 Choose **Try elevated circuit** on the opening screen, or open the dev-server URL with `?circuit=1`. Aim at the left ramp, rise above the reactors on an open wire bridge, cross the short illuminated tunnel, and return to the right flipper. A full ordered traversal awards **750 points**. Weak attempts roll back naturally; the ball remains a free physics body throughout.
 
-The radar shows the route and marks elevated balls. FPV previews the path with bounded pitch and a level horizon; both FPV and Chase sweep against the real cabinet to clear guard wires and ceilings. Reduced motion limits pitch to 8° and 15°/s. The classic table remains the default while physical-device performance and human FPV comfort are evaluated.
+The radar shows the route and marks elevated balls. FPV previews the path with bounded pitch and a level horizon; FPV sweeps against the real cabinet to clear guard wires and ceilings. Reduced motion limits pitch to 8° and 15°/s. The classic table remains the default while physical-device performance and human FPV comfort are evaluated.
 
 [Design](docs/elevated-circuit-design.md) · [Implementation](docs/elevated-circuit-implementation.md) · [Validation](docs/elevated-circuit-validation.md)
 
@@ -46,6 +45,8 @@ A short forecast plays distinct warning motifs ahead of a return: two low fallin
 Urgent warnings interrupt chatter and lower the music/effects. Reactions have cooldowns, the voice has one active slot, and effects have a bounded budget. Pause, blur, mute and restart cancel active sounds; game over stops music and rolling while the final wistful whistle finishes. Original synthesized droid clips are bundled with the game and the offline HTML. All audio plays through Web Audio after a player gesture.
 
 [Audio design, asset recipe and verification](docs/droid-soundscape.md)
+
+[FPV and the random lost-head reaction](docs/fpv-head-loss.md)
 
 ## Build and verify
 
