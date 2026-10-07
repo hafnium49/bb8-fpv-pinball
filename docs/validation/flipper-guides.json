@@ -1,0 +1,744 @@
+{
+  "result": "pass",
+  "verified_at_utc": "2026-10-07T20:06:34.234847+00:00",
+  "baseline_main_sha": "b7d02a27d8ef9d43f77f7c8abd250036dc845ad3",
+  "baseline_diagnostic": {
+    "scope": "Separate nonoverlapping hinge-arrival diagnostic; not the same inputs as the final sweep.",
+    "cases": 486,
+    "stalled": 25,
+    "photo_and_mirror_reproductions": [
+      {
+        "circuit": false,
+        "side": -1,
+        "start": {
+          "x": -2.7,
+          "y": 0.30500000000000005,
+          "z": 6.5
+        },
+        "velocity": {
+          "x": -1.5,
+          "y": 0,
+          "z": 0.5
+        },
+        "outcome": "stalled",
+        "position": {
+          "x": -3.268328905105591,
+          "y": 0.27993088960647583,
+          "z": 6.914266586303711
+        },
+        "finalVelocity": {
+          "x": -1.5329615052905865e-05,
+          "y": -6.300698296435314e-10,
+          "z": 0.00010254888911731541
+        },
+        "sleeping": false
+      },
+      {
+        "circuit": false,
+        "side": 1,
+        "start": {
+          "x": 2.7,
+          "y": 0.30500000000000005,
+          "z": 6.5
+        },
+        "velocity": {
+          "x": 1.5,
+          "y": 0,
+          "z": 0.5
+        },
+        "outcome": "stalled",
+        "position": {
+          "x": 3.243584156036377,
+          "y": 0.2799312174320221,
+          "z": 6.898245334625244
+        },
+        "finalVelocity": {
+          "x": -1.2444556887203362e-06,
+          "y": 4.6512610651916475e-08,
+          "z": 6.441584991989657e-05
+        },
+        "sleeping": false
+      }
+    ]
+  },
+  "guide_physics": {
+    "scope": "synthetic nonoverlapping ground arrivals outside closed ramp heels, both tables/sides, 120 Hz CCD, released/hold-release/pulsed flippers, spin and fast approaches",
+    "attempted": 4392,
+    "valid_and_cleared": 2610,
+    "groups": [
+      {
+        "table": "classic",
+        "attempted": 2196,
+        "valid": 1431,
+        "cleared": 1431,
+        "exclusions": {
+          "overlap": 765,
+          "closedHeel": 0
+        },
+        "left": 783,
+        "right": 648,
+        "maxQuiet": 0.09999999999999999,
+        "maxDuration": 4.033333333333337,
+        "failures": []
+      },
+      {
+        "table": "circuit",
+        "attempted": 2196,
+        "valid": 1179,
+        "cleared": 1179,
+        "exclusions": {
+          "overlap": 954,
+          "closedHeel": 63
+        },
+        "left": 756,
+        "right": 423,
+        "maxQuiet": 0.09999999999999999,
+        "maxDuration": 4.033333333333337,
+        "failures": []
+      }
+    ]
+  },
+  "circuit_physics": {
+    "result": "pass",
+    "scope": "actual free Rapier body, fixed 120 Hz, CCD; synthetic entries separated from input-only launch trials",
+    "geometry": {
+      "length": 27.10436657135103,
+      "samples": 273,
+      "addedColliders": 4
+    },
+    "grid": {
+      "count": 63,
+      "counts": {
+        "returned": 36,
+        "rollback": 27,
+        "drain": 0,
+        "timeout": 0
+      }
+    },
+    "spinAndPartialStep": {
+      "count": 18,
+      "counts": {
+        "returned": 12,
+        "rollback": 6,
+        "drain": 0,
+        "timeout": 0
+      }
+    },
+    "groundApproaches": {
+      "count": 96,
+      "cleared": 96,
+      "maxDuration": 11.408333333333326,
+      "maxQuiet": 1.0249999999999988,
+      "failures": []
+    },
+    "launches": [
+      {
+        "power": 0.7,
+        "leftZ": 6.3,
+        "rightZ": 6.4,
+        "laneExit": true,
+        "leftContact": true,
+        "awards": 1,
+        "rightReturn": true,
+        "phase": "playing",
+        "duration": 10.891666666666689,
+        "score": 1100,
+        "velocity": {
+          "x": 1.8025131225585938,
+          "y": -0.026665296405553818,
+          "z": -16.340906143188477
+        },
+        "changes": [
+          [
+            643,
+            true,
+            false
+          ],
+          [
+            658,
+            false,
+            false
+          ],
+          [
+            939,
+            true,
+            false
+          ],
+          [
+            946,
+            false,
+            false
+          ],
+          [
+            1216,
+            false,
+            true
+          ]
+        ]
+      },
+      {
+        "power": 0.7,
+        "leftZ": 6.6,
+        "rightZ": 6.4,
+        "laneExit": true,
+        "leftContact": true,
+        "awards": 1,
+        "rightReturn": true,
+        "phase": "playing",
+        "duration": 10.57500000000004,
+        "score": 1100,
+        "velocity": {
+          "x": 1.9826079607009888,
+          "y": 0.102276511490345,
+          "z": -16.03177261352539
+        },
+        "changes": [
+          [
+            656,
+            true,
+            false
+          ],
+          [
+            663,
+            false,
+            false
+          ],
+          [
+            1178,
+            false,
+            true
+          ]
+        ]
+      }
+    ]
+  },
+  "guide_browser": {
+    "result": "pass",
+    "cases": [
+      {
+        "name": "desktop-classic",
+        "result": "pass",
+        "laneExit": {
+          "phase": "playing",
+          "position": {
+            "x": 4.293561935424805,
+            "y": 0.278716117143631,
+            "z": -8.728425025939941
+          }
+        },
+        "arrivals": [
+          {
+            "input": {
+              "name": "left hinge",
+              "x": -2.7,
+              "z": 6.5,
+              "vx": -1.5,
+              "vz": 0.5
+            },
+            "duration": 1.5916666666666626,
+            "position": {
+              "x": -2.2311954498291016,
+              "y": 0.2787737250328064,
+              "z": 7.19484806060791
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "right hinge",
+              "x": 2.7,
+              "z": 6.5,
+              "vx": 1.5,
+              "vz": 0.5
+            },
+            "duration": 1.5916666666666626,
+            "position": {
+              "x": 2.2311954498291016,
+              "y": 0.2787737250328064,
+              "z": 7.19484806060791
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "left lower guide head",
+              "x": -5,
+              "z": 7,
+              "vx": -0.8,
+              "vz": 3
+            },
+            "duration": 1.2583333333333304,
+            "position": {
+              "x": -2.2436656951904297,
+              "y": 0.27867335081100464,
+              "z": 9.912713050842285
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "right lower guide head",
+              "x": 4.13,
+              "z": 7,
+              "vx": 0.8,
+              "vz": 3
+            },
+            "duration": 1.0499999999999978,
+            "position": {
+              "x": 2.8061165809631348,
+              "y": 0.27860382199287415,
+              "z": 10.272533416748047
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "right upper guide / ramp heel",
+              "x": 4,
+              "z": 3.5,
+              "vx": 0.8,
+              "vz": 3
+            },
+            "duration": 0.9916666666666647,
+            "position": {
+              "x": 2.230119466781616,
+              "y": 0.27857381105422974,
+              "z": 6.661156177520752
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          }
+        ],
+        "fit": {
+          "width": 1440,
+          "scrollWidth": 1440,
+          "height": 900,
+          "scrollHeight": 900,
+          "quality": true,
+          "drawCalls": 208
+        }
+      },
+      {
+        "name": "mobile-circuit",
+        "result": "pass",
+        "laneExit": {
+          "phase": "playing",
+          "position": {
+            "x": 3.8761491775512695,
+            "y": 0.2781718373298645,
+            "z": -8.713577270507812
+          }
+        },
+        "arrivals": [
+          {
+            "input": {
+              "name": "left hinge",
+              "x": -2.7,
+              "z": 6.5,
+              "vx": -1.5,
+              "vz": 0.5
+            },
+            "duration": 1.6083333333333292,
+            "position": {
+              "x": -2.204554319381714,
+              "y": 0.27878090739250183,
+              "z": 7.192572116851807
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "right hinge",
+              "x": 2.7,
+              "z": 6.5,
+              "vx": 1.5,
+              "vz": 0.5
+            },
+            "duration": 1.5916666666666626,
+            "position": {
+              "x": 2.2311954498291016,
+              "y": 0.2787737250328064,
+              "z": 7.19484806060791
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "left lower guide head",
+              "x": -5,
+              "z": 7,
+              "vx": -0.8,
+              "vz": 3
+            },
+            "duration": 1.274999999999997,
+            "position": {
+              "x": -2.1993274688720703,
+              "y": 0.2786785662174225,
+              "z": 9.969325065612793
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "right lower guide head",
+              "x": 4.13,
+              "z": 7,
+              "vx": 0.8,
+              "vz": 3
+            },
+            "duration": 1.0499999999999978,
+            "position": {
+              "x": 2.8061165809631348,
+              "y": 0.27860382199287415,
+              "z": 10.272533416748047
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          },
+          {
+            "input": {
+              "name": "right upper guide / ramp heel",
+              "x": 4,
+              "z": 3.5,
+              "vx": 0.8,
+              "vz": 3
+            },
+            "duration": 1.6916666666666622,
+            "position": {
+              "x": 2.128959894180298,
+              "y": 0.278801828622818,
+              "z": 7.241827011108398
+            },
+            "phase": "playing",
+            "completions": 0,
+            "result": "cleared"
+          }
+        ],
+        "fit": {
+          "width": 844,
+          "scrollWidth": 844,
+          "height": 390,
+          "scrollHeight": 390,
+          "quality": false,
+          "drawCalls": 147
+        }
+      }
+    ],
+    "screenshots": [
+      "desktop-classic-guide-table.png",
+      "desktop-classic-guide-hinge.png",
+      "mobile-circuit-guide-table.png",
+      "mobile-circuit-guide-hinge.png"
+    ],
+    "browserErrors": [],
+    "limitations": [
+      "Ground arrivals are seeded in the live app; input-only launch is checked separately.",
+      "Physics/input run through the live animation loop with drawing suppressed between screenshot frames; this is not a frame-rate benchmark.",
+      "Mobile viewport/touch emulation uses Chromium; physical iPhone Safari and human shot timing are unverified."
+    ]
+  },
+  "audio_and_lifecycle_browser": {
+    "result": "pass",
+    "cases": [
+      {
+        "name": "desktop-classic",
+        "result": "pass",
+        "confirmationPeak": 0.010188447311520576,
+        "voiceReady": true,
+        "wallPeak": 0.03661326691508293,
+        "bedPeak": 0.07997798919677734,
+        "warningStarted": 1.172607709750567,
+        "warningPans": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "pan": 0
+          }
+        ],
+        "fallbackMotifs": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "frequencies": [
+              690,
+              580
+            ],
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "frequencies": [
+              1050,
+              1210,
+              1370
+            ],
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "frequencies": [
+              620,
+              1320,
+              620,
+              1320
+            ],
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "frequencies": [
+              1500,
+              1600,
+              1800
+            ],
+            "pan": 0
+          }
+        ],
+        "bounded": {
+          "voiceReady": true,
+          "voiceFailed": false,
+          "effects": 12,
+          "music": 1,
+          "speaking": false,
+          "priority": 0,
+          "loops": 2,
+          "musicSteps": 10,
+          "warnings": 5,
+          "lastVoice": "left"
+        },
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "gesture resumes suspended context without recreating it",
+          "blur stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      },
+      {
+        "name": "mobile-circuit",
+        "result": "pass",
+        "confirmationPeak": 0.013036484830081463,
+        "voiceReady": true,
+        "wallPeak": 0.09919702261686325,
+        "bedPeak": 0.07802999019622803,
+        "warningStarted": 3.660045351473923,
+        "warningPans": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "pan": 0
+          }
+        ],
+        "fallbackMotifs": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "frequencies": [
+              690,
+              580
+            ],
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "frequencies": [
+              1050,
+              1210,
+              1370
+            ],
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "frequencies": [
+              620,
+              1320,
+              620,
+              1320
+            ],
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "frequencies": [
+              1500,
+              1600,
+              1800
+            ],
+            "pan": 0
+          }
+        ],
+        "bounded": {
+          "voiceReady": true,
+          "voiceFailed": false,
+          "effects": 12,
+          "music": 1,
+          "speaking": false,
+          "priority": 0,
+          "loops": 2,
+          "musicSteps": 21,
+          "warnings": 6,
+          "lastVoice": "left"
+        },
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "gesture resumes suspended context without recreating it",
+          "blur stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      }
+    ],
+    "screenshots": [
+      "desktop-classic-sound-on.png",
+      "mobile-circuit-sound-on.png"
+    ],
+    "browserErrors": [],
+    "limitations": [
+      "Chromium waveform measurements verify generated audio, not speaker audibility.",
+      "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.",
+      "Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured."
+    ]
+  },
+  "checks": {
+    "npm_ci": "pass",
+    "unit_tests": 36,
+    "unit_failures": 0,
+    "typescript_production_build": "pass",
+    "standalone_generation": "pass",
+    "development_hook_removed": true,
+    "unchanged_beep_bytes_in_production_and_standalone": true
+  },
+  "production_artifacts": {
+    "dist/assets/index-DJlG2Q_Z.js": {
+      "bytes": 5600390,
+      "sha256": "011436d8b273e17ec564845034155a5fa55eaf5e51ae75a90368bbb739b16989"
+    },
+    "dist/assets/index-Py7fEN_q.css": {
+      "bytes": 12694,
+      "sha256": "d2e7d799929ef3287b8f4dc6451cce5982bf858ec423eaacb16b5ed50714e7d6"
+    },
+    "artifacts/ORBIT-FPV-Pinball.html": {
+      "bytes": 5626142,
+      "sha256": "7c8087fb5b6dbaf4f34acd2e33245c161288f1c0a9765bd5baa1b4da65e08753"
+    }
+  },
+  "source_sha256": {
+    "src/physics/table.ts": "07c85657f0657f360b3019b14c16c83b192c36193a9fea01f75e187bcf69a4cd",
+    "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
+    "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
+    "src/render/table-model.ts": "5e06754761820f190a76594cee3f8a3c04c0c027020be94824e082deeacd00a4",
+    "src/ui/minimap.ts": "533125dd02680769ee5c6a83d80d5907d260cd4dd36e76b45fbb276b060aa5df",
+    "src/main.ts": "8b5f656c62a7a4087fedb75cc2f775098b700583bb5b091d365053fe4aaa27f9",
+    "src/ui/audio.ts": "b1119b57af9691596578c26bab39b94703513af692dee784cdcf1606918c57db",
+    "src/assets/droid-beeps.wav": "9f6f5177ff8882a1737bce58ad1035bbd7a792b4a91e7ad93ccbc13938a1ad68",
+    "scripts/flipper-guide-harness.ts": "4d1984649fc6d434a251ff1dda7718f1265edbea78e7a26eeb447d0898992d4d",
+    "scripts/flipper-guide-check.ts": "2a68a74b6ca8854fe817cfd16cfdf3d2b3be69e215f5cd2eaf211d26fd988c21",
+    "scripts/flipper-guide-browser.cjs": "5ba9ca42385ae51f8c5f798d1496478bce9715e5c75240d55acdf68697c14959",
+    "tests/flipper-guides.test.ts": "7c062d4cbbc7ccd65ab0442f13def30fc7f5061b358c0d96f14a936c28e9a5b0",
+    "scripts/circuit-check.ts": "9313e75a959aed14637d597da2ddd7528b04e95ab40e3fc491b77685e653fe74",
+    "scripts/audio-browser.cjs": "7c8a7e6d408ab5e13ba78182c320360ccf19994487f94ccfed149143cbd302b9",
+    ".github/workflows/ci.yml": "3d7796ac92a707facf7cbbbcbc36dc561c810751a021d55bc6a962226eda78db",
+    "package.json": "0289efc57afd9c9bd2d6ca54dcea0f0ca2afac679c678f1634fc46114bb22b29"
+  },
+  "screenshots_inspected": {
+    "artifacts/pivot/desktop-classic-guide-table.png": "3e4f9297d8a49f6e94f3305a02a3ca7911ce864e1e90e5ae727e60a04daff09d",
+    "artifacts/pivot/desktop-classic-guide-hinge.png": "fc57836c1223acfccb47562fcaf3c0c80b33924552386976ed9039cb6fd30e46",
+    "artifacts/pivot/mobile-circuit-guide-table.png": "eae4c473a5eeef328510557a5669b9a61f954981409b3ca43b8f9e2e012aa232",
+    "artifacts/pivot/mobile-circuit-guide-hinge.png": "9c047f08f8d9f17ae01264188e7dc6d76b216cb76b5c84a8cba763c93f4d9c29",
+    "artifacts/audio/desktop-classic-sound-on.png": "71fa1d5eaaef6046bfe260ab3763573e2b1885e155dcc44a656f3f51c6f53023",
+    "artifacts/audio/mobile-circuit-sound-on.png": "bf31b28a6c5c0fd1d53bff33306f32daedf88276692d2203e406c576f42ab532"
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "browser": "Chromium 153, headless software WebGL",
+    "viewports": [
+      "1440x900 desktop classic",
+      "844x390 mobile circuit with touch emulation"
+    ]
+  },
+  "limitations": [
+    "Bounded synthetic arrival sweep; not proof against every possible trajectory.",
+    "Real animation-loop physics and input are active, with drawing suppressed between actual screenshot frames. No frame-rate benchmark.",
+    "Physical iPhone Safari, speaker listening, mute-switch/routing behavior and human shot timing remain unverified."
+  ]
+}
