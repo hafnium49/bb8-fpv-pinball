@@ -52,6 +52,7 @@ Urgent warnings interrupt chatter and lower the music/effects. Reactions have co
 ```sh
 npm test
 npm run test:circuit
+npm run test:guides
 npm run build
 npm run preview
 ```
@@ -63,6 +64,8 @@ For browser QA, run `npx playwright install chromium`, then `npm run test:browse
 `npm run test:audio:browser` checks real Web Audio waveforms, decoded droid beeps, directional warnings, actual collision and route cues, warning priority, continuous rolling/music, resource bounds, mute, reload preferences, interruption recovery and the three-ball audio lifecycle in desktop classic and mobile circuit views. It also injects clip-decoding and audio-start failures and verifies distinct procedural warning fallbacks. Safari audio-session behavior and the listening balance require a physical iPhone check.
 
 `npm run test:circuit` runs the 63-case entry sweep, 18 spin/partial-step variants and two input-only launch-to-flipper return trials. `npm run test:circuit:browser` adds playable route screenshots, camera/control checks, touch, resource stability and context recovery. These commands use the same Chromium configuration as `test:browser`.
+
+`npm run test:guides` sweeps both flipper hinges and the upper/lower side-guide heads on both tables, including slow arrivals, fast spin, held/released and pulsed flippers. It excludes overlapping seeds and the interiors of closed ramp heels. `npm run test:guides:browser` checks live arrivals, keyboard/touch launch exit and desktop/mobile screenshots. The [guide trap fix and validation](docs/flipper-guide-fix.md) records the scope and results.
 
 `tests/circuit.test.ts` checks ordered scoring, reversals, wrong-height crossings, rollbacks, real flipper returns, underpasses and swept camera clearance. `tests/physics.test.ts` checks launch controls and lane exit, high-speed collision detection, bumper scoring, flipper return, three-ball game lifecycle, pause, and render-rate independence. Browser QA also checks actual keyboard/pointer input, camera orientation, minimap, responsive layout and WebGL rendering.
 
