@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { PinballSimulation } from '../src/physics/simulation';
@@ -112,12 +113,12 @@ test('a real slow ground return receives a warning well before flipper contact',
     }
     assert.ok(warnedAt !== undefined && touchedAt !== undefined);
     assert.ok(touchedAt - warnedAt > 0.6, `Only ${touchedAt - warnedAt}s of warning`);
-    assert.ok(touchedAt - warnedAt > voiceBank.left.duration, 'The instruction must finish before contact');
+    assert.ok(touchedAt - warnedAt > voiceBank.left.duration, 'The warning motif must finish before contact');
   } finally { s.dispose(); }
 });
 
-test('bundled robot speech has valid non-silent clips and sub-second urgent callouts', () => {
-  const wav = readFileSync(new URL('../src/assets/droid-voice.wav', import.meta.url));
+test('original nonverbal droid clips are audible, bounded and leave reaction time', () => {
+  const wav = readFileSync(new URL('../src/assets/droid-beeps.wav', import.meta.url));
   assert.equal(wav.toString('ascii', 0, 4), 'RIFF');
   assert.equal(wav.toString('ascii', 36, 40), 'data');
   const rate = wav.readUInt32LE(24), duration = (wav.length - 44) / 2 / rate;
@@ -129,6 +130,23 @@ test('bundled robot speech has valid non-silent clips and sub-second urgent call
     }
     assert.ok(energy / (clip.duration * rate) > 0.0001, `${key} is silent`);
     assert.ok(peak < 0.99, `${key} clips`);
-    if (['left', 'right', 'both', 'danger'].includes(key)) assert.ok(clip.duration < 0.65);
+    if (['left', 'right', 'both', 'danger'].includes(key)) assert.ok(clip.duration < 0.5);
   }
+});
+
+test('mono warning audio has different rhythms and low-left/high-right pitch', () => {
+  const wav = readFileSync(new URL('../src/assets/droid-beeps.wav', import.meta.url)), rate = wav.readUInt32LE(24);
+  const clips = ['left', 'right', 'both', 'danger'].map(key => {
+    const clip = voiceBank[key as keyof typeof voiceBank];
+    const start = Math.round(clip.offset * rate), end = Math.round((clip.offset + clip.duration) * rate);
+    const bytes = wav.subarray(44 + start * 2, 44 + end * 2);
+    let crossings = 0;
+    // Compare only the first voiced packet, before either warning's pause.
+    for (let i = start + 1; i < start + Math.round(.08 * rate); i++) {
+      if (wav.readInt16LE(44 + (i - 1) * 2) <= 0 && wav.readInt16LE(44 + i * 2) > 0) crossings++;
+    }
+    return { signature: createHash('sha256').update(bytes).digest('hex'), crossings };
+  });
+  assert.equal(new Set(clips.map(c => c.signature)).size, 4, 'Warnings must remain distinct without stereo');
+  assert.ok(clips[1].crossings > clips[0].crossings * 1.3, 'Right warning should sound higher than left');
 });

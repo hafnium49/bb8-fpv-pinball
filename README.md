@@ -39,9 +39,11 @@ The radar shows the route and marks elevated balls. FPV previews the path with b
 
 ## Droid soundscape
 
-The ball has a voice: curious electronic chatter, impact cries, launch excitement, bridge banter, tunnel echoes and save celebrations. Contact-speed rolling and metal bridge rattles sit under an original arcade groove. A short forecast calls **Left flipper!**, **Right flipper!** or **Both flippers!** ahead of a return; outlane approaches get **Watch the drain!**. Captions highlight the requested flipper, including when sound is muted.
+The ball expresses itself entirely through electronic beeps, whistles, trills and squeals, inspired by BB-8 and R2-D2. Curious chatter, impact cries, launch excitement, bridge joy, tunnel echoes and relieved save chirps each have their own contour and rhythm. Contact-speed rolling and metal bridge rattles sit under an original arcade groove. The game contains no spoken English audio.
 
-Urgent instructions interrupt chatter and lower the music/effects. Reactions have cooldowns, the voice has one active slot, and effects have a bounded budget. Pause, blur, mute and restart cancel active sounds; game over stops music and rolling while the final line finishes. Original robot speech is bundled with the game and the offline HTML. All audio plays through Web Audio after a player gesture.
+A short forecast plays distinct warning motifs ahead of a return: two low falling beeps for **Left flipper!**, three high rising beeps for **Right flipper!**, alternating low/high beeps for **Both flippers!**, and a rapid panic pattern for **Watch the drain!**. Left/right warnings also pan toward that side; their rhythm and pitch remain distinct on a mono phone speaker. English captions interpret the warning and highlight the requested flipper, including when sound is muted.
+
+Urgent warnings interrupt chatter and lower the music/effects. Reactions have cooldowns, the voice has one active slot, and effects have a bounded budget. Pause, blur, mute and restart cancel active sounds; game over stops music and rolling while the final wistful whistle finishes. Original synthesized droid clips are bundled with the game and the offline HTML. All audio plays through Web Audio after a player gesture.
 
 [Audio design, asset recipe and verification](docs/droid-soundscape.md)
 
@@ -58,7 +60,7 @@ For a single offline HTML file, run `npm run standalone` and open `artifacts/ORB
 
 For browser QA, run `npx playwright install chromium`, then `npm run test:browser`. It starts its own dev server. Screenshots and the check report go into `artifacts/`. Set `CHROME_PATH` to use an existing Chromium executable or `GAME_URL` to test a running dev server.
 
-`npm run test:audio:browser` checks real Web Audio waveforms, decoded robot speech, actual collision and route cues, warning priority, continuous rolling/music, resource bounds, mute, reload preferences, interruption recovery and the three-ball audio lifecycle in desktop classic and mobile circuit views. It also injects speech-decoding and audio-start failures. Safari audio-session behavior and the listening balance require a physical iPhone check.
+`npm run test:audio:browser` checks real Web Audio waveforms, decoded droid beeps, directional warnings, actual collision and route cues, warning priority, continuous rolling/music, resource bounds, mute, reload preferences, interruption recovery and the three-ball audio lifecycle in desktop classic and mobile circuit views. It also injects clip-decoding and audio-start failures and verifies distinct procedural warning fallbacks. Safari audio-session behavior and the listening balance require a physical iPhone check.
 
 `npm run test:circuit` runs the 63-case entry sweep, 18 spin/partial-step variants and two input-only launch-to-flipper return trials. `npm run test:circuit:browser` adds playable route screenshots, camera/control checks, touch, resource stability and context recovery. These commands use the same Chromium configuration as `test:browser`.
 
@@ -68,8 +70,8 @@ For browser QA, run `npx playwright install chromium`, then `npm run test:browse
 
 - `src/physics/`: Rapier rigid bodies, shared table dimensions, a 120 Hz fixed step and game rules.
 - `src/render/`: Three.js view and independent cameras, canvas artwork, detailed table geometry, lighting, postprocessing and bounded visual effects.
-- `src/ui/`: radar, a pure sound director, a bounded Web Audio mixer and robot voice cue index.
-- `src/assets/`: the bundled robot speech sprite; the rebuilding recipe is in `scripts/generate-droid-voice.py`.
+- `src/ui/`: radar, a pure sound director, a bounded Web Audio mixer and droid beep cue index.
+- `src/assets/`: the bundled nonverbal droid sprite; rebuild it with `python3 scripts/generate-droid-beeps.py` (standard library only).
 - `src/main.ts`: DOM controls, state presentation, input and browser lifecycle.
 
 The render graph is separate from the simulation. Flippers are moving kinematic bodies, the ball uses continuous collision detection, and physics is independent of display frame rate. FPV camera orientation never inherits the ball quaternion. UI checks do not replace collision/physics tests.

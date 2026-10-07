@@ -1,6 +1,6 @@
 # Sound activation and iPhone playback
 
-The later [expressive droid soundscape](droid-soundscape.md) adds character speech, continuous layers and prioritized flipper instructions on top of the activation behavior described here.
+The later [expressive droid soundscape](droid-soundscape.md) adds nonverbal character beeps, continuous layers and prioritized flipper warnings on top of the activation behavior described here.
 
 The 6 October 2026 report followed a screenshot with **SOUND OFF**. The original app started muted after every reload, had no audible confirmation when sound was enabled, and did not request a media playback audio session. This does not establish which setting caused silence on the reported device.
 

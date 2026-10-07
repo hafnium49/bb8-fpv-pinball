@@ -219,26 +219,39 @@ export class GameAudio {
     const transition = cue.kind === 'ascent' || cue.kind === 'bridge' || cue.kind === 'tunnel';
     if (this.speaking && priority < 90 && (this.speaking.priority > priority || this.speaking.priority === priority && !transition)) return false;
     if (this.speaking) this.clean(this.speaking);
-    const layer = this.layer('voice', priority, cue.kind === 'warning' ? 0 : cue.pan); this.speaking = layer;
+    // Direction is carried by rhythm/pitch even on a mono speaker; stereo
+    // positioning is an additional hint, never the only way to tell sides.
+    const pan = cue.kind === 'warning' ? cue.voice === 'left' ? -0.65 : cue.voice === 'right' ? 0.65 : 0 : cue.pan;
+    const layer = this.layer('voice', priority, pan); this.speaking = layer;
     if (cue.voice && this.voiceBuffer) {
       const c = this.context!, source = c.createBufferSource(), clip = voiceBank[cue.voice];
       source.buffer = this.voiceBuffer; source.connect(layer.input); this.attach(layer, source);
       layer.input.gain.value = cue.kind === 'warning' ? 1 : 0.85;
-      const cry = cue.kind === 'chatter' && (cue.strength ?? 0) > 0.65;
-      if (cry) this.chirp(layer, cue, 0.19);
-      source.start(c.currentTime + (cry ? 0.1 : 0), clip.offset, clip.duration); this.lastVoice = cue.voice;
+      source.start(c.currentTime, clip.offset, clip.duration); this.lastVoice = cue.voice;
     } else {
       this.chirp(layer, cue);
     }
     this.smooth(this.mix().music.gain, 0.10, 0.015); this.smooth(this.mix().effects.gain, priority >= 90 ? 0.3 : 0.55, 0.015);
     return true;
   }
-  private chirp(layer: Layer, cue: SoundCue, length?: number) {
+  private chirp(layer: Layer, cue: SoundCue) {
     // Original FM/formant vocals: questioning chirps, excited trills and a
     // pitch-breaking cry for hard impacts or danger.
     const c = this.context!, at = c.currentTime, strength = cue.strength ?? 0.35;
-    const scream = cue.kind === 'warning' || (cue.kind === 'chatter' && strength > 0.55) || cue.kind === 'drain';
-    const duration = length ?? (scream ? 0.48 : 0.32);
+    if (cue.kind === 'warning') {
+      // Immediate nonverbal fallback while the sprite is unavailable. Keep
+      // left low/falling, right high/rising and both alternating, as in the WAV.
+      const pitches = cue.voice === 'left' ? [690, 580] : cue.voice === 'right' ? [1050, 1210, 1370]
+        : cue.voice === 'both' ? [620, 1320, 620, 1320] : [1500, 1600, 1800];
+      const interval = cue.voice === 'left' ? 0.17 : cue.voice === 'danger' ? 0.15 : 0.11;
+      for (const [i, pitch] of pitches.entries()) {
+        this.note(layer, pitch, 0.10, 'triangle', 0.16,
+          pitch * (cue.voice === 'left' || cue.voice === 'danger' ? 0.7 : 1.12), at + i * interval);
+      }
+      return;
+    }
+    const scream = (cue.kind === 'chatter' && strength > 0.55) || cue.kind === 'drain';
+    const duration = scream ? 0.48 : 0.32;
     const carrier = c.createOscillator(), modulator = c.createOscillator(), modulation = c.createGain();
     const formant = c.createBiquadFilter(), volume = c.createGain();
     carrier.type = 'sawtooth'; modulator.type = 'sine'; formant.type = 'bandpass'; formant.Q.value = 1.6;
