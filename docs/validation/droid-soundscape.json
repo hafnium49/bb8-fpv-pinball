@@ -236,7 +236,7 @@
     "scripts/audio-browser.cjs": "7c8a7e6d408ab5e13ba78182c320360ccf19994487f94ccfed149143cbd302b9",
     "scripts/generate-droid-beeps.py": "038ab808fc8b68599c24ac49219e84c3125c22c791c80f20c9d0286225b9eaf5",
     "tests/audio.test.ts": "30d4b15c8bc903585e111fb18cc770814d1e5b1aacefbc3ec221da431c158234",
-    "tests/sound-director.test.ts": "c7272df9718eb9ccd163f6c252ab818aa2103b959636d4861852ae8357c604b6",
+    "tests/sound-director.test.ts": "d93fc50f695e06be1822efef1ecbc3c31ef01d542197f6040b74afadb1cce01d",
     "README.md": "3229899bb915076b25294ee3f2783491c1197dee9cfc114f166405a38736e2ed",
     "docs/droid-soundscape.md": "b1e0ff005d687d79fc0a668f2d34eb600a8bf671cec71a96b56bfc86e908d1ac",
     "docs/audio-fix.md": "ac255c51f4d5c09954e8a93d7bc449d0ffd28d0e95066787392119f8686b539b",
@@ -269,5 +269,11 @@
     "node": "v24.19.0",
     "browser": "Chromium 153, headless software WebGL",
     "audio": "real Web Audio; optional Safari session API stubbed"
+  },
+  "review_followup": {
+    "verified_at_utc": "2026-10-07T19:20:28.027867+00:00",
+    "unit_tests": 31,
+    "mono_warning_packets": "Shipped PCM energy onsets verify left=2, right=3, both=4, danger=3 with distinct onset timings; pitch remains low-left/high-right.",
+    "scope": "Only regression test and evidence changed; tested runtime/assets/browser screenshots are unchanged."
   }
 }

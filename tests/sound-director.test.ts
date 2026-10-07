@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { PinballSimulation } from '../src/physics/simulation';
@@ -136,17 +135,33 @@ test('original nonverbal droid clips are audible, bounded and leave reaction tim
 
 test('mono warning audio has different rhythms and low-left/high-right pitch', () => {
   const wav = readFileSync(new URL('../src/assets/droid-beeps.wav', import.meta.url)), rate = wav.readUInt32LE(24);
-  const clips = ['left', 'right', 'both', 'danger'].map(key => {
+  const patterns = { left: [0, .18], right: [0, .13, .26], both: [0, .11, .22, .33], danger: [0, .16, .32] };
+  const clips = Object.entries(patterns).map(([key, expected]) => {
     const clip = voiceBank[key as keyof typeof voiceBank];
     const start = Math.round(clip.offset * rate), end = Math.round((clip.offset + clip.duration) * rate);
-    const bytes = wav.subarray(44 + start * 2, 44 + end * 2);
+    // Measure packet onsets from the shipped PCM, not its generation recipe.
+    // Short RMS windows ignore carrier zero crossings and preserve the pauses.
+    const onsets: number[] = [], window = Math.round(.005 * rate);
+    let voiced = false;
+    for (let i = start; i < end; i += window) {
+      let energy = 0;
+      const count = Math.min(window, end - i);
+      for (let j = 0; j < count; j++) energy += (wav.readInt16LE(44 + (i + j) * 2) / 32768) ** 2;
+      const active = Math.sqrt(energy / count) > .025;
+      if (active && !voiced) onsets.push((i - start) / rate);
+      voiced = active;
+    }
+    assert.equal(onsets.length, expected.length, `${key}: wrong number of beep packets`);
+    for (const [i, time] of expected.entries()) {
+      assert.ok(Math.abs(onsets[i] - time) < .012, `${key}: packet ${i} starts at ${onsets[i]}s, expected ${time}s`);
+    }
     let crossings = 0;
     // Compare only the first voiced packet, before either warning's pause.
     for (let i = start + 1; i < start + Math.round(.08 * rate); i++) {
       if (wav.readInt16LE(44 + (i - 1) * 2) <= 0 && wav.readInt16LE(44 + i * 2) > 0) crossings++;
     }
-    return { signature: createHash('sha256').update(bytes).digest('hex'), crossings };
+    return { onsets, crossings };
   });
-  assert.equal(new Set(clips.map(c => c.signature)).size, 4, 'Warnings must remain distinct without stereo');
+  assert.equal(new Set(clips.map(c => JSON.stringify(c.onsets))).size, 4, 'Warning rhythms must remain distinct without stereo');
   assert.ok(clips[1].crossings > clips[0].crossings * 1.3, 'Right warning should sound higher than left');
 });
