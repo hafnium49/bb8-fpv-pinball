@@ -20,7 +20,7 @@ const out = 'artifacts/audio';
     // in Chromium, so this is not a physical iPhone mute-switch test.
     await context.addInitScript(() => {
       const Native = window.AudioContext;
-      window.audioProbe = { contexts: [], voices: [], peak: 0, sessionTypes: [] };
+      window.audioProbe = { contexts: [], voices: [], panners: [], peak: 0, sessionTypes: [] };
       Object.defineProperty(navigator, 'audioSession', { configurable: true,
         value: { set type(value) { window.audioProbe.sessionTypes.push(value); } } });
       window.AudioContext = class extends Native {
@@ -28,6 +28,8 @@ const out = 'artifacts/audio';
           super(...args); window.audioProbe.contexts.push(this);
           const decode = this.decodeAudioData.bind(this);
           this.decodeAudioData = (...args) => window.audioProbe.failDecode ? Promise.reject(new Error('Injected voice decoding failure')) : decode(...args);
+          const panner = this.createStereoPanner.bind(this);
+          this.createStereoPanner = () => { const node = panner(); window.audioProbe.panners.push(node); return node; };
           const analyser = this.createAnalyser(); analyser.fftSize = 1024;
           const samples = new Float32Array(1024), gain = this.createGain.bind(this), oscillator = this.createOscillator.bind(this);
           this.createGain = () => {
@@ -65,7 +67,7 @@ const out = 'artifacts/audio';
     const confirmationPeak = await page.evaluate(() => window.audioProbe.peak);
     console.log(`${name}: real confirmation signal ${confirmationPeak}`);
     await activate(page.locator('#start'));
-    await page.waitForFunction(() => document.querySelector('#droid-line').textContent === 'Ready to roll!');
+    await page.waitForFunction(() => document.querySelector('#droid-line').textContent === '[ready chirps]');
     assert.equal(await page.locator('#droid-comms').getAttribute('aria-live'), 'polite');
     if (options.hasTouch) {
       const left = await page.locator('#left').boundingBox(), right = await page.locator('#right').boundingBox();
@@ -90,6 +92,16 @@ const out = 'artifacts/audio';
     console.log(`${name}: flipper and launch tones`);
     await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.voiceReady);
     const voiceReady = await page.evaluate(() => window.orbitDebug.audio.diagnostics.voiceReady);
+    const warningPans = await page.evaluate(() => {
+      const audio = window.orbitDebug.audio;
+      return ['left', 'right', 'both', 'danger'].map(voice => {
+        audio.reset(); const accepted = audio.play({ kind: 'warning', voice, priority: 100 });
+        return { voice, accepted, pan: window.audioProbe.panners.at(-1).pan.value };
+      });
+    });
+    assert.ok(warningPans.every(p => p.accepted));
+    assert.ok(warningPans[0].pan < -0.6 && warningPans[1].pan > 0.6);
+    assert.equal(warningPans[2].pan, 0); assert.equal(warningPans[3].pan, 0);
     // Exercise actual Rapier collisions while observing the real audio mixer.
     const place = async (position, velocity) => page.evaluate(({ position, velocity }) => {
       const { sim, audio, soundDirector } = window.orbitDebug;
@@ -120,7 +132,7 @@ const out = 'artifacts/audio';
       assert.ok(routeHistory.some(c => c.kind === 'warning' && c.voice === 'right' && c.accepted));
       console.log(`${name}: live ramp/bridge/tunnel/return sound cues`);
     }
-    // Interrupt a long flavour line with an urgent, forecasted left warning.
+    // Interrupt a flavour whistle with an urgent, forecasted left warning.
     await place({ x: -1.7, y: 0.305, z: 2 }, { x: 0, y: 0, z: 4 });
     await page.evaluate(() => {
       const { audio, soundDirector } = window.orbitDebug;
@@ -203,6 +215,17 @@ const out = 'artifacts/audio';
     });
     await page.waitForFunction(() => window.audioProbe.peak > 0.001);
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.lastVoice), undefined);
+    const fallbackMotifs = await page.evaluate(() => {
+      const audio = window.orbitDebug.audio;
+      return ['left', 'right', 'both', 'danger'].map(voice => {
+        audio.reset(); const start = window.audioProbe.voices.length;
+        const accepted = audio.play({ kind: 'warning', voice, priority: 100 });
+        return { voice, accepted, frequencies: window.audioProbe.voices.slice(start).filter(Number.isFinite).slice(1), pan: window.audioProbe.panners.at(-1).pan.value };
+      });
+    });
+    assert.ok(fallbackMotifs.every(m => m.accepted && m.frequencies.length >= 2));
+    assert.equal(new Set(fallbackMotifs.map(m => JSON.stringify(m.frequencies))).size, 4);
+    assert.ok(fallbackMotifs[0].pan < -0.6 && fallbackMotifs[1].pan > 0.6);
     await activate(page.locator('#sound')); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     await page.waitForTimeout(300); await page.evaluate(() => { window.audioProbe.peak = 0; });
     if (options.hasTouch) { await activate(page.locator('#left')); } else { await page.keyboard.press('KeyA'); }
@@ -210,8 +233,8 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => window.audioProbe.peak), 0, 'Muted audio still reaches output');
     assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
-    cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, bounded,
-      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'bundled speech decodes in the real audio context', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return instruction'] : []), 'forecasted left instruction interrupts flavour speech and blocks lower-priority chatter', 'persistent caption region is polite for ordinary speech and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected speech-decoding failure retains audible procedural warning fallback', 'mute stops output and releases session', 'sound-off preference survives reload'] });
+    cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, warningPans, fallbackMotifs, bounded,
+      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     // Keep one page alive with single-process Chromium while opening the next.
   }

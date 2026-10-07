@@ -112,12 +112,12 @@ test('a real slow ground return receives a warning well before flipper contact',
     }
     assert.ok(warnedAt !== undefined && touchedAt !== undefined);
     assert.ok(touchedAt - warnedAt > 0.6, `Only ${touchedAt - warnedAt}s of warning`);
-    assert.ok(touchedAt - warnedAt > voiceBank.left.duration, 'The instruction must finish before contact');
+    assert.ok(touchedAt - warnedAt > voiceBank.left.duration, 'The warning motif must finish before contact');
   } finally { s.dispose(); }
 });
 
-test('bundled robot speech has valid non-silent clips and sub-second urgent callouts', () => {
-  const wav = readFileSync(new URL('../src/assets/droid-voice.wav', import.meta.url));
+test('original nonverbal droid clips are audible, bounded and leave reaction time', () => {
+  const wav = readFileSync(new URL('../src/assets/droid-beeps.wav', import.meta.url));
   assert.equal(wav.toString('ascii', 0, 4), 'RIFF');
   assert.equal(wav.toString('ascii', 36, 40), 'data');
   const rate = wav.readUInt32LE(24), duration = (wav.length - 44) / 2 / rate;
@@ -129,6 +129,39 @@ test('bundled robot speech has valid non-silent clips and sub-second urgent call
     }
     assert.ok(energy / (clip.duration * rate) > 0.0001, `${key} is silent`);
     assert.ok(peak < 0.99, `${key} clips`);
-    if (['left', 'right', 'both', 'danger'].includes(key)) assert.ok(clip.duration < 0.65);
+    if (['left', 'right', 'both', 'danger'].includes(key)) assert.ok(clip.duration < 0.5);
   }
+});
+
+test('mono warning audio has different rhythms and low-left/high-right pitch', () => {
+  const wav = readFileSync(new URL('../src/assets/droid-beeps.wav', import.meta.url)), rate = wav.readUInt32LE(24);
+  const patterns = { left: [0, .18], right: [0, .13, .26], both: [0, .11, .22, .33], danger: [0, .16, .32] };
+  const clips = Object.entries(patterns).map(([key, expected]) => {
+    const clip = voiceBank[key as keyof typeof voiceBank];
+    const start = Math.round(clip.offset * rate), end = Math.round((clip.offset + clip.duration) * rate);
+    // Measure packet onsets from the shipped PCM, not its generation recipe.
+    // Short RMS windows ignore carrier zero crossings and preserve the pauses.
+    const onsets: number[] = [], window = Math.round(.005 * rate);
+    let voiced = false;
+    for (let i = start; i < end; i += window) {
+      let energy = 0;
+      const count = Math.min(window, end - i);
+      for (let j = 0; j < count; j++) energy += (wav.readInt16LE(44 + (i + j) * 2) / 32768) ** 2;
+      const active = Math.sqrt(energy / count) > .025;
+      if (active && !voiced) onsets.push((i - start) / rate);
+      voiced = active;
+    }
+    assert.equal(onsets.length, expected.length, `${key}: wrong number of beep packets`);
+    for (const [i, time] of expected.entries()) {
+      assert.ok(Math.abs(onsets[i] - time) < .012, `${key}: packet ${i} starts at ${onsets[i]}s, expected ${time}s`);
+    }
+    let crossings = 0;
+    // Compare only the first voiced packet, before either warning's pause.
+    for (let i = start + 1; i < start + Math.round(.08 * rate); i++) {
+      if (wav.readInt16LE(44 + (i - 1) * 2) <= 0 && wav.readInt16LE(44 + i * 2) > 0) crossings++;
+    }
+    return { onsets, crossings };
+  });
+  assert.equal(new Set(clips.map(c => JSON.stringify(c.onsets))).size, 4, 'Warning rhythms must remain distinct without stereo');
+  assert.ok(clips[1].crossings > clips[0].crossings * 1.3, 'Right warning should sound higher than left');
 });

@@ -4,7 +4,7 @@ import { PinballView, type CameraMode } from './render/view';
 import { drawMinimap } from './ui/minimap';
 import { GameAudio } from './ui/audio';
 import { SoundDirector, type SoundCue } from './ui/sound-director';
-import voiceUrl from './assets/droid-voice.wav?inline';
+import voiceUrl from './assets/droid-beeps.wav?inline';
 
 const circuitEnabled = new URLSearchParams(location.search).get('circuit') === '1';
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -219,9 +219,9 @@ function frame(now: number) {
   const soundFrame = soundDirector.update(sim, sim.events);
   audio.update(soundFrame);
   for (const cue of soundFrame.cues) {
-    const spoken = audio.play(cue);
+    const vocalized = audio.play(cue);
     // Critical instructions remain visible when the player chooses mute.
-    if (cue.caption && (spoken || cue.kind === 'warning')) showComms(cue);
+    if (cue.caption && (vocalized || cue.kind === 'warning')) showComms(cue);
   }
   sim.events.length = 0;
   if (now > commsUntil && !sim.paused) clearComms();

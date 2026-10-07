@@ -74,12 +74,12 @@ export class SoundDirector {
   private route: RoutePhase = 'free';
   private warned = false;
   private nextReaction = 0;
-  private nextSpeech = 0;
+  private nextPhrase = 0;
   private nextIdle = 6;
   private hitCount = 0;
   reset() {
     this.phase = 'intro'; this.route = 'free'; this.warned = false;
-    this.nextReaction = this.nextSpeech = this.hitCount = 0; this.nextIdle = 6;
+    this.nextReaction = this.nextPhrase = this.hitCount = 0; this.nextIdle = 6;
   }
   resume() { this.warned = false; }
   update(s: SoundState, events: readonly GameEvent[]): SoundFrame {
@@ -90,7 +90,7 @@ export class SoundDirector {
     if (s.paused || s.phase === 'intro') return frame;
     const say = (kind: CueKind, voice: VoiceKey, priority: number, strength?: number, pan = 0) => {
       cues.push({ kind, voice, priority, strength, pan, caption: voiceBank[voice].caption });
-      this.nextSpeech = s.time + 2.2;
+      this.nextPhrase = s.time + 2.2;
     };
     if (s.phase !== this.phase) {
       this.warned = false;
@@ -107,7 +107,7 @@ export class SoundDirector {
       if (e.type === 'drain') say('drain', 'drain', 90);
       if (e.type === 'over') say('over', 'over', 95);
       if (e.type === 'circuit') say('circuit', 'circuit', 65);
-      if (e.type === 'flipper-hit' && s.velocity.z < -2 && s.time >= this.nextSpeech) say('save', 'save', 55);
+      if (e.type === 'flipper-hit' && s.velocity.z < -2 && s.time >= this.nextPhrase) say('save', 'save', 55);
       if (e.type === 'bumper' || e.type === 'target' || e.type === 'wall') {
         const kind = e.type, strength = e.type === 'wall' ? Math.min(1, e.speed / 16) : 0.8;
         const pan = Math.max(-0.7, Math.min(0.7, s.position.x / 6));
@@ -115,7 +115,7 @@ export class SoundDirector {
         cues.push({ kind, strength, pan });
         if (s.time >= this.nextReaction) {
           this.nextReaction = s.time + 0.18; this.nextIdle = s.time + 5;
-          if (strength > 0.65 && s.time >= this.nextSpeech) {
+          if (strength > 0.65 && s.time >= this.nextPhrase) {
             say('chatter', ++this.hitCount % 2 ? 'whoa' : 'ouch', 45, strength, pan);
           } else cues.push({ kind: 'chatter', strength, pan, priority: 20 });
         }
@@ -132,7 +132,7 @@ export class SoundDirector {
       this.warned = true; say('warning', warning.voice, 100);
       this.nextIdle = s.time + 5;
     }
-    if (s.phase === 'playing' && s.time >= this.nextIdle && s.time >= this.nextSpeech && !warning) {
+    if (s.phase === 'playing' && s.time >= this.nextIdle && s.time >= this.nextPhrase && !warning) {
       cues.push({ kind: 'chatter', strength: 0.2, priority: 15, caption: '[curious droid chirps]' });
       this.nextIdle = s.time + 7;
     }

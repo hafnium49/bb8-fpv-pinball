@@ -6,9 +6,73 @@
       "result": "pass",
       "confirmationPeak": 0.01687064953148365,
       "voiceReady": true,
-      "wallPeak": 0.15859927237033844,
-      "bedPeak": 0.0869007259607315,
-      "warningStarted": 1.3322448979591837,
+      "wallPeak": 0.025882016867399216,
+      "bedPeak": 0.08694726973772049,
+      "warningStarted": 1.2712925170068028,
+      "warningPans": [
+        {
+          "voice": "left",
+          "accepted": true,
+          "pan": -0.6499999761581421
+        },
+        {
+          "voice": "right",
+          "accepted": true,
+          "pan": 0.6499999761581421
+        },
+        {
+          "voice": "both",
+          "accepted": true,
+          "pan": 0
+        },
+        {
+          "voice": "danger",
+          "accepted": true,
+          "pan": 0
+        }
+      ],
+      "fallbackMotifs": [
+        {
+          "voice": "left",
+          "accepted": true,
+          "frequencies": [
+            690,
+            580
+          ],
+          "pan": -0.6499999761581421
+        },
+        {
+          "voice": "right",
+          "accepted": true,
+          "frequencies": [
+            1050,
+            1210,
+            1370
+          ],
+          "pan": 0.6499999761581421
+        },
+        {
+          "voice": "both",
+          "accepted": true,
+          "frequencies": [
+            620,
+            1320,
+            620,
+            1320
+          ],
+          "pan": 0
+        },
+        {
+          "voice": "danger",
+          "accepted": true,
+          "frequencies": [
+            1500,
+            1600,
+            1800
+          ],
+          "pan": 0
+        }
+      ],
       "bounded": {
         "voiceReady": true,
         "voiceFailed": false,
@@ -17,25 +81,27 @@
         "speaking": false,
         "priority": 0,
         "loops": 2,
-        "musicSteps": 10,
-        "warnings": 1,
+        "musicSteps": 11,
+        "warnings": 6,
         "lastVoice": "left"
       },
       "checks": [
         "first visit muted with no AudioContext",
         "explicit click/tap requests playback and emits nonzero audio",
         "flipper and launch event tones with keyboard/simultaneous touch",
-        "bundled speech decodes in the real audio context",
+        "original nonverbal beep sprite decodes in the real audio context",
+        "sampled left/right warnings pan to their sides; both/drain stay centered",
         "real Rapier wall/bumper/target sound events",
-        "forecasted left instruction interrupts flavour speech and blocks lower-priority chatter",
-        "persistent caption region is polite for ordinary speech and assertive/atomic for urgent advice",
+        "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+        "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
         "nonzero rolling/music output with no active voice; bounded 100-impact burst",
         "gesture resumes suspended context without recreating it",
         "blur stops all layers and outputs zero; resume rebuilds the mix",
         "three drains stop music/loops and restart resets lives/audio",
         "sound-on preference restored without autoplay",
         "injected saved-on startup failure clears UI/preference/session and allows retry",
-        "injected speech-decoding failure retains audible procedural warning fallback",
+        "injected sprite-decoding failure retains audible procedural warning fallback",
+        "all four fallback warning motifs differ; left/right pan correctly",
         "mute stops output and releases session",
         "sound-off preference survives reload"
       ]
@@ -43,11 +109,75 @@
     {
       "name": "mobile-circuit",
       "result": "pass",
-      "confirmationPeak": 0.0130372429266572,
+      "confirmationPeak": 0.007276812568306923,
       "voiceReady": true,
-      "wallPeak": 0.09130692481994629,
-      "bedPeak": 0.08318096399307251,
-      "warningStarted": 3.982222222222222,
+      "wallPeak": 0.04602450132369995,
+      "bedPeak": 0.07845887541770935,
+      "warningStarted": 3.5816780045351475,
+      "warningPans": [
+        {
+          "voice": "left",
+          "accepted": true,
+          "pan": -0.6499999761581421
+        },
+        {
+          "voice": "right",
+          "accepted": true,
+          "pan": 0.6499999761581421
+        },
+        {
+          "voice": "both",
+          "accepted": true,
+          "pan": 0
+        },
+        {
+          "voice": "danger",
+          "accepted": true,
+          "pan": 0
+        }
+      ],
+      "fallbackMotifs": [
+        {
+          "voice": "left",
+          "accepted": true,
+          "frequencies": [
+            690,
+            580
+          ],
+          "pan": -0.6499999761581421
+        },
+        {
+          "voice": "right",
+          "accepted": true,
+          "frequencies": [
+            1050,
+            1210,
+            1370
+          ],
+          "pan": 0.6499999761581421
+        },
+        {
+          "voice": "both",
+          "accepted": true,
+          "frequencies": [
+            620,
+            1320,
+            620,
+            1320
+          ],
+          "pan": 0
+        },
+        {
+          "voice": "danger",
+          "accepted": true,
+          "frequencies": [
+            1500,
+            1600,
+            1800
+          ],
+          "pan": 0
+        }
+      ],
       "bounded": {
         "voiceReady": true,
         "voiceFailed": false,
@@ -57,25 +187,27 @@
         "priority": 0,
         "loops": 2,
         "musicSteps": 21,
-        "warnings": 2,
+        "warnings": 6,
         "lastVoice": "left"
       },
       "checks": [
         "first visit muted with no AudioContext",
         "explicit click/tap requests playback and emits nonzero audio",
         "flipper and launch event tones with keyboard/simultaneous touch",
-        "bundled speech decodes in the real audio context",
+        "original nonverbal beep sprite decodes in the real audio context",
+        "sampled left/right warnings pan to their sides; both/drain stay centered",
         "real Rapier wall/bumper/target sound events",
-        "live ramp/bridge/tunnel/circuit cues and early right-return instruction",
-        "forecasted left instruction interrupts flavour speech and blocks lower-priority chatter",
-        "persistent caption region is polite for ordinary speech and assertive/atomic for urgent advice",
+        "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+        "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+        "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
         "nonzero rolling/music output with no active voice; bounded 100-impact burst",
         "gesture resumes suspended context without recreating it",
         "blur stops all layers and outputs zero; resume rebuilds the mix",
         "three drains stop music/loops and restart resets lives/audio",
         "sound-on preference restored without autoplay",
         "injected saved-on startup failure clears UI/preference/session and allows retry",
-        "injected speech-decoding failure retains audible procedural warning fallback",
+        "injected sprite-decoding failure retains audible procedural warning fallback",
+        "all four fallback warning motifs differ; left/right pan correctly",
         "mute stops output and releases session",
         "sound-off preference survives reload"
       ]
@@ -91,46 +223,57 @@
     "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.",
     "Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured."
   ],
-  "verified_at_utc": "2026-10-06T20:10:10.541458+00:00",
+  "verified_at_utc": "2026-10-07T19:13:04.607686+00:00",
   "source_sha256": {
-    "src/main.ts": "61c4f56a973360648d1a27dfe797810eb97abac11c4432bf88ac0feb6f6be09e",
+    "src/main.ts": "8b5f656c62a7a4087fedb75cc2f775098b700583bb5b091d365053fe4aaa27f9",
     "src/style.css": "b49fee8b7b26499fe7e59acc3fcc6860f57071500875b94739c2b99a24bcf953",
-    "src/ui/audio.ts": "1bf96dd37b1728b9f2ccbacc68a937d0c8c61ba886eed142d458cdd5c31bbd36",
-    "src/ui/sound-director.ts": "328c2ac30d9197deaac7c090dda76719eb82942f38a5291be14fa778b8a49039",
-    "src/ui/voice-bank.ts": "0b15b381c443c27a21475d530297a909031ac004497d3da1717afa62969a6fd5",
-    "src/assets/droid-voice.wav": "110d380637c30542cdd7a687b48cd4353f3ab6f537fcbaefc83843aabcb0a2b8",
+    "src/ui/audio.ts": "b1119b57af9691596578c26bab39b94703513af692dee784cdcf1606918c57db",
+    "src/ui/sound-director.ts": "165975a8b49c945fa9a65a0afe357006458817fc23d7bbf2c463bbc67f5089f6",
+    "src/ui/voice-bank.ts": "f8323d416d110e68c9b1076252fbba05734350d2075c9cf8f779d12afe48c185",
+    "src/assets/droid-beeps.wav": "9f6f5177ff8882a1737bce58ad1035bbd7a792b4a91e7ad93ccbc13938a1ad68",
     "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
     "src/physics/table.ts": "569ba34bc2b2f8f0adccd822a5af2e55e10c9ca6c6a8d838ecc0187306cd2fc4",
-    "scripts/audio-browser.cjs": "93bdc1b4f927ab886d55f142bb56b9694ff52c354f7f7a730f114b5b547aa610",
-    "scripts/generate-droid-voice.py": "9f3ee7c8b6ecf687db7198c04ea3b99bf7edf16e7064a7498fa5dd863839563f",
+    "scripts/audio-browser.cjs": "7c8a7e6d408ab5e13ba78182c320360ccf19994487f94ccfed149143cbd302b9",
+    "scripts/generate-droid-beeps.py": "038ab808fc8b68599c24ac49219e84c3125c22c791c80f20c9d0286225b9eaf5",
     "tests/audio.test.ts": "30d4b15c8bc903585e111fb18cc770814d1e5b1aacefbc3ec221da431c158234",
-    "tests/sound-director.test.ts": "88875df38e6d24a59b6dc0dbb1137ab6d8591fb92db19543f4051c0df3d5ccb0"
+    "tests/sound-director.test.ts": "d93fc50f695e06be1822efef1ecbc3c31ef01d542197f6040b74afadb1cce01d",
+    "README.md": "3229899bb915076b25294ee3f2783491c1197dee9cfc114f166405a38736e2ed",
+    "docs/droid-soundscape.md": "b1e0ff005d687d79fc0a668f2d34eb600a8bf671cec71a96b56bfc86e908d1ac",
+    "docs/audio-fix.md": "ac255c51f4d5c09954e8a93d7bc449d0ffd28d0e95066787392119f8686b539b",
+    "THIRD-PARTY-NOTICES.txt": "be02c1c668da17b6a17f677f38d0366791915a073b8bf4173a9722edbe71d949"
   },
   "screenshots_inspected": {
-    "mobile-circuit-sound-on.png": "2d94369a3eb3a6f1752d79831b5d43c75d7f776dfee8caa51b8f5d1b152f820d",
-    "desktop-classic-sound-on.png": "c3b4f04a9b2a1044436b49ae2017bbf7e77e6f7a9d172b45d37f771283e20218"
+    "desktop-classic-sound-on.png": "c3427e3ab914cd6c873e5044603d1c8d3f04da89d4aca87799364e335a402a1b",
+    "mobile-circuit-sound-on.png": "caf8b15f86fa3dac4ae91c361bc9e644951258964b7a4ec9c32173fd09f1d1eb"
   },
   "additional_checks": {
-    "unit_tests": 30,
+    "unit_tests": 31,
     "route_entries": 63,
     "spin_partial_variants": 18,
     "ground_approaches": 96,
     "input_only_launch_returns": 2,
     "typescript_production_build": "pass",
     "standalone_generation": "pass",
-    "production_and_standalone_voice_bytes_match": true,
-    "physical_circuit_warning_probe": {
-      "speed": 20,
-      "outcome": "returned",
-      "warning_phase": "tunnel",
-      "warning_at_sim_seconds": 1.6416666666666633,
-      "right_flipper_contact_at_sim_seconds": 2.66666666666666,
-      "lead_seconds": 1.0249999999999966
-    }
+    "production_and_standalone_beep_bytes_match": true,
+    "beep_generation_reproducible": true,
+    "nonverbal_clips": 15,
+    "warning_durations_seconds": {
+      "left": 0.34,
+      "right": 0.409977,
+      "both": 0.46,
+      "danger": 0.489977
+    },
+    "asset_recipe": "Only oscillator/FM synthesis with Python standard library; no speech synthesis or recorded film audio."
   },
   "environment": {
     "node": "v24.19.0",
     "browser": "Chromium 153, headless software WebGL",
     "audio": "real Web Audio; optional Safari session API stubbed"
+  },
+  "review_followup": {
+    "verified_at_utc": "2026-10-07T19:20:28.027867+00:00",
+    "unit_tests": 31,
+    "mono_warning_packets": "Shipped PCM energy onsets verify left=2, right=3, both=4, danger=3 with distinct onset timings; pitch remains low-left/high-right.",
+    "scope": "Only regression test and evidence changed; tested runtime/assets/browser screenshots are unchanged."
   }
 }
