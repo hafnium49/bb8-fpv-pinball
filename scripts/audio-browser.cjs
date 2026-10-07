@@ -54,7 +54,7 @@ const out = 'artifacts/audio';
       await page.locator('#start:not([disabled])').waitFor();
       // Keep real simulation/input active; avoid software-GPU stalls during
       // short audio envelopes. Restore rendering for each actual screenshot.
-      await page.evaluate(() => { const view = window.orbitDebug.view; window.restoreAudioRender = view.render.bind(view); view.render = () => {}; });
+      await page.evaluate(() => { const { view, headLoss } = window.orbitDebug; headLoss.draw = () => 1; window.restoreAudioRender = view.render.bind(view); view.render = () => {}; });
     };
     const activate = locator => options.hasTouch ? locator.tap() : locator.click();
     console.log(`${name}: boot`); await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
@@ -69,6 +69,9 @@ const out = 'artifacts/audio';
     await activate(page.locator('#start'));
     await page.waitForFunction(() => document.querySelector('#droid-line').textContent === '[ready chirps]');
     assert.equal(await page.locator('#droid-comms').getAttribute('aria-live'), 'polite');
+    assert.equal(await page.locator('[data-camera], #camera-controls').count(), 0);
+    for (const key of ['Digit1', 'Digit2', 'Digit3', 'Digit4']) await page.keyboard.press(key);
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
     if (options.hasTouch) {
       const left = await page.locator('#left').boundingBox(), right = await page.locator('#right').boundingBox();
       const cdp = await context.newCDPSession(page);
@@ -132,6 +135,86 @@ const out = 'artifacts/audio';
       assert.ok(routeHistory.some(c => c.kind === 'warning' && c.voice === 'right' && c.accepted));
       console.log(`${name}: live ramp/bridge/tunnel/return sound cues`);
     }
+    // Select an episode deterministically through the controller's dev hook.
+    // The probability itself is covered at the exact boundary by unit tests.
+    await place({ x: -4, y: .305, z: -9 }, { x: 0, y: 0, z: 0 });
+    await page.evaluate(() => {
+      const { sim, headLoss } = window.orbitDebug; headLoss.reset(); headLoss.draw = () => 0;
+      window.restoreSpinUpdate = sim.update.bind(sim); sim.update = () => {};
+      sim.ball.setRotation({ x: 0, y: 0, z: Math.SQRT1_2, w: Math.SQRT1_2 }, true);
+      sim.events.push({ type: 'launch' });
+    });
+    await page.waitForFunction(() => window.orbitDebug.view.mode === 'spin');
+    assert.equal(await page.locator('#droid-line').textContent(), 'Oh no, BB-8 lost its head!');
+    assert.equal(await page.locator('#droid-comms').getAttribute('aria-live'), 'polite');
+    assert.ok(await page.evaluate(() => window.orbitDebug.audio.history.some(c => c.kind === 'head-loss' && c.voice === 'ouch' && c.accepted)));
+    // A stalled simulation must retain the caption even after three wall seconds.
+    await page.waitForTimeout(3200);
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'spin');
+    assert.equal(await page.locator('#droid-line').textContent(), 'Oh no, BB-8 lost its head!');
+    assert.ok(await page.locator('#droid-comms').evaluate(el => !el.classList.contains('sr-only')));
+    await page.evaluate(() => { window.orbitDebug.view.render = window.restoreAudioRender; });
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const spinUp = await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5]);
+    assert.ok(Math.abs(spinUp) < .1, 'Lost-head camera must inherit real ball rotation');
+    await page.screenshot({ path: `${out}/${name}-head-loss.png`, timeout: 90000 }); screenshots.push(`${name}-head-loss.png`);
+    const beganSpin = await page.evaluate(() => {
+      const { sim, view } = window.orbitDebug; view.render = () => {}; sim.update = window.restoreSpinUpdate; return sim.time;
+    });
+    await page.waitForFunction(() => window.orbitDebug.view.mode === 'fpv');
+    const spinDuration = await page.evaluate(start => window.orbitDebug.sim.time - start, beganSpin);
+    assert.ok(spinDuration >= 3 && spinDuration <= 3.2, `Unexpected spin lifetime ${spinDuration}`);
+    assert.equal(await page.evaluate(() => window.orbitDebug.sim.phase), 'playing');
+    assert.notEqual(await page.locator('#droid-line').textContent(), 'Oh no, BB-8 lost its head!');
+    const startSpin = async () => {
+      await place({ x: -4, y: .305, z: -9 }, { x: 0, y: 0, z: 0 });
+      await page.evaluate(() => { const { sim, headLoss } = window.orbitDebug; headLoss.reset(); headLoss.draw = () => 0; sim.events.push({ type: 'launch' }); });
+      await page.waitForFunction(() => window.orbitDebug.view.mode === 'spin');
+    };
+    await startSpin(); await activate(page.locator('#pause'));
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
+    await activate(page.locator('#resume'));
+    assert.equal(await page.evaluate(() => window.orbitDebug.headLoss.mode), 'fpv');
+    await startSpin();
+    await page.evaluate(() => {
+      const { sim, view } = window.orbitDebug, effects = view.effects;
+      effects.reset(); effects.hit(-4, -9, 0x62e6ff, 100);
+      effects.update(0, sim.position, 0, false);
+      window.beforeMotionResetVersion = effects.geometry.attributes.position.version;
+    });
+    assert.ok(await page.evaluate(() => {
+      const e = window.orbitDebug.view.effects;
+      return e.life.some(l => l > 0) && e.rings.some(r => r.mesh.visible) && e.popups.some(p => p.sprite.visible);
+    }));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => window.orbitDebug.view.mode === 'fpv');
+    assert.ok(await page.evaluate(() => {
+      const e = window.orbitDebug.view.effects;
+      return e.life.every(l => l === 0) && e.positions.every(p => p === 1000)
+        && e.rings.every(r => !r.mesh.visible) && e.popups.every(p => !p.sprite.visible)
+        && e.geometry.attributes.position.version > window.beforeMotionResetVersion;
+    }), 'Live reduced motion must clear existing effects and upload cleared particle positions');
+    await place({ x: -4, y: .305, z: -9 }, { x: 0, y: 0, z: 0 });
+    await page.evaluate(() => {
+      const { sim, headLoss } = window.orbitDebug; window.headLossDraws = 0;
+      headLoss.draw = () => { window.headLossDraws++; return 0; }; sim.events.push({ type: 'launch' });
+    });
+    await page.waitForTimeout(80);
+    assert.equal(await page.evaluate(() => window.headLossDraws), 0);
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    assert.ok(await page.evaluate(() => {
+      const e = window.orbitDebug.view.effects;
+      return e.life.every(l => l === 0) && e.rings.every(r => !r.mesh.visible) && e.popups.every(p => !p.sprite.visible);
+    }), 'Old hit effects must not return when reduced motion is disabled');
+    await place({ x: -1.7, y: .305, z: 2 }, { x: 0, y: 0, z: 4 });
+    await page.evaluate(() => { const { sim, headLoss } = window.orbitDebug; headLoss.reset(); headLoss.draw = () => 0; sim.events.push({ type: 'launch' }); });
+    await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'warning' && c.accepted));
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.priority), 100);
+    assert.equal(await page.locator('#droid-line').textContent(), 'Left flipper!');
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'head-loss', voice: 'ouch', strength: 1, priority: 85 })), false);
+    await page.evaluate(() => { window.orbitDebug.headLoss.reset(); window.orbitDebug.headLoss.draw = () => 1; });
+    console.log(`${name}: lost-head rotation, caption, beep, automatic return, pause and live reduced-motion checks pass`);
     // Interrupt a flavour whistle with an urgent, forecasted left warning.
     await place({ x: -1.7, y: 0.305, z: 2 }, { x: 0, y: 0, z: 4 });
     await page.evaluate(() => {
@@ -234,6 +317,7 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, warningPans, fallbackMotifs, bounded,
+      headLoss: { spinUp, spinDuration, cue: 'nonverbal ouch cry', caption: 'Oh no, BB-8 lost its head!', captionTracksSimulationTime: true, automaticFpvReturn: true, pauseCancels: true, reducedMotionCancelsAndSuppressesDraw: true, reducedMotionClearsExistingEffects: true, warningsTakePrecedence: true, cameraControlsAndShortcutsRemoved: true },
       checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     // Keep one page alive with single-process Chromium while opening the next.

@@ -9,7 +9,14 @@ interface Ring { mesh: THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>;
 /** A bounded visual pool; these effects never apply forces or change game rules. */
 export class ArcadeEffects {
   readonly group = new THREE.Group();
-  readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  private motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  private motionReduced = this.motionPreference.matches;
+  get reducedMotion() {
+    const reduced = this.motionPreference.matches;
+    if (reduced && !this.motionReduced) this.reset();
+    this.motionReduced = reduced;
+    return reduced;
+  }
   private positions = new Float32Array(capacity * 3).fill(1000);
   private colors = new Float32Array(capacity * 3);
   private velocities = new Float32Array(capacity * 3);
@@ -94,6 +101,7 @@ export class ArcadeEffects {
 
   reset() {
     this.life.fill(0); this.positions.fill(1000); this.trailTime = 0;
+    this.geometry.attributes.position.needsUpdate = true;
     for (const p of this.popups) { p.life = 0; p.sprite.visible = false; }
     for (const r of this.rings) { r.life = 0; r.mesh.visible = false; }
   }

@@ -195,7 +195,7 @@ export class GameAudio {
     source.start(); source.stop(at + duration);
   }
   private mechanical(cue: SoundCue) {
-    if (cue.kind === 'chatter' || cue.kind === 'ready' || cue.kind === 'over') return;
+    if (cue.kind === 'chatter' || cue.kind === 'ready' || cue.kind === 'over' || cue.kind === 'head-loss') return;
     const layer = this.layer('effects', 0, cue.pan), strength = cue.strength ?? 0.7;
     switch (cue.kind) {
       case 'warning': this.note(layer, 960, 0.06, 'sine', 0.05, 1250); break;
@@ -250,7 +250,7 @@ export class GameAudio {
       }
       return;
     }
-    const scream = (cue.kind === 'chatter' && strength > 0.55) || cue.kind === 'drain';
+    const scream = (cue.kind === 'chatter' && strength > 0.55) || cue.kind === 'drain' || cue.kind === 'head-loss';
     const duration = scream ? 0.48 : 0.32;
     const carrier = c.createOscillator(), modulator = c.createOscillator(), modulation = c.createGain();
     const formant = c.createBiquadFilter(), volume = c.createGain();

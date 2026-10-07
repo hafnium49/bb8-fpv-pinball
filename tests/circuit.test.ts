@@ -98,11 +98,11 @@ test('ground approaches cannot wedge beneath either low ramp heel', async () => 
   } finally { sim.dispose(); }
 });
 
-test('route cameras bound pitch/rates and sweep FPV/Chase envelopes against real colliders', async () => {
+test('the FPV camera bounds pitch/rates and sweeps its envelope against real colliders', async () => {
   await RAPIER.init();
   for (const reduced of [false, true]) for (const aspect of [844 / 390, 6]) {
     const sim = new PinballSimulation({ circuit: true }), camera = new RouteCamera();
-    const fpv = new CameraClearance(), chase = new CameraClearance(), out = { x: 0, y: 0, z: 0 }, q = { x: 0, y: 0, z: 0, w: 1 };
+    const fpv = new CameraClearance(), out = { x: 0, y: 0, z: 0 }, q = { x: 0, y: 0, z: 0, w: 1 };
     let maxPitch = 0, samples = 0;
     try {
       const report = entryTrial(sim, { speed: 20, offset: 0, veer: 0 }, s => {
@@ -113,7 +113,6 @@ test('route cameras bound pitch/rates and sweep FPV/Chase envelopes against real
         const p = s.position;
         for (const [clearance, desired, fov] of [
           [fpv, { x: p.x, y: p.y + 0.30, z: p.z }, 82],
-          [chase, { x: p.x - Math.sin(camera.heading) * 3.9, y: p.y + 2.6, z: p.z + Math.cos(camera.heading) * 3.9 }, 72],
         ] as const) {
           clearance.place(s, desired, out, aspect, fov, STEP);
           const tangent = Math.tan(fov * Math.PI / 360), radius = Math.max(0.12, Math.min(0.25, 0.06 * Math.sqrt(1 + tangent * tangent * (1 + aspect * aspect))));

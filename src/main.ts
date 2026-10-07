@@ -1,6 +1,7 @@
 import './style.css';
 import { PinballSimulation } from './physics/simulation';
-import { PinballView, type CameraMode } from './render/view';
+import { PinballView } from './render/view';
+import { HeadLossCamera, HEAD_LOSS_CAPTION } from './render/head-loss';
 import { drawMinimap } from './ui/minimap';
 import { GameAudio } from './ui/audio';
 import { SoundDirector, type SoundCue } from './ui/sound-director';
@@ -23,10 +24,9 @@ app.innerHTML = `
     <div id="toast" role="status" aria-live="polite"></div>
     <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
-      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. Camera buttons switch views. Spin mode follows the ball's real rotation.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
+      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
-    <nav id="camera-controls" class="camera-controls" aria-label="Camera views" hidden><button class="selected" data-camera="fpv" aria-pressed="true">FPV</button><button data-camera="chase" aria-pressed="false">CHASE</button><button data-camera="table" aria-pressed="false">TABLE</button><button data-camera="spin" aria-pressed="false">SPIN ↻</button></nav>
     <div id="play-controls" class="play-controls" hidden>
       <button id="left" class="flipper-button" aria-label="Hold left flipper"><span class="flipper-icon">↖</span><b>LEFT FLIPPER</b><small>A / ←</small></button>
       <div class="launch-cluster"><span id="hint">HOLD SPACE TO LAUNCH</span><button id="launch" aria-label="Hold then release to launch the ball"><span id="launch-label">LAUNCH</span><span class="charge-track"><span id="charge"></span></span></button></div>
@@ -38,6 +38,7 @@ app.innerHTML = `
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const audio = new GameAudio(voiceUrl), soundDirector = new SoundDirector();
+const headLoss = new HeadLossCamera();
 try { audio.setEnabled(localStorage.getItem('orbit-pinball-sound') === 'on'); } catch { /* Sound still works without storage. */ }
 let sim: PinballSimulation, view: PinballView;
 let best = 0;
@@ -61,7 +62,9 @@ function showComms(cue: SoundCue) {
   $('droid-comms').classList.toggle('urgent', cue.kind === 'warning');
   $('left').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'left' || cue.voice === 'both'));
   $('right').classList.toggle('warning', cue.kind === 'warning' && (cue.voice === 'right' || cue.voice === 'both'));
-  commsUntil = performance.now() + (cue.kind === 'warning' ? 1400 : 1800);
+  // The spin follows simulation time, which can lag wall time on a slow device.
+  // Its end/cancellation clears this caption; warnings keep their own timeout.
+  commsUntil = cue.kind === 'head-loss' ? Infinity : performance.now() + (cue.kind === 'warning' ? 1400 : 1800);
 }
 
 function toast(message: string, seconds = 1.6) {
@@ -94,23 +97,15 @@ $('sound').addEventListener('click', () => {
   if (!audio.enabled) { toast('SOUND OFF'); return; }
   void activateSound(true);
 });
-function setCamera(mode: CameraMode) {
-  view.mode = mode;
-  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-camera]')) {
-    const active = button.dataset.camera === mode; button.classList.toggle('selected', active); button.setAttribute('aria-pressed', String(active));
-  }
-  if (mode === 'spin') toast('SPIN VIEW · follows the ball’s rotation');
-  else if (mode === 'fpv') toast('FPV · horizon stabilized');
-}
 function begin() {
-  sim.start(); soundDirector.reset(); audio.reset(); clearComms(); view.heading = 0; view.resetEffects(); void activateSound();
+  sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); void activateSound();
   $('score').textContent = '00000';
   $('intro').hidden = true; $('modal').hidden = true;
-  for (const id of ['hud', 'map-wrap', 'camera-controls', 'play-controls']) $(id).hidden = false;
-  setCamera('fpv'); toast('Hold SPACE, then release to launch');
+  for (const id of ['hud', 'map-wrap', 'play-controls']) $(id).hidden = false;
+  toast('Hold SPACE, then release to launch');
 }
 function showPause() {
-  audio.setPaused(true); clearComms();
+  audio.setPaused(true); clearComms(); headLoss.reset(); if (view) view.mode = 'fpv';
   if (sim.phase === 'intro' || sim.phase === 'over') return;
   sim.paused = true; sim.releaseControls();
   $('modal-kicker').textContent = 'TAKE A BREATHER'; $('modal-title').textContent = 'Paused.';
@@ -156,7 +151,6 @@ async function boot() {
       try { if (document.fullscreenElement) await document.exitFullscreen(); else await $('game').requestFullscreen(); }
       catch { toast('Fullscreen is unavailable in this browser'); }
     });
-    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-camera]')) button.addEventListener('click', () => setCamera(button.dataset.camera as CameraMode));
     pointerButton('left', 'left'); pointerButton('right', 'right'); pointerButton('launch', 'launch');
     window.addEventListener('keydown', e => {
       if (['ArrowLeft', 'ArrowRight', 'Space', 'Escape'].includes(e.code)) e.preventDefault();
@@ -166,7 +160,6 @@ async function boot() {
       if (e.code === 'KeyA' || e.code === 'ArrowLeft') sim.controls.left = true;
       if (e.code === 'KeyD' || e.code === 'ArrowRight') sim.controls.right = true;
       if (e.code === 'Space') sim.controls.launch = true;
-      if (!e.repeat && ['Digit1', 'Digit2', 'Digit3', 'Digit4'].includes(e.code)) setCamera((['fpv', 'chase', 'table', 'spin'] as CameraMode[])[Number(e.code.slice(-1)) - 1]);
     });
     window.addEventListener('keyup', e => {
       if (e.code === 'KeyA' || e.code === 'ArrowLeft') sim.controls.left = false;
@@ -180,7 +173,7 @@ async function boot() {
     view.renderer.domElement.addEventListener('webglcontextrestored', () => { toast('Graphics restored · resume when ready'); });
 
     // A development-only inspection hook supports browser QA without changing the production UI.
-    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector } });
+    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector, headLoss } });
     requestAnimationFrame(frame);
   } catch (error) {
     $('loading-error').hidden = false;
@@ -191,7 +184,11 @@ async function boot() {
 
 function frame(now: number) {
   const dt = Math.min((now - last) / 1000, 0.1); last = now;
-  sim.update(dt); view.render(sim, dt);
+  sim.update(dt);
+  const cameraFrame = headLoss.update(sim, sim.events, view.effects.reducedMotion);
+  view.mode = cameraFrame.mode;
+  if (cameraFrame.ended && $('droid-line').textContent === HEAD_LOSS_CAPTION) clearComms();
+  view.render(sim, dt);
   drawMinimap($<HTMLCanvasElement>('minimap'), sim, view.heading);
   $('score').textContent = String(sim.score).padStart(5, '0');
   $('balls').textContent = '● '.repeat(sim.balls) + '○ '.repeat(3 - sim.balls);
@@ -217,11 +214,14 @@ function frame(now: number) {
     if (e.type === 'circuit') toast('CIRCUIT +750 · RIGHT FLIPPER NEXT', 1.5);
   }
   const soundFrame = soundDirector.update(sim, sim.events);
+  if (cameraFrame.started) soundFrame.cues.unshift({ kind: 'head-loss', voice: 'ouch', strength: 1, priority: 85, caption: HEAD_LOSS_CAPTION });
   audio.update(soundFrame);
   for (const cue of soundFrame.cues) {
     const vocalized = audio.play(cue);
     // Critical instructions remain visible when the player chooses mute.
-    if (cue.caption && (vocalized || cue.kind === 'warning')) showComms(cue);
+    const headCaption = $('droid-line').textContent === HEAD_LOSS_CAPTION && headLoss.mode === 'spin';
+    if (cue.caption && (vocalized || cue.kind === 'warning' || cue.kind === 'head-loss')
+      && (!headCaption || cue.kind === 'warning' || cue.kind === 'head-loss')) showComms(cue);
   }
   sim.events.length = 0;
   if (now > commsUntil && !sim.paused) clearComms();

@@ -11,7 +11,7 @@ import { ArcadeEffects } from './effects';
 import { ElevatedCircuit } from './route-model';
 import { CameraClearance, RouteCamera } from './route-camera';
 
-export type CameraMode = 'fpv' | 'chase' | 'table' | 'spin';
+export type CameraMode = 'fpv' | 'spin';
 
 export class PinballView {
   readonly scene = new THREE.Scene();
@@ -98,7 +98,7 @@ export class PinballView {
 
   render(sim: PinballSimulation, dt: number) {
     const p = sim.position, v = sim.velocity, visualDt = sim.paused ? 0 : dt;
-    this.table.update(sim, visualDt, this.mode);
+    this.table.update(sim, visualDt);
     this.circuit?.update(sim);
     if (!this.effects.reducedMotion) this.table.animate(visualDt);
     for (const event of sim.events) {
@@ -113,16 +113,6 @@ export class PinballView {
     this.camera.up.set(0, 1, 0);
     if (sim.phase === 'intro') {
       this.camera.fov = 48; this.camera.position.set(13, 19, 20); this.camera.lookAt(-3, 0, -1);
-    } else if (this.mode === 'table') {
-      this.camera.fov = 48;
-      this.camera.position.set(0, Math.max(29, 16 / this.camera.aspect), 12); this.camera.lookAt(0, 0, -0.5);
-    } else if (this.mode === 'chase') {
-      this.camera.fov = 72;
-      this.position.set(p.x, p.y + 2.6, p.z).addScaledVector(this.forward, -3.9);
-      this.position.x = THREE.MathUtils.clamp(this.position.x, -5.45, 5.45);
-      this.position.z = THREE.MathUtils.clamp(this.position.z, -10.1, 12.1);
-      this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 72, visualDt);
-      this.look.set(p.x, p.y + 0.2, p.z).addScaledVector(this.forward, 2.0); this.camera.lookAt(this.look);
     } else if (this.mode === 'spin') {
       this.camera.fov = 82; this.camera.position.set(p.x, p.y + 0.08, p.z);
       this.camera.quaternion.copy(this.table.ball.quaternion);

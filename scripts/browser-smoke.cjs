@@ -24,6 +24,7 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   await page.locator('#start:not([disabled])').waitFor({ timeout: 60000 });
   await rendered(page);
   await page.screenshot({ path: path.join(output, 'desktop-intro.png') });
+  await page.evaluate(() => { window.orbitDebug.headLoss.draw = () => 1; });
   await page.locator('#start').click();
   assert.equal(await page.evaluate(() => window.orbitDebug.sim.phase), 'ready');
   await page.keyboard.down('Space');
@@ -42,10 +43,10 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   const pausePosition = await page.evaluate(() => window.orbitDebug.sim.position);
   await page.waitForTimeout(100); assert.deepEqual(await page.evaluate(() => window.orbitDebug.sim.position), pausePosition);
   await page.locator('#restart').click();
-  await page.locator('[data-camera="table"]').click();
+  assert.equal(await page.locator('[data-camera], #camera-controls').count(), 0);
   await rendered(page);
-  await page.screenshot({ path: path.join(output, 'desktop-table.png') });
-  assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'table');
+  await page.screenshot({ path: path.join(output, 'desktop-fpv-ready.png') });
+  assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
   const highCalls = await page.evaluate(() => window.orbitDebug.view.renderer.info.render.calls);
   assert.equal(await page.locator('#quality').textContent(), 'FX HIGH');
   await page.locator('#quality').click(); await rendered(page);
@@ -83,19 +84,12 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   await page.waitForFunction(old => window.orbitDebug.view.scene.environment.uuid !== old, environment, { timeout: 60000 });
   await page.locator('#resume').click(); await rendered(page);
   assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), false, 'Graphics recovery did not resume');
-  await page.locator('[data-camera="chase"]').click();
-  await rendered(page);
-  await page.screenshot({ path: path.join(output, 'desktop-chase.png') });
-  await page.locator('[data-camera="fpv"]').click();
   await page.evaluate(() => window.orbitDebug.sim.ball.setRotation({ x: 0, y: 0, z: Math.SQRT1_2, w: Math.SQRT1_2 }, true));
   await page.waitForFunction(() => window.orbitDebug.view.camera.matrixWorld.elements[5] > 0.98);
   const stabilized = await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5]);
   assert.ok(stabilized > 0.98, 'ball rotation leaked into stabilized FPV');
-  await page.locator('[data-camera="spin"]').click();
-  await page.waitForFunction(() => Math.abs(window.orbitDebug.view.camera.matrixWorld.elements[5]) < 0.1);
-  const spinning = await page.evaluate(() => window.orbitDebug.view.camera.matrixWorld.elements[5]);
-  assert.ok(Math.abs(spinning) < 0.1, 'Spin view did not follow ball rotation');
-  await page.locator('[data-camera="fpv"]').click();
+  for (const key of ['Digit1', 'Digit2', 'Digit3', 'Digit4']) await page.keyboard.press(key);
+  assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
   await page.evaluate(() => { const s = window.orbitDebug.sim; s.launch(0.5); s.balls = 1; s.score = 350; s.ball.setTranslation({ x: 0, y: 0.4, z: 11.6 }, true); });
   await page.waitForFunction(() => window.orbitDebug.sim.phase === 'over');
   assert.equal(await page.locator('#modal-title').textContent(), '00350');
@@ -110,7 +104,7 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   await phone.goto(url, { waitUntil: 'networkidle' });
   await phone.locator('#start:not([disabled])').waitFor({ timeout: 60000 }); await phone.locator('#start').tap();
   assert.equal(await phone.locator('#quality').textContent(), 'FX ECO', 'Touch device did not default to Eco');
-  await phone.locator('[data-camera="table"]').tap();
+  assert.equal(await phone.locator('[data-camera], #camera-controls').count(), 0);
   await rendered(phone);
   const left = await phone.locator('#left').boundingBox(), right = await phone.locator('#right').boundingBox();
   const cdp = await mobile.newCDPSession(phone);
@@ -134,7 +128,7 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   assert.equal(await phone.evaluate(() => window.orbitDebug.view.effects.reducedMotion), true);
   await phone.evaluate(() => window.orbitDebug.view.effects.hit(0, -6.4, 0xffad55, 100));
   assert.equal(await phone.evaluate(() => window.orbitDebug.view.effects.group.children.some(o => o.type === 'Sprite' && o.visible)), false);
-  const report = { result: 'pass', checks: ['boot', 'real keyboard launch', 'simultaneous keyboard flippers', 'pause freezes physics', 'blur releases controls and pauses', 'table/chase/FPV/spin cameras', 'FPV independent of ball rotation', 'game-over/restart/high score', 'rendered WebGL scene', 'High/Eco rendering and lower Eco draw calls', 'real bumper collision produces impact effects', 'restart clears effects', 'WebGL context recovery rebuilds reflections', 'touch defaults to Eco', 'simultaneous touch flippers', 'mobile landscape and portrait resize', 'reduced-motion suppresses impact animations'], browserErrors: errors, screenshots: ['desktop-intro.png', 'desktop-fpv.png', 'desktop-table.png', 'desktop-eco.png', 'desktop-impact.png', 'desktop-chase.png', 'mobile-landscape.png', 'mobile-portrait.png'] };
+  const report = { result: 'pass', checks: ['boot', 'real keyboard launch', 'simultaneous keyboard flippers', 'pause freezes physics', 'blur releases controls and pauses', 'FPV-only player camera and removed number-key shortcuts', 'FPV independent of ball rotation', 'game-over/restart/high score', 'rendered WebGL scene', 'High/Eco rendering and lower Eco draw calls', 'real bumper collision produces impact effects', 'restart clears effects', 'WebGL context recovery rebuilds reflections', 'touch defaults to Eco', 'simultaneous touch flippers', 'mobile landscape and portrait resize', 'reduced-motion suppresses impact animations'], browserErrors: errors, screenshots: ['desktop-intro.png', 'desktop-fpv.png', 'desktop-fpv-ready.png', 'desktop-eco.png', 'desktop-impact.png', 'mobile-landscape.png', 'mobile-portrait.png'] };
   fs.writeFileSync(path.join(output, 'browser-report.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report, null, 2));
 })().catch(async error => {
