@@ -1,0 +1,644 @@
+{
+  "baseCommit": "51b452b91fee4fd1233dc0d69030ee46d65eafcf",
+  "scope": "Static render-cost samples of current FPV renderer; no implementation changes",
+  "browser": "Google Chrome for Testing 155.0.8059.39",
+  "gpu": "ANGLE SwiftShader",
+  "cases": [
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 103,
+      "triangles": 56400,
+      "memory": {
+        "geometries": 133,
+        "textures": 22
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 75,
+      "triangles": 47700,
+      "memory": {
+        "geometries": 133,
+        "textures": 22
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 178,
+      "triangles": 72426,
+      "memory": {
+        "geometries": 133,
+        "textures": 22
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 150,
+      "triangles": 63726,
+      "memory": {
+        "geometries": 133,
+        "textures": 22
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 106,
+      "triangles": 57300,
+      "memory": {
+        "geometries": 133,
+        "textures": 9
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 75,
+      "triangles": 47700,
+      "memory": {
+        "geometries": 133,
+        "textures": 9
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 181,
+      "triangles": 73326,
+      "memory": {
+        "geometries": 133,
+        "textures": 22
+      },
+      "programs": 26
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 150,
+      "triangles": 63726,
+      "memory": {
+        "geometries": 133,
+        "textures": 22
+      },
+      "programs": 26
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 117,
+      "triangles": 83536,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 35
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 84,
+      "triangles": 74400,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 35
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 65,
+      "triangles": 50880,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 35
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 78,
+      "triangles": 50040,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 195,
+      "triangles": 118730,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 162,
+      "triangles": 109594,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 143,
+      "triangles": 86074,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 156,
+      "triangles": 85234,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 121,
+      "triangles": 84438,
+      "memory": {
+        "geometries": 146,
+        "textures": 10
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 84,
+      "triangles": 74400,
+      "memory": {
+        "geometries": 146,
+        "textures": 10
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 78,
+      "triangles": 57252,
+      "memory": {
+        "geometries": 146,
+        "textures": 10
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 81,
+      "triangles": 50940,
+      "memory": {
+        "geometries": 146,
+        "textures": 10
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 199,
+      "triangles": 119632,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 162,
+      "triangles": 109594,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 156,
+      "triangles": 92446,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 159,
+      "triangles": 86134,
+      "memory": {
+        "geometries": 146,
+        "textures": 23
+      },
+      "programs": 36
+    }
+  ],
+  "limitations": [
+    "Not a device FPS benchmark.",
+    "Draw calls and triangles include all High composer/shadow passes; compare the same pose/quality/viewport.",
+    "Ball poses are held by the dev inspection hook; they are not gameplay success trials.",
+    "Render container size changes are not mobile-device emulation; texture counts depend on quality warm-up order."
+  ],
+  "observedDate": "2026-10-09",
+  "browserViewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "method": "Held ball poses in a paused dev fixture; render container dimensions vary, browser/device model does not; two warm render calls per pose."
+}
