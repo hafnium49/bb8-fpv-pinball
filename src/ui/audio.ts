@@ -235,7 +235,7 @@ export class GameAudio {
     return true;
   }
   private chirp(layer: Layer, cue: SoundCue) {
-    // Original FM/formant vocals: questioning chirps, excited trills and a
+    // Original FM/formant vocals: questioning burbles, excited trills and a
     // pitch-breaking cry for hard impacts or danger.
     const c = this.context!, at = c.currentTime, strength = cue.strength ?? 0.35;
     if (cue.kind === 'warning') {
@@ -245,8 +245,8 @@ export class GameAudio {
         : cue.voice === 'both' ? [620, 1320, 620, 1320] : [1500, 1600, 1800];
       const interval = cue.voice === 'left' ? 0.17 : cue.voice === 'danger' ? 0.15 : 0.11;
       for (const [i, pitch] of pitches.entries()) {
-        this.note(layer, pitch, 0.10, 'triangle', 0.16,
-          pitch * (cue.voice === 'left' || cue.voice === 'danger' ? 0.7 : 1.12), at + i * interval);
+        this.note(layer, pitch * 0.6, 0.10, 'triangle', 0.16,
+          pitch * 0.6 * (cue.voice === 'left' || cue.voice === 'danger' ? 0.7 : 1.12), at + i * interval);
       }
       return;
     }
@@ -255,12 +255,12 @@ export class GameAudio {
     const carrier = c.createOscillator(), modulator = c.createOscillator(), modulation = c.createGain();
     const formant = c.createBiquadFilter(), volume = c.createGain();
     carrier.type = 'sawtooth'; modulator.type = 'sine'; formant.type = 'bandpass'; formant.Q.value = 1.6;
-    const variant = this.variant++ % 4, base = scream ? 500 : 380 + variant * 70;
+    const variant = this.variant++ % 4, base = (scream ? 500 : 380 + variant * 70) * 0.6;
     carrier.frequency.setValueAtTime(base, at);
     for (let i = 1; i <= 5; i++) carrier.frequency.exponentialRampToValueAtTime(base * (scream ? [1, 2.8, 2.2, 3.1, 0.6][i - 1] : [1.7, 1.15, 2.0, 1.4, 0.8][i - 1]), at + duration * i / 5);
     modulator.frequency.value = scream ? 27 : 42 + variant * 11; modulation.gain.value = scream ? 130 : 60;
     modulator.connect(modulation); modulation.connect(carrier.frequency);
-    formant.frequency.setValueAtTime(1500, at); formant.frequency.linearRampToValueAtTime(scream ? 2700 : 900, at + duration);
+    formant.frequency.setValueAtTime(900, at); formant.frequency.linearRampToValueAtTime(scream ? 1620 : 540, at + duration);
     volume.gain.setValueAtTime(0.0001, at); volume.gain.linearRampToValueAtTime(scream ? 0.2 : 0.12, at + 0.018); volume.gain.exponentialRampToValueAtTime(0.0001, at + duration);
     carrier.connect(formant); formant.connect(volume); volume.connect(layer.input); layer.nodes.push(modulation, formant, volume);
     this.attach(layer, carrier); this.attach(layer, modulator); carrier.start(); modulator.start(); carrier.stop(at + duration); modulator.stop(at + duration);

@@ -1,6 +1,6 @@
 # FPV and the lost-head reaction
 
-FPV is the only player camera. The camera chooser, number-key camera shortcuts, Table and Chase render branches are removed. The opening screen retains its cabinet view. The launch controls use the space freed by the chooser.
+FPV is the only player camera. The camera chooser, number-key camera shortcuts, Table and Chase render branches are removed. The overhead radar is also removed in every state, including the lost-head reaction. The opening screen retains its cabinet view. The launch controls use the space freed by the chooser.
 
 Each launch makes one random draw with a **1/20 probability**. A selected ball waits until its centre leaves the launcher (`x < 4.4`), then follows the actual ball quaternion for **three simulated seconds**. Stable FPV resumes automatically. The probability does not depend on frame rate, collisions or how long a ball survives. There is at most one episode per launch.
 

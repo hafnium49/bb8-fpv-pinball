@@ -126,7 +126,7 @@ const groundProbes = async p => {
       if (!sim.route.active) throw new Error('Physical shot did not reach requested stage');
       sim.paused = true;
     }, s);
-    assert.equal(await p.locator('[data-camera], #camera-controls').count(), 0); await rendered(p);
+    assert.equal(await p.locator('[data-camera], #camera-controls, #map-wrap, #minimap, .map-wrap').count(), 0); await rendered(p);
     return p.evaluate(() => {
       const { sim, view } = window.orbitDebug, m = view.camera.matrixWorld.elements;
       return { position: sim.position, phase: sim.route.phase, s: sim.route.projection.s, roll: Math.abs(m[1]), pitchDegrees: Math.asin(-m[9]) * 180 / Math.PI, calls: view.renderer.info.render.calls, triangles: view.renderer.info.render.triangles };
