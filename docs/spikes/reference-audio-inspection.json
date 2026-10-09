@@ -1,0 +1,128 @@
+{
+  "observedDate": "2026-10-09",
+  "method": "Public served source and WAV signal metadata inspection; no subjective listening or speaker test",
+  "reference": "https://pinball-fbd1a.firebaseapp.com/",
+  "sounds": [
+    {
+      "name": "flipper",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/flipper.wav",
+      "bytes": 2690,
+      "sha256": "9834d1b9993e7f33e2c774381a37181195007028d70e202cc591aaae7b43dc56",
+      "duration": 0.06,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.613067626953125,
+      "rms": 0.13969941702029923
+    },
+    {
+      "name": "bumper",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/bumper.wav",
+      "bytes": 4012,
+      "sha256": "f3e8ef1a2b211d494b787326f118bc1593990e0c8d3df9b8853474955ebf7602",
+      "duration": 0.08997732426303855,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.516357421875,
+      "rms": 0.17080163959864625
+    },
+    {
+      "name": "target",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/target.wav",
+      "bytes": 3130,
+      "sha256": "cde648fc04e76c2adaccf47dfbd3a2de252e25ccd43d49fc95c850001ef53a00",
+      "duration": 0.06997732426303854,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.29083251953125,
+      "rms": 0.12950199258032558
+    },
+    {
+      "name": "launch",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/launch.wav",
+      "bytes": 15478,
+      "sha256": "1f9dc5e231f59ab383c1699d4cb9b7d792f54981b48af299213266153d5e9493",
+      "duration": 0.34997732426303857,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.573699951171875,
+      "rms": 0.08162662519032753
+    },
+    {
+      "name": "ramp",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/ramp.wav",
+      "bytes": 10628,
+      "sha256": "c0112a806cdc2c0c3ed748b9ea9309357e30620d4767270eed84b4dfd3286f1f",
+      "duration": 0.24,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.28326416015625,
+      "rms": 0.21631145622661024
+    },
+    {
+      "name": "combo",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/combo.wav",
+      "bytes": 8860,
+      "sha256": "254d05cc1173f64a79d7b3a4ad4fa66e44360f3a0fc172fcd8662e42d1e319f1",
+      "duration": 0.19990929705215418,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.28326416015625,
+      "rms": 0.2201536707030927
+    },
+    {
+      "name": "drain",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/drain.wav",
+      "bytes": 30912,
+      "sha256": "476b6724015adfbbedb337273c31c3c84b6ff4b077658aee6169596119b96b8d",
+      "duration": 0.6999546485260771,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.384552001953125,
+      "rms": 0.1178184685622487
+    },
+    {
+      "name": "gameover",
+      "url": "https://pinball-fbd1a.firebaseapp.com/sounds/gameover.wav",
+      "bytes": 45908,
+      "sha256": "7ec8b8c2525f749c227aab756e0844668a4a94f226cbcfdda2ebcf819ecc53b6",
+      "duration": 1.04,
+      "sampleRate": 22050,
+      "channels": 1,
+      "bitDepth": 16,
+      "peak": 0.2884521484375,
+      "rms": 0.11498316206641022
+    }
+  ],
+  "sourceFiles": [
+    {
+      "url": "https://pinball-fbd1a.firebaseapp.com/",
+      "bytes": 3205,
+      "sha256": "866647c09011f191907c42c699ca5e4973fa143be33da23f0c9cfab2d074c95d"
+    },
+    {
+      "url": "https://pinball-fbd1a.firebaseapp.com/game.js",
+      "bytes": 65162,
+      "sha256": "d6892599aee2fefb1887fc9aab9a5fda36f03c86de93058264a81c68e7968f27"
+    },
+    {
+      "url": "https://pinball-fbd1a.firebaseapp.com/assets.js",
+      "bytes": 91020,
+      "sha256": "10715488e0a0ab588d7478e0ced405c9162ed82fe0677f764e3cf977d1fceb22"
+    }
+  ],
+  "findings": {
+    "namedEventEffects": 24,
+    "instancesPerEffect": 3,
+    "elementVolume": 0.55,
+    "music": "No background music loop or sequencer found in inspected game.js or assets.js",
+    "listeningVerified": false,
+    "referenceAssetsImported": false
+  }
+}

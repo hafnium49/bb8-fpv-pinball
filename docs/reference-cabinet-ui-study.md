@@ -2,6 +2,8 @@
 
 Reference: https://pinball-fbd1a.firebaseapp.com/ — inspected on 2026-10-09 through its running browser UI. This study concerns visible design and interaction, not its source code or physics implementation.
 
+Follow-up: [the implementation handoff](cabinet-ui-audio-upgrade.md) specifies cabinet materials, contact boundaries, display layout, original audio, work order and measurable budgets. A separate [audio inspection](reference-audio-study.md) records the reference's event sounds and the limits of that source/file analysis.
+
 The useful direction for ORBIT is a denser, more believable pinball cabinet viewed from inside, with a compact cabinet-style score display. The reference's overhead view and wide sidebars do not fit the requested FPV experience.
 
 ## Captured flow

@@ -24,6 +24,8 @@ FPV fills the playfield; there is no overhead/radar inset, including during a sp
 
 ## Orbital arcade visuals
 
+The next cabinet, UI and original soundtrack upgrade is specified in the [implementation design](docs/cabinet-ui-audio-upgrade.md), with a layout schematic, reference audio evidence and a reproducible render-cost baseline. It is a proposal; the current game behaviour below remains the shipped baseline.
+
 The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels.
 
 **FX High** enables bloom and dynamic shadows and caps pixel density at 1.5. **FX Eco** skips those extra passes and caps pixel density at 1 while keeping the artwork, mechanical detail and collision effects. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable the random spin, decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
