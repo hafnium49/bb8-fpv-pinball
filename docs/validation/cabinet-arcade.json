@@ -1,0 +1,1004 @@
+{
+  "result": "pass",
+  "observedUtc": "2026-10-09T23:57:49.845181+00:00",
+  "implementationBaseCommit": "e74e2e6f5d2d8749e9bf109e948b780791b93c63",
+  "environment": {
+    "browser": "Chrome for Testing 155.0.8059.39",
+    "gpu": "ANGLE SwiftShader",
+    "flags": [
+      "--no-zygote",
+      "--single-process",
+      "--in-process-gpu"
+    ]
+  },
+  "unitAndIntegration": {
+    "result": "pass",
+    "tests": 44,
+    "command": "npm test"
+  },
+  "build": {
+    "result": "pass",
+    "commands": [
+      "npm run build",
+      "npm run standalone"
+    ],
+    "developmentHookAbsent": true,
+    "originalAudioEmbedded": true,
+    "standaloneHasNoExternalScriptOrStylesheet": true,
+    "files": {
+      "dist/index.html": {
+        "sha256": "29ab5b788a988f02b6f2e0cb3aee9fb68cf2eddad5cf21d797a9263b2bd453c7",
+        "bytes": 661
+      },
+      "dist/assets/index-78NUwZCW.js": {
+        "sha256": "deb65d6e7fd7990a6463320d25f0415131c3ed42882963a873502b000abe2033",
+        "bytes": 5602336
+      },
+      "dist/assets/index-nwRmP1p2.css": {
+        "sha256": "f9284c1933a41ee8ecf407c78e8b619efe7c4648b557e7792496ae155b876d78",
+        "bytes": 10747
+      },
+      "artifacts/ORBIT-FPV-Pinball.html": {
+        "sha256": "9af1c45e6dc96128c124e39e6dfb76678fceec0d2b19942cdddb0154bd8cad45",
+        "bytes": 5626141
+      }
+    }
+  },
+  "physics": {
+    "sourceUnchanged": true,
+    "circuit": {
+      "result": "pass",
+      "entrySeeds": 63,
+      "spinPartialStepCases": 18,
+      "groundApproaches": 96,
+      "inputOnlyReturns": 2
+    },
+    "guides": {
+      "result": "pass",
+      "classicValidClear": 1431,
+      "circuitValidClear": 1179,
+      "validTotal": 2610,
+      "failures": 0
+    }
+  },
+  "browser": {
+    "gameplay": {
+      "result": "pass",
+      "checks": [
+        "boot",
+        "real keyboard launch",
+        "simultaneous keyboard flippers",
+        "pause freezes physics",
+        "blur releases controls and pauses",
+        "FPV-only player camera and removed number-key shortcuts",
+        "FPV independent of ball rotation",
+        "game-over/restart/high score",
+        "rendered WebGL scene",
+        "High/Eco rendering and lower Eco draw calls",
+        "real bumper collision produces impact effects",
+        "restart clears effects",
+        "WebGL context recovery rebuilds reflections",
+        "touch defaults to Eco",
+        "simultaneous touch flippers",
+        "mobile landscape and portrait resize",
+        "reduced-motion suppresses impact animations"
+      ],
+      "browserErrors": [],
+      "screenshots": [
+        "desktop-intro.png",
+        "desktop-fpv.png",
+        "desktop-fpv-ready.png",
+        "desktop-eco.png",
+        "desktop-impact.png",
+        "mobile-landscape.png",
+        "mobile-portrait.png"
+      ]
+    },
+    "cabinet": {
+      "result": "pass",
+      "cases": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "bounds": [
+            {
+              "id": "hud",
+              "x": 550,
+              "y": 8,
+              "width": 340,
+              "height": 75.1875,
+              "scrollWidth": 338,
+              "clientWidth": 338
+            },
+            {
+              "id": "score",
+              "x": 565,
+              "y": 30,
+              "width": 228,
+              "height": 21,
+              "scrollWidth": 228,
+              "clientWidth": 228
+            },
+            {
+              "id": "balls",
+              "x": 805,
+              "y": 30,
+              "width": 70,
+              "height": 27,
+              "scrollWidth": 70,
+              "clientWidth": 70
+            },
+            {
+              "id": "hint",
+              "x": 565,
+              "y": 59,
+              "width": 310,
+              "height": 16.1875,
+              "scrollWidth": 310,
+              "clientWidth": 310
+            },
+            {
+              "id": "quality",
+              "x": 1180,
+              "y": 23.59375,
+              "width": 58,
+              "height": 44,
+              "scrollWidth": 56,
+              "clientWidth": 56
+            },
+            {
+              "id": "sound",
+              "x": 1244,
+              "y": 23.59375,
+              "width": 80,
+              "height": 44,
+              "scrollWidth": 78,
+              "clientWidth": 78
+            },
+            {
+              "id": "pause",
+              "x": 1330,
+              "y": 23.59375,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "fullscreen",
+              "x": 1380,
+              "y": 23.59375,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "left",
+              "x": 16,
+              "y": 806,
+              "width": 155,
+              "height": 80,
+              "scrollWidth": 153,
+              "clientWidth": 153
+            },
+            {
+              "id": "right",
+              "x": 1269,
+              "y": 806,
+              "width": 155,
+              "height": 80,
+              "scrollWidth": 153,
+              "clientWidth": 153
+            },
+            {
+              "id": "launch",
+              "x": 652.5,
+              "y": 830,
+              "width": 135,
+              "height": 56,
+              "scrollWidth": 133,
+              "clientWidth": 133
+            }
+          ],
+          "checks": [
+            "ordinary button owns Space",
+            "simultaneous keyboard flippers",
+            "focused launch hold/release",
+            "modal focus/inert/Tab trap",
+            "music slider keyboard control/persistence",
+            "large score fits",
+            "44px action targets",
+            "nonoverlapping controls",
+            "FPV-only UI"
+          ]
+        },
+        {
+          "viewport": {
+            "width": 844,
+            "height": 390
+          },
+          "bounds": [
+            {
+              "id": "hud",
+              "x": 306,
+              "y": 8,
+              "width": 270,
+              "height": 57.1875,
+              "scrollWidth": 268,
+              "clientWidth": 268
+            },
+            {
+              "id": "score",
+              "x": 317,
+              "y": 14,
+              "width": 166,
+              "height": 18.890625,
+              "scrollWidth": 166,
+              "clientWidth": 166
+            },
+            {
+              "id": "balls",
+              "x": 495,
+              "y": 14,
+              "width": 70,
+              "height": 27,
+              "scrollWidth": 70,
+              "clientWidth": 70
+            },
+            {
+              "id": "hint",
+              "x": 317,
+              "y": 43,
+              "width": 248,
+              "height": 16.1875,
+              "scrollWidth": 248,
+              "clientWidth": 248
+            },
+            {
+              "id": "quality",
+              "x": 584,
+              "y": 14.59375,
+              "width": 58,
+              "height": 44,
+              "scrollWidth": 56,
+              "clientWidth": 56
+            },
+            {
+              "id": "sound",
+              "x": 648,
+              "y": 14.59375,
+              "width": 80,
+              "height": 44,
+              "scrollWidth": 78,
+              "clientWidth": 78
+            },
+            {
+              "id": "pause",
+              "x": 734,
+              "y": 14.59375,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "fullscreen",
+              "x": 784,
+              "y": 14.59375,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "left",
+              "x": 16,
+              "y": 314,
+              "width": 125,
+              "height": 64,
+              "scrollWidth": 123,
+              "clientWidth": 123
+            },
+            {
+              "id": "right",
+              "x": 703,
+              "y": 314,
+              "width": 125,
+              "height": 64,
+              "scrollWidth": 123,
+              "clientWidth": 123
+            },
+            {
+              "id": "launch",
+              "x": 370,
+              "y": 326,
+              "width": 104,
+              "height": 52,
+              "scrollWidth": 102,
+              "clientWidth": 102
+            }
+          ],
+          "checks": [
+            "ordinary button owns Space",
+            "simultaneous keyboard flippers",
+            "focused launch hold/release",
+            "modal focus/inert/Tab trap",
+            "music slider keyboard control/persistence",
+            "large score fits",
+            "44px action targets",
+            "nonoverlapping controls",
+            "FPV-only UI"
+          ]
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "bounds": [
+            {
+              "id": "hud",
+              "x": 12,
+              "y": 58,
+              "width": 366,
+              "height": 75.1875,
+              "scrollWidth": 364,
+              "clientWidth": 364
+            },
+            {
+              "id": "score",
+              "x": 27,
+              "y": 80,
+              "width": 254,
+              "height": 21,
+              "scrollWidth": 254,
+              "clientWidth": 254
+            },
+            {
+              "id": "balls",
+              "x": 293,
+              "y": 80,
+              "width": 70,
+              "height": 27,
+              "scrollWidth": 70,
+              "clientWidth": 70
+            },
+            {
+              "id": "hint",
+              "x": 27,
+              "y": 109,
+              "width": 336,
+              "height": 16.1875,
+              "scrollWidth": 336,
+              "clientWidth": 336
+            },
+            {
+              "id": "quality",
+              "x": 154,
+              "y": 8,
+              "width": 50,
+              "height": 44,
+              "scrollWidth": 48,
+              "clientWidth": 48
+            },
+            {
+              "id": "sound",
+              "x": 208,
+              "y": 8,
+              "width": 74,
+              "height": 44,
+              "scrollWidth": 72,
+              "clientWidth": 72
+            },
+            {
+              "id": "pause",
+              "x": 286,
+              "y": 8,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "fullscreen",
+              "x": 334,
+              "y": 8,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "left",
+              "x": 12,
+              "y": 754,
+              "width": 97.5,
+              "height": 76,
+              "scrollWidth": 96,
+              "clientWidth": 96
+            },
+            {
+              "id": "right",
+              "x": 280.5,
+              "y": 754,
+              "width": 97.5,
+              "height": 76,
+              "scrollWidth": 96,
+              "clientWidth": 96
+            },
+            {
+              "id": "launch",
+              "x": 143,
+              "y": 774,
+              "width": 104,
+              "height": 56,
+              "scrollWidth": 102,
+              "clientWidth": 102
+            }
+          ],
+          "checks": [
+            "ordinary button owns Space",
+            "simultaneous keyboard flippers",
+            "focused launch hold/release",
+            "modal focus/inert/Tab trap",
+            "music slider keyboard control/persistence",
+            "large score fits",
+            "44px action targets",
+            "nonoverlapping controls",
+            "FPV-only UI"
+          ]
+        },
+        {
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "bounds": [
+            {
+              "id": "hud",
+              "x": 12,
+              "y": 58,
+              "width": 296,
+              "height": 75.1875,
+              "scrollWidth": 294,
+              "clientWidth": 294
+            },
+            {
+              "id": "score",
+              "x": 27,
+              "y": 80,
+              "width": 184,
+              "height": 21,
+              "scrollWidth": 184,
+              "clientWidth": 184
+            },
+            {
+              "id": "balls",
+              "x": 223,
+              "y": 80,
+              "width": 70,
+              "height": 27,
+              "scrollWidth": 70,
+              "clientWidth": 70
+            },
+            {
+              "id": "hint",
+              "x": 27,
+              "y": 109,
+              "width": 266,
+              "height": 16.1875,
+              "scrollWidth": 266,
+              "clientWidth": 266
+            },
+            {
+              "id": "quality",
+              "x": 84,
+              "y": 8,
+              "width": 50,
+              "height": 44,
+              "scrollWidth": 48,
+              "clientWidth": 48
+            },
+            {
+              "id": "sound",
+              "x": 138,
+              "y": 8,
+              "width": 74,
+              "height": 44,
+              "scrollWidth": 72,
+              "clientWidth": 72
+            },
+            {
+              "id": "pause",
+              "x": 216,
+              "y": 8,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "fullscreen",
+              "x": 264,
+              "y": 8,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "left",
+              "x": 12,
+              "y": 478,
+              "width": 92,
+              "height": 76,
+              "scrollWidth": 90,
+              "clientWidth": 90
+            },
+            {
+              "id": "right",
+              "x": 216,
+              "y": 478,
+              "width": 92,
+              "height": 76,
+              "scrollWidth": 90,
+              "clientWidth": 90
+            },
+            {
+              "id": "launch",
+              "x": 112,
+              "y": 498,
+              "width": 96,
+              "height": 56,
+              "scrollWidth": 94,
+              "clientWidth": 94
+            }
+          ],
+          "checks": [
+            "ordinary button owns Space",
+            "simultaneous keyboard flippers",
+            "focused launch hold/release",
+            "modal focus/inert/Tab trap",
+            "music slider keyboard control/persistence",
+            "large score fits",
+            "44px action targets",
+            "nonoverlapping controls",
+            "FPV-only UI"
+          ]
+        },
+        {
+          "viewport": {
+            "width": 568,
+            "height": 320
+          },
+          "bounds": [
+            {
+              "id": "hud",
+              "x": 48,
+              "y": 8,
+              "width": 276,
+              "height": 57.1875,
+              "scrollWidth": 274,
+              "clientWidth": 274
+            },
+            {
+              "id": "score",
+              "x": 59,
+              "y": 14,
+              "width": 172,
+              "height": 18.890625,
+              "scrollWidth": 172,
+              "clientWidth": 172
+            },
+            {
+              "id": "balls",
+              "x": 243,
+              "y": 14,
+              "width": 70,
+              "height": 27,
+              "scrollWidth": 70,
+              "clientWidth": 70
+            },
+            {
+              "id": "hint",
+              "x": 59,
+              "y": 43,
+              "width": 254,
+              "height": 16.1875,
+              "scrollWidth": 254,
+              "clientWidth": 254
+            },
+            {
+              "id": "quality",
+              "x": 332,
+              "y": 14.59375,
+              "width": 50,
+              "height": 44,
+              "scrollWidth": 48,
+              "clientWidth": 48
+            },
+            {
+              "id": "sound",
+              "x": 386,
+              "y": 14.59375,
+              "width": 74,
+              "height": 44,
+              "scrollWidth": 72,
+              "clientWidth": 72
+            },
+            {
+              "id": "pause",
+              "x": 464,
+              "y": 14.59375,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "fullscreen",
+              "x": 512,
+              "y": 14.59375,
+              "width": 44,
+              "height": 44,
+              "scrollWidth": 42,
+              "clientWidth": 42
+            },
+            {
+              "id": "left",
+              "x": 12,
+              "y": 252,
+              "width": 125,
+              "height": 56,
+              "scrollWidth": 123,
+              "clientWidth": 123
+            },
+            {
+              "id": "right",
+              "x": 431,
+              "y": 252,
+              "width": 125,
+              "height": 56,
+              "scrollWidth": 123,
+              "clientWidth": 123
+            },
+            {
+              "id": "launch",
+              "x": 232,
+              "y": 256,
+              "width": 104,
+              "height": 52,
+              "scrollWidth": 102,
+              "clientWidth": 102
+            }
+          ],
+          "checks": [
+            "ordinary button owns Space",
+            "simultaneous keyboard flippers",
+            "focused launch hold/release",
+            "modal focus/inert/Tab trap",
+            "music slider keyboard control/persistence",
+            "large score fits",
+            "44px action targets",
+            "nonoverlapping controls",
+            "FPV-only UI"
+          ]
+        }
+      ],
+      "errors": []
+    },
+    "audio": {
+      "result": "pass",
+      "cases": [
+        {
+          "name": "desktop-classic",
+          "result": "pass",
+          "confirmationPeak": 0.019357556477189064,
+          "voiceReady": true,
+          "wallPeak": 0.031207412481307983,
+          "bedPeak": 0.06769399344921112,
+          "warningStarted": 12.541678004535147,
+          "warningPans": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "pan": 0
+            }
+          ],
+          "fallbackMotifs": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "frequencies": [
+                414,
+                348
+              ],
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "frequencies": [
+                630,
+                726,
+                822
+              ],
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "frequencies": [
+                372,
+                792,
+                372,
+                792
+              ],
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "frequencies": [
+                900,
+                960,
+                1080
+              ],
+              "pan": 0
+            }
+          ],
+          "bounded": {
+            "voiceReady": true,
+            "voiceFailed": false,
+            "effects": 12,
+            "music": 2,
+            "speaking": false,
+            "priority": 0,
+            "loops": 2,
+            "musicSteps": 46,
+            "warnings": 8,
+            "musicVolume": 0.6,
+            "lastVoice": "left"
+          },
+          "headLoss": {
+            "spinUp": -1.3435885648505064e-07,
+            "spinDuration": 3.0083333333333253,
+            "cue": "nonverbal ouch cry",
+            "caption": "Oh no, BB-8 lost its head!",
+            "captionTracksSimulationTime": true,
+            "automaticFpvReturn": true,
+            "pauseCancels": true,
+            "reducedMotionCancelsAndSuppressesDraw": true,
+            "reducedMotionClearsExistingEffects": true,
+            "warningsTakePrecedence": true,
+            "cameraControlsAndShortcutsRemoved": true,
+            "noRadarDuringSpin": true
+          },
+          "checks": [
+            "first visit muted with no AudioContext",
+            "explicit click/tap requests playback and emits nonzero audio",
+            "flipper and launch event tones with keyboard/simultaneous touch",
+            "original nonverbal beep sprite decodes in the real audio context",
+            "sampled left/right warnings pan to their sides; both/drain stay centered",
+            "real Rapier wall/bumper/target sound events",
+            "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+            "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+            "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+            "music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom",
+            "gesture resumes suspended context without recreating it",
+            "blur stops all layers and outputs zero; resume rebuilds the mix",
+            "three drains stop music/loops and restart resets lives/audio",
+            "sound-on preference restored without autoplay",
+            "injected saved-on startup failure clears UI/preference/session and allows retry",
+            "injected sprite-decoding failure retains audible procedural warning fallback",
+            "all four fallback warning motifs differ; left/right pan correctly",
+            "mute stops output and releases session",
+            "sound-off preference survives reload"
+          ]
+        },
+        {
+          "name": "mobile-circuit",
+          "result": "pass",
+          "confirmationPeak": 0.010188447311520576,
+          "voiceReady": true,
+          "wallPeak": 0.04986299201846123,
+          "bedPeak": 0.06949880719184875,
+          "warningStarted": 11.461950113378684,
+          "warningPans": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "pan": 0
+            }
+          ],
+          "fallbackMotifs": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "frequencies": [
+                414,
+                348
+              ],
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "frequencies": [
+                630,
+                726,
+                822
+              ],
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "frequencies": [
+                372,
+                792,
+                372,
+                792
+              ],
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "frequencies": [
+                900,
+                960,
+                1080
+              ],
+              "pan": 0
+            }
+          ],
+          "bounded": {
+            "voiceReady": true,
+            "voiceFailed": false,
+            "effects": 12,
+            "music": 2,
+            "speaking": false,
+            "priority": 0,
+            "loops": 2,
+            "musicSteps": 52,
+            "warnings": 8,
+            "musicVolume": 0.6,
+            "lastVoice": "left"
+          },
+          "headLoss": {
+            "spinUp": -1.3435885648505064e-07,
+            "spinDuration": 3.0083333333333253,
+            "cue": "nonverbal ouch cry",
+            "caption": "Oh no, BB-8 lost its head!",
+            "captionTracksSimulationTime": true,
+            "automaticFpvReturn": true,
+            "pauseCancels": true,
+            "reducedMotionCancelsAndSuppressesDraw": true,
+            "reducedMotionClearsExistingEffects": true,
+            "warningsTakePrecedence": true,
+            "cameraControlsAndShortcutsRemoved": true,
+            "noRadarDuringSpin": true
+          },
+          "checks": [
+            "first visit muted with no AudioContext",
+            "explicit click/tap requests playback and emits nonzero audio",
+            "flipper and launch event tones with keyboard/simultaneous touch",
+            "original nonverbal beep sprite decodes in the real audio context",
+            "sampled left/right warnings pan to their sides; both/drain stay centered",
+            "real Rapier wall/bumper/target sound events",
+            "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+            "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+            "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+            "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+            "music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom",
+            "gesture resumes suspended context without recreating it",
+            "blur stops all layers and outputs zero; resume rebuilds the mix",
+            "three drains stop music/loops and restart resets lives/audio",
+            "sound-on preference restored without autoplay",
+            "injected saved-on startup failure clears UI/preference/session and allows retry",
+            "injected sprite-decoding failure retains audible procedural warning fallback",
+            "all four fallback warning motifs differ; left/right pan correctly",
+            "mute stops output and releases session",
+            "sound-off preference survives reload"
+          ]
+        }
+      ],
+      "screenshots": [
+        "desktop-classic-head-loss.png",
+        "desktop-classic-sound-on.png",
+        "mobile-circuit-head-loss.png",
+        "mobile-circuit-sound-on.png"
+      ],
+      "browserErrors": [],
+      "limitations": [
+        "Chromium waveform measurements verify generated audio, not speaker audibility.",
+        "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.",
+        "Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured."
+      ]
+    }
+  },
+  "renderCost": {
+    "report": "cabinet-arcade-render-cost.json",
+    "result": "pass",
+    "samples": 24,
+    "maximumDelta": {
+      "calls": 4,
+      "triangles": -7048,
+      "geometries": -5,
+      "textures": 0
+    }
+  },
+  "sourceSha256": {
+    "package.json": "acb4c4fe63325f3e1f4f752e1876c79e789b73d5fa71d7d0acfd4094dd1b6145",
+    "scripts/audio-browser.cjs": "8e1c99b6fd2264455082a33bcb33d4867d30a3d260730ca2ca47b8b4b77357cf",
+    "scripts/cabinet-browser.cjs": "b0a72ea79d37f98d1b793c2ec2264caf794f20169071e8767f061e52477032ce",
+    "src/assets/droid-beeps.wav": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77",
+    "src/main.ts": "32b2ff49163ba479f44b9ef6132d500cca4cbb615bf51232e9b7b3791dc5199b",
+    "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
+    "src/physics/route-state.ts": "3d03cc5a75ea62f82845d2552f41cce2964fcfb10ddf3e8568fc94b84d5b1be8",
+    "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
+    "src/physics/table.ts": "cc4ee3626284dc706fb5e350f3b1f1bdbebd52db05379f418ef946ed75e16bbf",
+    "src/render/artwork.ts": "bfaecdd23a8dcbbbfc013f8a05368eee5a648501b96d85a61c9f688bdd38d914",
+    "src/render/cabinet-theme.ts": "b653f447dfe1ebdd92aed94cbbc3120382b5c045b35b2aa2f89389b0665f1137",
+    "src/render/effects.ts": "75c858572ea06cac5318563ff208bde89c4742cfebb97b49d781ee927c422080",
+    "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
+    "src/render/route-camera.ts": "a84d91b9922723b252ebc952433e72b935b7bf19c15e4cd0019be2b876171de6",
+    "src/render/route-model.ts": "f481f49a92b8aca0f96cff9d11d1d821393242adfd8e22f6d9561e8f8137a284",
+    "src/render/table-model.ts": "324142434fae379d3ca7d0f3fc64fe7c3af36d55d7e0932ff5d69421560d2dcb",
+    "src/render/view.ts": "8f5d7b2536b07620484a599cc195f7345fa84df2595c6294d084e5862a78ff3f",
+    "src/style.css": "3d7ee21ac22320b7895c5eb87c70d78d3c3cc472149d98b0f1b8159c1d370143",
+    "src/ui/audio-presets.ts": "7dde7824734a311a7fdb7ebd7a1ebe3bb289b71ed0b2093f026aed5a698aa0e6",
+    "src/ui/audio.ts": "095befb151a0e0869c18420b914e170de7d97299841299084f87651c0f1753c6",
+    "src/ui/cabinet-display.ts": "2299ee18dfaa9c923e087576895b0183deed3f14015df269631e9eea86f2c3b4",
+    "src/ui/music-pattern.ts": "1a8257b6ae57b23b148823c54c23096ff5ca66159bdc3d50fcffa695f8efdf61",
+    "src/ui/sound-director.ts": "16cd791e8a034b9b606f3e2698a9e13ac40f0edb39716edc377963976d0f827c",
+    "src/ui/voice-bank.ts": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac",
+    "tests/audio.test.ts": "30d4b15c8bc903585e111fb18cc770814d1e5b1aacefbc3ec221da431c158234",
+    "tests/cabinet-audio.test.ts": "5dcc196a7e6e3e3bc03f9c5b3694e6525f351763a8ed04903d353dda11ff12a7",
+    "tests/circuit.test.ts": "f11332b987ddf67ffed0b663e2d3d42e82657813c0b9dfe5a5f953eca544ce2c",
+    "tests/flipper-guides.test.ts": "23740d0c7c50de8d50ff21c2a0a41c71fdc30aee1b764c68a0ebc8bc0c0c0c7b",
+    "tests/head-loss.test.ts": "0a60165ec7a435307d5a23845201744798882d7b783189708665855844affeba",
+    "tests/physics.test.ts": "8faffc434d050e5e3641dea835000253b391c2d31ed4de7dbaec370a668bb050",
+    "tests/sound-director.test.ts": "d93fc50f695e06be1822efef1ecbc3c31ef01d542197f6040b74afadb1cce01d"
+  },
+  "limitations": [
+    "Software-GPU counters do not establish a physical-device frame rate.",
+    "Chromium Web Audio signal checks do not establish physical iPhone speaker balance, Silent Mode or Bluetooth routing.",
+    "Perceived soundtrack quality and screen-reader announcement timing require human playtesting.",
+    "The reference event pacing informs original synthesis; its continuous music was not verified by listening."
+  ]
+}

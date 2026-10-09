@@ -11,15 +11,15 @@ function texture(image: HTMLCanvasElement) {
 }
 function random(seed = 43) { return () => { seed = seed * 16807 % 2147483647; return seed / 2147483647; }; }
 
-export function playfieldTexture() {
+export function playfieldTexture(circuitEnabled = false) {
   const { image, c } = canvas(1024, 2048), rand = random();
   const x = (v: number) => (v + 6) / 12 * 1024, z = (v: number) => (v + 11) / 22 * 2048;
   const background = c.createLinearGradient(0, 0, 1024, 2048);
-  background.addColorStop(0, '#0e2546'); background.addColorStop(0.38, '#191b43');
+  background.addColorStop(0, '#0e2546'); background.addColorStop(0.38, '#1d2c33');
   background.addColorStop(0.7, '#101d34'); background.addColorStop(1, '#07222e');
   c.fillStyle = background; c.fillRect(0, 0, 1024, 2048);
   const haze = c.createRadialGradient(330, 900, 0, 330, 900, 740);
-  haze.addColorStop(0, '#744ca966'); haze.addColorStop(0.45, '#293e7244'); haze.addColorStop(1, '#08152c00');
+  haze.addColorStop(0, '#744ca922'); haze.addColorStop(0.45, '#293e7244'); haze.addColorStop(1, '#08152c00');
   c.fillStyle = haze; c.fillRect(0, 0, 1024, 2048);
   for (let i = 0; i < 750; i++) {
     c.fillStyle = `rgba(185,219,255,${0.06 + rand() * 0.4})`;
@@ -44,7 +44,7 @@ export function playfieldTexture() {
   }
   // A large illustrated planet gives the field its own arcade artwork.
   const px = x(-0.45), py = z(0.45), radius = 228;
-  c.save(); c.translate(px, py); c.rotate(-0.36);
+  c.save(); c.globalAlpha = 0.42; c.translate(px, py); c.rotate(-0.36);
   c.strokeStyle = '#62c9ed'; c.lineWidth = 5; c.shadowColor = '#42bbff'; c.shadowBlur = 17;
   c.beginPath(); c.ellipse(0, 0, 330, 126, 0, 0, Math.PI * 2); c.stroke(); c.shadowBlur = 0;
   c.save(); c.beginPath(); c.arc(0, 0, radius, 0, Math.PI * 2); c.clip();
@@ -90,7 +90,7 @@ export function playfieldTexture() {
     const a = side * (1.05 + n * 0.4);
     path([[a - side * 0.12, 6.5], [a, 6.75], [a + side * 0.12, 6.5]], side < 0 ? '#68ebfa' : '#ffbc76', 5, 9);
   }
-  c.fillStyle = '#ffb966'; c.font = 'bold 26px monospace'; c.fillText('LAUNCH / RETURN / REPEAT', x(0), z(10.2));
+  c.fillStyle = '#ffb966'; c.font = 'bold 26px monospace'; c.fillText(circuitEnabled ? 'LEFT RAMP / BRIDGE / RIGHT RETURN' : 'LAUNCH / REACTORS / REPEAT', x(0), z(10.2));
   return texture(image);
 }
 

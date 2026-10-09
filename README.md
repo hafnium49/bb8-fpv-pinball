@@ -24,7 +24,7 @@ FPV fills the playfield; there is no overhead/radar inset, including during a sp
 
 ## Orbital arcade visuals
 
-The next cabinet, UI and original soundtrack upgrade is specified in the [implementation design](docs/cabinet-ui-audio-upgrade.md), with a layout schematic, reference audio evidence and a reproducible render-cost baseline. It is a proposal; the current game behaviour below remains the shipped baseline.
+The cabinet/display and original soundtrack upgrade is implemented. See the [release and verification record](docs/cabinet-arcade-release.md) and the [original design](docs/cabinet-ui-audio-upgrade.md). The score, balls and status share one compact display; pause offers a separate Music volume slider while master SOUND controls the full mix.
 
 The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels.
 
@@ -40,7 +40,7 @@ FPV previews the path with bounded pitch and a level horizon; FPV sweeps against
 
 ## Droid soundscape
 
-The ball expresses itself entirely through lower electronic beeps, burbles, trills and metallic cries, inspired by BB-8 and R2-D2. Curious chatter, impact cries, launch excitement, bridge joy, tunnel echoes and relieved save beeps each have their own contour and rhythm. Contact-speed rolling and metal bridge rattles sit under an original arcade groove. The game contains no spoken English audio.
+The ball expresses itself entirely through lower electronic beeps, burbles, trills and metallic cries, inspired by BB-8 and R2-D2. Curious chatter, impact cries, launch excitement, bridge joy, tunnel echoes and relieved save beeps each have their own contour and rhythm. Contact-speed rolling and metal bridge rattles sit under an original 16-bar, 108 BPM arcade groove with bass, soft chords, percussion and a sparse motif. The game contains no spoken English audio.
 
 A short forecast plays distinct warning motifs ahead of a return: two low falling beeps for **Left flipper!**, three high rising beeps for **Right flipper!**, alternating low/high beeps for **Both flippers!**, and a rapid panic pattern for **Watch the drain!**. Left/right warnings also pan toward that side; their rhythm and pitch remain distinct on a mono phone speaker. English captions interpret the warning and highlight the requested flipper, including when sound is muted.
 
@@ -63,6 +63,8 @@ npm run preview
 For a single offline HTML file, run `npm run standalone` and open `artifacts/ORBIT-FPV-Pinball.html` in a WebGL-capable browser. It embeds the renderer, physics runtime and stylesheet; no server or CDN is needed.
 
 For browser QA, run `npx playwright install chromium`, then `npm run test:browser`. It starts its own dev server. Screenshots and the check report go into `artifacts/`. Set `CHROME_PATH` to use an existing Chromium executable or `GAME_URL` to test a running dev server.
+
+`npm run test:cabinet:browser` checks five viewport layouts, large scores, toolbar target sizes, modal focus/inert behavior, keyboard ownership and the music slider.
 
 `npm run test:audio:browser` checks real Web Audio waveforms, decoded droid beeps, directional warnings, actual collision and route cues, warning priority, continuous rolling/music, resource bounds, mute, reload preferences, interruption recovery and the three-ball audio lifecycle in desktop classic and mobile circuit views. It also injects clip-decoding and audio-start failures and verifies distinct procedural warning fallbacks. Safari audio-session behavior and the listening balance require a physical iPhone check.
 

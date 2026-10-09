@@ -44,7 +44,7 @@ export class PinballView {
     this.renderer.setClearColor(0x080e24);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.08;
+    this.renderer.toneMappingExposure = 0.98;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.info.autoReset = false;
     this.renderer.domElement.setAttribute('aria-label', 'Illuminated orbital arcade pinball table');
@@ -60,7 +60,7 @@ export class PinballView {
     this.environment = this.createEnvironment();
     this.scene.environment = this.environment.texture; this.scene.environmentIntensity = 0.55;
     this.renderer.domElement.addEventListener('webglcontextrestored', this.restoreEnvironment);
-    this.table = new ArcadeTable(this.scene); this.effects = new ArcadeEffects(this.scene);
+    this.table = new ArcadeTable(this.scene, circuitEnabled); this.effects = new ArcadeEffects(this.scene);
     if (circuitEnabled) this.circuit = new ElevatedCircuit(this.scene);
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
@@ -76,7 +76,7 @@ export class PinballView {
 
   /** Eco keeps the same artwork and mechanics, with fewer pixels and no bloom/shadow pass. */
   setQuality(high: boolean) {
-    this.highQuality = high; this.renderer.shadowMap.enabled = high;
+    this.highQuality = high; this.renderer.shadowMap.enabled = high; this.table.setQuality(high);
     this.scene.traverse(object => {
       if (object instanceof THREE.Mesh) {
         const materials = Array.isArray(object.material) ? object.material : [object.material];

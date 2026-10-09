@@ -1,6 +1,6 @@
 # Next implementation: cabinet, display and arcade audio
 
-Design baseline: `main` at `51b452b91fee4fd1233dc0d69030ee46d65eafcf`, inspected 2026-10-09. This is an implementation handoff; the proposed visuals, UI and audio below have not shipped.
+Design baseline: `main` at `51b452b91fee4fd1233dc0d69030ee46d65eafcf`, inspected 2026-10-09. This records the original implementation handoff. The runtime upgrade was implemented on 2026-10-10 (JST); see the [release record](cabinet-arcade-release.md) for the delivered scope, final values, verification and remaining device checks. Statements about proposed work below describe the original design stage.
 
 The next release should feel like being inside a constructed arcade cabinet: readable rubber contact edges, painted housings, restrained illuminated inserts, a mechanically credible elevated circuit, one compact score/status display, and a fuller original arcade soundtrack. The selected direction comes from the [reference cabinet/UI study](reference-cabinet-ui-study.md) and the [new audio inspection](reference-audio-study.md).
 

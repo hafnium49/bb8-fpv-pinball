@@ -1,3 +1,4 @@
+import type { MusicMode } from './music-pattern';
 import type { Controls, GameEvent, Phase, Point } from '../physics/simulation';
 import type { RoutePhase } from '../physics/route-state';
 import { routeLength } from '../physics/route-geometry';
@@ -27,6 +28,7 @@ export interface SoundCue {
 export interface SoundFrame {
   paused: boolean;
   music: boolean;
+  musicMode?: MusicMode;
   rolling: number;
   speed: number;
   surface: RoutePhase;
@@ -85,6 +87,7 @@ export class SoundDirector {
   update(s: SoundState, events: readonly GameEvent[]): SoundFrame {
     const cues: SoundCue[] = [];
     const frame: SoundFrame = { paused: s.paused, music: !s.paused && ['ready', 'playing', 'draining'].includes(s.phase),
+      musicMode: s.paused ? 'off' : s.phase === 'ready' ? 'ready' : s.phase === 'playing' ? 'playing' : s.phase === 'draining' ? 'draining' : 'off',
       rolling: 0, speed: Math.hypot(s.velocity.x, s.velocity.y, s.velocity.z),
       surface: s.route.phase, charge: s.phase === 'ready' ? s.charge : 0, cues };
     if (s.paused || s.phase === 'intro') return frame;
