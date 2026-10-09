@@ -133,7 +133,7 @@ export class SoundDirector {
       this.nextIdle = s.time + 5;
     }
     if (s.phase === 'playing' && s.time >= this.nextIdle && s.time >= this.nextPhrase && !warning) {
-      cues.push({ kind: 'chatter', strength: 0.2, priority: 15, caption: '[curious droid chirps]' });
+      cues.push({ kind: 'chatter', strength: 0.2, priority: 15, caption: '[curious electronic chatter]' });
       this.nextIdle = s.time + 7;
     }
     return frame;

@@ -2,7 +2,6 @@ import './style.css';
 import { PinballSimulation } from './physics/simulation';
 import { PinballView } from './render/view';
 import { HeadLossCamera, HEAD_LOSS_CAPTION } from './render/head-loss';
-import { drawMinimap } from './ui/minimap';
 import { GameAudio } from './ui/audio';
 import { SoundDirector, type SoundCue } from './ui/sound-director';
 import voiceUrl from './assets/droid-beeps.wav?inline';
@@ -20,11 +19,10 @@ app.innerHTML = `
       <div class="score-block"><span class="eyebrow">SCORE</span><output id="score">00000</output></div>
       <div class="ball-block"><span class="eyebrow">BALLS</span><span id="balls" aria-label="Three balls remaining">● ● ●</span></div>
     </div>
-    <aside id="map-wrap" class="map-wrap" hidden><div class="map-label"><span>TABLE RADAR</span><i></i></div><canvas id="minimap" width="156" height="270" aria-label="Overhead map showing the ball, bumpers, and flippers"></canvas><div class="map-bottom">YOU ARE THE BALL</div></aside>
     <div id="toast" role="status" aria-live="polite"></div>
     <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
-      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. The radar shows what is behind you. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
+      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
     <div id="play-controls" class="play-controls" hidden>
@@ -101,7 +99,7 @@ function begin() {
   sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); void activateSound();
   $('score').textContent = '00000';
   $('intro').hidden = true; $('modal').hidden = true;
-  for (const id of ['hud', 'map-wrap', 'play-controls']) $(id).hidden = false;
+  for (const id of ['hud', 'play-controls']) $(id).hidden = false;
   toast('Hold SPACE, then release to launch');
 }
 function showPause() {
@@ -189,7 +187,6 @@ function frame(now: number) {
   view.mode = cameraFrame.mode;
   if (cameraFrame.ended && $('droid-line').textContent === HEAD_LOSS_CAPTION) clearComms();
   view.render(sim, dt);
-  drawMinimap($<HTMLCanvasElement>('minimap'), sim, view.heading);
   $('score').textContent = String(sim.score).padStart(5, '0');
   $('balls').textContent = '● '.repeat(sim.balls) + '○ '.repeat(3 - sim.balls);
   $('balls').setAttribute('aria-label', `${sim.balls} balls remaining`);

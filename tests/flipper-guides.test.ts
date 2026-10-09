@@ -10,7 +10,7 @@ for (const circuit of [false, true]) {
     try {
       for (const side of [-1, 1] as const) {
         // Before the fix these valid arrivals parked indefinitely at
-        // (-3.268, .280, 6.914) and (3.244, .280, 6.898), matching the radar.
+        // (-3.268, .280, 6.914) and (3.244, .280, 6.898), as reported in the original stuck-ball screenshot.
         const report = guideTrial(sim, { side, start: { x: side * 2.7, y: BALL_RADIUS + .025, z: 6.5 }, velocity: { x: side * 1.5, y: 0, z: .5 } });
         assert.ok(report.valid); assert.equal(report.outcome, 'cleared', JSON.stringify(report));
         assert.equal(report.completions, 0); assert.equal(report.score, 0);

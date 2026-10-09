@@ -1,0 +1,754 @@
+{
+  "verifiedUtc": "2026-10-09T07:15:23.442825+00:00",
+  "baseCommit": "3aca00ff85dccaf7c2f61687736d9ef468268b82",
+  "scope": [
+    "Remove radar markup, styles, frame rendering and minimap module in all game states",
+    "Lower the original synthesized nonverbal voice and its procedural fallback",
+    "Retain 5% per-launch, three-simulation-second spin, warning precedence and reduced-motion support",
+    "Document the reference cabinet/UI design; proposed larger visual redesign is not implemented"
+  ],
+  "environment": {
+    "browser": "Chrome Headless Shell 155.0.8059.39",
+    "automation": "Playwright 1.62.1",
+    "renderer": "ANGLE SwiftShader software GPU",
+    "browserArgs": [
+      "--no-zygote",
+      "--single-process",
+      "--in-process-gpu"
+    ],
+    "deviceIsolation": "Fresh browser process for desktop and mobile cases"
+  },
+  "commands": {
+    "npm ci": "pass",
+    "npm test": {
+      "result": "pass",
+      "tests": 40,
+      "failed": 0
+    },
+    "npm run standalone": "pass (TypeScript, Vite production build and offline HTML)",
+    "git diff --check": "pass",
+    "npm run test:audio:browser": {
+      "result": "pass",
+      "cases": [
+        {
+          "name": "desktop-classic",
+          "result": "pass",
+          "confirmationPeak": 0.013036484830081463,
+          "voiceReady": true,
+          "wallPeak": 0.09590357542037964,
+          "bedPeak": 0.022051291540265083,
+          "warningStarted": 20.48,
+          "warningPans": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "pan": 0
+            }
+          ],
+          "fallbackMotifs": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "frequencies": [
+                414,
+                348
+              ],
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "frequencies": [
+                630,
+                726,
+                822
+              ],
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "frequencies": [
+                372,
+                792,
+                372,
+                792
+              ],
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "frequencies": [
+                900,
+                960,
+                1080
+              ],
+              "pan": 0
+            }
+          ],
+          "bounded": {
+            "voiceReady": true,
+            "voiceFailed": false,
+            "effects": 12,
+            "music": 1,
+            "speaking": false,
+            "priority": 0,
+            "loops": 2,
+            "musicSteps": 58,
+            "warnings": 7,
+            "lastVoice": "left"
+          },
+          "headLoss": {
+            "spinUp": -1.3435885648505064e-07,
+            "spinDuration": 3.024999999999992,
+            "cue": "nonverbal ouch cry",
+            "caption": "Oh no, BB-8 lost its head!",
+            "captionTracksSimulationTime": true,
+            "automaticFpvReturn": true,
+            "pauseCancels": true,
+            "reducedMotionCancelsAndSuppressesDraw": true,
+            "reducedMotionClearsExistingEffects": true,
+            "warningsTakePrecedence": true,
+            "cameraControlsAndShortcutsRemoved": true,
+            "noRadarDuringSpin": true
+          },
+          "checks": [
+            "first visit muted with no AudioContext",
+            "explicit click/tap requests playback and emits nonzero audio",
+            "flipper and launch event tones with keyboard/simultaneous touch",
+            "original nonverbal beep sprite decodes in the real audio context",
+            "sampled left/right warnings pan to their sides; both/drain stay centered",
+            "real Rapier wall/bumper/target sound events",
+            "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+            "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+            "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+            "gesture resumes suspended context without recreating it",
+            "blur stops all layers and outputs zero; resume rebuilds the mix",
+            "three drains stop music/loops and restart resets lives/audio",
+            "sound-on preference restored without autoplay",
+            "injected saved-on startup failure clears UI/preference/session and allows retry",
+            "injected sprite-decoding failure retains audible procedural warning fallback",
+            "all four fallback warning motifs differ; left/right pan correctly",
+            "mute stops output and releases session",
+            "sound-off preference survives reload"
+          ]
+        },
+        {
+          "name": "mobile-circuit",
+          "result": "pass",
+          "confirmationPeak": 0.010188447311520576,
+          "voiceReady": true,
+          "wallPeak": 0.015437395311892033,
+          "bedPeak": 0.0822167694568634,
+          "warningStarted": 13.432743764172336,
+          "warningPans": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "pan": 0
+            }
+          ],
+          "fallbackMotifs": [
+            {
+              "voice": "left",
+              "accepted": true,
+              "frequencies": [
+                414,
+                348
+              ],
+              "pan": -0.6499999761581421
+            },
+            {
+              "voice": "right",
+              "accepted": true,
+              "frequencies": [
+                630,
+                726,
+                822
+              ],
+              "pan": 0.6499999761581421
+            },
+            {
+              "voice": "both",
+              "accepted": true,
+              "frequencies": [
+                372,
+                792,
+                372,
+                792
+              ],
+              "pan": 0
+            },
+            {
+              "voice": "danger",
+              "accepted": true,
+              "frequencies": [
+                900,
+                960,
+                1080
+              ],
+              "pan": 0
+            }
+          ],
+          "bounded": {
+            "voiceReady": true,
+            "voiceFailed": false,
+            "effects": 12,
+            "music": 2,
+            "speaking": false,
+            "priority": 0,
+            "loops": 2,
+            "musicSteps": 60,
+            "warnings": 8,
+            "lastVoice": "left"
+          },
+          "headLoss": {
+            "spinUp": -1.3435885648505064e-07,
+            "spinDuration": 3.0083333333333253,
+            "cue": "nonverbal ouch cry",
+            "caption": "Oh no, BB-8 lost its head!",
+            "captionTracksSimulationTime": true,
+            "automaticFpvReturn": true,
+            "pauseCancels": true,
+            "reducedMotionCancelsAndSuppressesDraw": true,
+            "reducedMotionClearsExistingEffects": true,
+            "warningsTakePrecedence": true,
+            "cameraControlsAndShortcutsRemoved": true,
+            "noRadarDuringSpin": true
+          },
+          "checks": [
+            "first visit muted with no AudioContext",
+            "explicit click/tap requests playback and emits nonzero audio",
+            "flipper and launch event tones with keyboard/simultaneous touch",
+            "original nonverbal beep sprite decodes in the real audio context",
+            "sampled left/right warnings pan to their sides; both/drain stay centered",
+            "real Rapier wall/bumper/target sound events",
+            "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+            "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+            "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+            "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+            "gesture resumes suspended context without recreating it",
+            "blur stops all layers and outputs zero; resume rebuilds the mix",
+            "three drains stop music/loops and restart resets lives/audio",
+            "sound-on preference restored without autoplay",
+            "injected saved-on startup failure clears UI/preference/session and allows retry",
+            "injected sprite-decoding failure retains audible procedural warning fallback",
+            "all four fallback warning motifs differ; left/right pan correctly",
+            "mute stops output and releases session",
+            "sound-off preference survives reload"
+          ]
+        }
+      ],
+      "screenshots": [
+        "desktop-classic-head-loss.png",
+        "desktop-classic-sound-on.png",
+        "mobile-circuit-head-loss.png",
+        "mobile-circuit-sound-on.png"
+      ],
+      "browserErrors": [],
+      "limitations": [
+        "Chromium waveform measurements verify generated audio, not speaker audibility.",
+        "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.",
+        "Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured."
+      ]
+    },
+    "npm run test:browser": {
+      "result": "pass",
+      "checks": [
+        "boot",
+        "real keyboard launch",
+        "simultaneous keyboard flippers",
+        "pause freezes physics",
+        "blur releases controls and pauses",
+        "FPV-only player camera and removed number-key shortcuts",
+        "FPV independent of ball rotation",
+        "game-over/restart/high score",
+        "rendered WebGL scene",
+        "High/Eco rendering and lower Eco draw calls",
+        "real bumper collision produces impact effects",
+        "restart clears effects",
+        "WebGL context recovery rebuilds reflections",
+        "touch defaults to Eco",
+        "simultaneous touch flippers",
+        "mobile landscape and portrait resize",
+        "reduced-motion suppresses impact animations"
+      ],
+      "browserErrors": [],
+      "screenshots": [
+        "desktop-intro.png",
+        "desktop-fpv.png",
+        "desktop-fpv-ready.png",
+        "desktop-eco.png",
+        "desktop-impact.png",
+        "mobile-landscape.png",
+        "mobile-portrait.png"
+      ]
+    }
+  },
+  "voice": {
+    "originalAsset": {
+      "path": "artifacts/audio/original-voice.wav",
+      "bytes": 465302,
+      "sha256": "9f6f5177ff8882a1737bce58ad1035bbd7a792b4a91e7ad93ccbc13938a1ad68"
+    },
+    "newAsset": {
+      "path": "src/assets/droid-beeps.wav",
+      "bytes": 465302,
+      "sha256": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77"
+    },
+    "analysis": {
+      "pitchScale": 0.6,
+      "durationsUnchanged": true,
+      "original": {
+        "left": {
+          "spectralCentroidHz": 634.6,
+          "energyAbove3k": 0.0,
+          "rms": 0.2932
+        },
+        "right": {
+          "spectralCentroidHz": 1492.0,
+          "energyAbove3k": 0.061,
+          "rms": 0.2831
+        },
+        "both": {
+          "spectralCentroidHz": 1062.2,
+          "energyAbove3k": 0.0252,
+          "rms": 0.2754
+        },
+        "danger": {
+          "spectralCentroidHz": 4206.6,
+          "energyAbove3k": 0.5396,
+          "rms": 0.2491
+        },
+        "ready": {
+          "spectralCentroidHz": 1009.1,
+          "energyAbove3k": 0.0022,
+          "rms": 0.2859
+        },
+        "launch": {
+          "spectralCentroidHz": 1657.0,
+          "energyAbove3k": 0.1069,
+          "rms": 0.2912
+        },
+        "whoa": {
+          "spectralCentroidHz": 3995.5,
+          "energyAbove3k": 0.5057,
+          "rms": 0.2719
+        },
+        "ouch": {
+          "spectralCentroidHz": 4329.6,
+          "energyAbove3k": 0.5766,
+          "rms": 0.2695
+        },
+        "ramp": {
+          "spectralCentroidHz": 1275.4,
+          "energyAbove3k": 0.0569,
+          "rms": 0.2825
+        },
+        "bridge": {
+          "spectralCentroidHz": 1627.1,
+          "energyAbove3k": 0.1249,
+          "rms": 0.2813
+        },
+        "tunnel": {
+          "spectralCentroidHz": 868.7,
+          "energyAbove3k": 0.0089,
+          "rms": 0.2184
+        },
+        "save": {
+          "spectralCentroidHz": 1461.1,
+          "energyAbove3k": 0.0875,
+          "rms": 0.2864
+        },
+        "circuit": {
+          "spectralCentroidHz": 1603.8,
+          "energyAbove3k": 0.0992,
+          "rms": 0.286
+        },
+        "drain": {
+          "spectralCentroidHz": 1498.2,
+          "energyAbove3k": 0.1174,
+          "rms": 0.2717
+        },
+        "over": {
+          "spectralCentroidHz": 606.3,
+          "energyAbove3k": 0.0004,
+          "rms": 0.2938
+        }
+      },
+      "new": {
+        "left": {
+          "spectralCentroidHz": 387.4,
+          "energyAbove3k": 0.0,
+          "rms": 0.2586
+        },
+        "right": {
+          "spectralCentroidHz": 875.0,
+          "energyAbove3k": 0.0027,
+          "rms": 0.2407
+        },
+        "both": {
+          "spectralCentroidHz": 582.0,
+          "energyAbove3k": 0.0008,
+          "rms": 0.2551
+        },
+        "danger": {
+          "spectralCentroidHz": 1541.6,
+          "energyAbove3k": 0.1591,
+          "rms": 0.1835
+        },
+        "ready": {
+          "spectralCentroidHz": 567.4,
+          "energyAbove3k": 0.0002,
+          "rms": 0.2589
+        },
+        "launch": {
+          "spectralCentroidHz": 885.7,
+          "energyAbove3k": 0.0142,
+          "rms": 0.2573
+        },
+        "whoa": {
+          "spectralCentroidHz": 1492.7,
+          "energyAbove3k": 0.1512,
+          "rms": 0.211
+        },
+        "ouch": {
+          "spectralCentroidHz": 1464.5,
+          "energyAbove3k": 0.1274,
+          "rms": 0.1872
+        },
+        "ramp": {
+          "spectralCentroidHz": 725.1,
+          "energyAbove3k": 0.0029,
+          "rms": 0.2483
+        },
+        "bridge": {
+          "spectralCentroidHz": 870.7,
+          "energyAbove3k": 0.0098,
+          "rms": 0.2373
+        },
+        "tunnel": {
+          "spectralCentroidHz": 524.8,
+          "energyAbove3k": 0.0005,
+          "rms": 0.2123
+        },
+        "save": {
+          "spectralCentroidHz": 824.9,
+          "energyAbove3k": 0.0044,
+          "rms": 0.2405
+        },
+        "circuit": {
+          "spectralCentroidHz": 887.0,
+          "energyAbove3k": 0.0129,
+          "rms": 0.2416
+        },
+        "drain": {
+          "spectralCentroidHz": 756.2,
+          "energyAbove3k": 0.0082,
+          "rms": 0.229
+        },
+        "over": {
+          "spectralCentroidHz": 392.3,
+          "energyAbove3k": 0.0,
+          "rms": 0.2474
+        }
+      },
+      "meanCentroidOriginal": 1821.8,
+      "meanCentroidNew": 851.8
+    },
+    "clips": {
+      "left": {
+        "offset": 0.0,
+        "duration": 0.34,
+        "caption": "Left flipper!"
+      },
+      "right": {
+        "offset": 0.46,
+        "duration": 0.409977,
+        "caption": "Right flipper!"
+      },
+      "both": {
+        "offset": 0.989977,
+        "duration": 0.46,
+        "caption": "Both flippers!"
+      },
+      "danger": {
+        "offset": 1.569977,
+        "duration": 0.489977,
+        "caption": "Watch the drain!"
+      },
+      "ready": {
+        "offset": 2.179955,
+        "duration": 0.6,
+        "caption": "[ready electronic beeps]"
+      },
+      "launch": {
+        "offset": 2.899955,
+        "duration": 0.510023,
+        "caption": "[excited electronic chatter]"
+      },
+      "whoa": {
+        "offset": 3.529977,
+        "duration": 0.46,
+        "caption": "[startled metallic yelp]"
+      },
+      "ouch": {
+        "offset": 4.109977,
+        "duration": 0.630023,
+        "caption": "[pained electronic cry]"
+      },
+      "ramp": {
+        "offset": 4.86,
+        "duration": 0.66,
+        "caption": "[rising excited burbles]"
+      },
+      "bridge": {
+        "offset": 5.64,
+        "duration": 0.690023,
+        "caption": "[joyful electronic trill]"
+      },
+      "tunnel": {
+        "offset": 6.450023,
+        "duration": 0.850023,
+        "caption": "[curious robot echoes]"
+      },
+      "save": {
+        "offset": 7.420045,
+        "duration": 0.510023,
+        "caption": "[relieved electronic beeps]"
+      },
+      "circuit": {
+        "offset": 8.050068,
+        "duration": 0.8,
+        "caption": "[triumphant beeps]"
+      },
+      "drain": {
+        "offset": 8.970068,
+        "duration": 0.610023,
+        "caption": "[panicked electronic groan]"
+      },
+      "over": {
+        "offset": 9.700091,
+        "duration": 0.729977,
+        "caption": "[wistful questioning burble]"
+      }
+    },
+    "spokenEnglish": false,
+    "warningTiming": "Unchanged; all four motifs finish within half a second"
+  },
+  "production": {
+    "files": [
+      {
+        "path": "dist/index.html",
+        "bytes": 661,
+        "sha256": "3df95b1c207a9d2f954621b00eb0333a86d02f08d1a15977cdad9f42a0bd9b2d"
+      },
+      {
+        "path": "dist/assets/index-C1I7Xs4E.js",
+        "bytes": 5596492,
+        "sha256": "d843581f999515ac2c4cfa8683e021dfe956270ba93b4c670e5ad1e979ef23a6"
+      },
+      {
+        "path": "dist/assets/index-DoRi4sJn.css",
+        "bytes": 11233,
+        "sha256": "178f111d41a9e3891f2dab1a226f3efc1d88693b207089c0dd014b7c9bc409b3"
+      },
+      {
+        "path": "artifacts/ORBIT-FPV-Pinball.html",
+        "bytes": 5620783,
+        "sha256": "af1f2666573047b75c0716ed6770918581c53225bb0f75ea871cd4993d626e99"
+      }
+    ],
+    "newVoiceEmbeddedOnlineAndOffline": true,
+    "debugHooksAndRadarAbsentOnlineAndOffline": true
+  },
+  "validatedSources": [
+    {
+      "path": "src/main.ts",
+      "bytes": 16370,
+      "sha256": "414895ae9b949c94b2e6534ce6035397c00c66bac613161ab3d64ff572067395"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 12716,
+      "sha256": "be20df23497fdac4fbb6106a34b09a6e3b96f8b9a26b01e4c7e1de637f2ef0c3"
+    },
+    {
+      "path": "src/ui/audio.ts",
+      "bytes": 19265,
+      "sha256": "27ebdbe6e01c6e3cc2fa5bf73343ebcd892c45db8413aec7fa95e007cf56c453"
+    },
+    {
+      "path": "src/ui/sound-director.ts",
+      "bytes": 6640,
+      "sha256": "d217e994e9059f6f87123485d941d8f897e17685d8b71c74a8490b60f48bcab2"
+    },
+    {
+      "path": "src/ui/voice-bank.ts",
+      "bytes": 1744,
+      "sha256": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac"
+    },
+    {
+      "path": "src/assets/droid-beeps.wav",
+      "bytes": 465302,
+      "sha256": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77"
+    },
+    {
+      "path": "src/render/head-loss.ts",
+      "bytes": 1495,
+      "sha256": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f"
+    },
+    {
+      "path": "scripts/generate-droid-beeps.py",
+      "bytes": 6550,
+      "sha256": "2c699630c78b27ede0262be407543ab2514f7b29d40dac85bf7b6f5fc9705631"
+    },
+    {
+      "path": "scripts/audio-browser.cjs",
+      "bytes": 27965,
+      "sha256": "947c2fdf1c4abbccbfdec24f87f1e23a44edb9cce88d715fed5f16a08ca7f7be"
+    },
+    {
+      "path": "scripts/browser-smoke.cjs",
+      "bytes": 11778,
+      "sha256": "6a0e4d494d9ed0d94537f4befaa683b42ca194b9d9520801f47063e43aa3cf5a"
+    },
+    {
+      "path": "scripts/circuit-browser.cjs",
+      "bytes": 17303,
+      "sha256": "b7965275904fd1690b65e97575ba9409a2cdccb5d76ef20b3c2c8b1930614f02"
+    },
+    {
+      "path": "scripts/flipper-guide-browser.cjs",
+      "bytes": 7451,
+      "sha256": "40cb28dfa86eaf594e267f86b330574be629a1d3f537e5d420097da32d4b1e3a"
+    },
+    {
+      "path": "tests/audio.test.ts",
+      "bytes": 3022,
+      "sha256": "30d4b15c8bc903585e111fb18cc770814d1e5b1aacefbc3ec221da431c158234"
+    },
+    {
+      "path": "tests/circuit.test.ts",
+      "bytes": 9011,
+      "sha256": "f11332b987ddf67ffed0b663e2d3d42e82657813c0b9dfe5a5f953eca544ce2c"
+    },
+    {
+      "path": "tests/flipper-guides.test.ts",
+      "bytes": 2487,
+      "sha256": "23740d0c7c50de8d50ff21c2a0a41c71fdc30aee1b764c68a0ebc8bc0c0c0c7b"
+    },
+    {
+      "path": "tests/head-loss.test.ts",
+      "bytes": 3174,
+      "sha256": "0a60165ec7a435307d5a23845201744798882d7b783189708665855844affeba"
+    },
+    {
+      "path": "tests/physics.test.ts",
+      "bytes": 3954,
+      "sha256": "8faffc434d050e5e3641dea835000253b391c2d31ed4de7dbaec370a668bb050"
+    },
+    {
+      "path": "tests/sound-director.test.ts",
+      "bytes": 10152,
+      "sha256": "d93fc50f695e06be1822efef1ecbc3c31ef01d542197f6040b74afadb1cce01d"
+    }
+  ],
+  "reference": {
+    "url": "https://pinball-fbd1a.firebaseapp.com/",
+    "date": "2026-10-09",
+    "observedFlows": [
+      "Ready display and cabinet",
+      "Space launch and Z flipper response",
+      "P pause displayed on dot matrix"
+    ],
+    "screenshotsInspected": [
+      {
+        "path": "docs/assets/reference/01-ready.jpg",
+        "bytes": 182872,
+        "sha256": "5e74f272bc50e04e1f61832ad101d371b3be4abbd764bd2e8bfc03c2a0b1f3c3"
+      },
+      {
+        "path": "docs/assets/reference/02-playing.jpg",
+        "bytes": 181622,
+        "sha256": "1628df38831e50b6476caa5d39704684935cfc60f4158202101657f678919781"
+      },
+      {
+        "path": "docs/assets/reference/03-paused.jpg",
+        "bytes": 183430,
+        "sha256": "f50b21e0c19ca97ea12dcd879c65db755f1a3be6b03f16fbd48a13dcdb566ac5"
+      }
+    ],
+    "report": "docs/reference-cabinet-ui-study.md",
+    "largerCabinetAndUiRedesign": "Documented proposal, not shipped"
+  },
+  "gameScreenshotsInspected": [
+    {
+      "path": "artifacts/audio/desktop-classic-head-loss.png",
+      "bytes": 753377,
+      "sha256": "73d1b2e108472aaf855c26e41b4a730524d21a34727cc055c14963af28217669"
+    },
+    {
+      "path": "artifacts/audio/desktop-classic-sound-on.png",
+      "bytes": 863558,
+      "sha256": "797e8ab89c8a234fd372420e36db80b5368431009eeff361600b6f8ef0845dbb"
+    },
+    {
+      "path": "artifacts/audio/mobile-circuit-head-loss.png",
+      "bytes": 238095,
+      "sha256": "8c77cb74e0749a5e1a69b1d189a0716c6e43cb9e5a2cc8b0a50c37f4a20c95e3"
+    },
+    {
+      "path": "artifacts/audio/mobile-circuit-sound-on.png",
+      "bytes": 317528,
+      "sha256": "17a29a875f4c64f3e341e672cf6db218217bb02051a124ff5c94dd53d67e7ca4"
+    },
+    {
+      "path": "artifacts/mobile-landscape.png",
+      "bytes": 226337,
+      "sha256": "287984a02051d1c064c5930f57df114e55ae8c0b6f1e595ed738653f05c84597"
+    },
+    {
+      "path": "artifacts/mobile-portrait.png",
+      "bytes": 253837,
+      "sha256": "309eb9faac9530c0392a9a72535838a9dc8b1c5d0a7b49f84f3664bb6b7dd05b"
+    }
+  ],
+  "limitations": [
+    "Mobile checks use Chromium touch/viewport emulation, not physical Safari or an iPhone speaker.",
+    "Audio waveform measurements verify output and frequency balance; they do not rate subjective character expressiveness.",
+    "The reference was inspected through its desktop UI; its source, physics, mobile layout and screen-reader behavior were not verified.",
+    "Rendered spin screenshots use the existing dev-only deterministic fixture; the 5% probability boundary is covered by unit tests."
+  ]
+}

@@ -23,17 +23,17 @@ export const voiceBank = {
   "ready": {
     "offset": 2.179955,
     "duration": 0.6,
-    "caption": "[ready chirps]"
+    "caption": "[ready electronic beeps]"
   },
   "launch": {
     "offset": 2.899955,
     "duration": 0.510023,
-    "caption": "[excited launch whistle]"
+    "caption": "[excited electronic chatter]"
   },
   "whoa": {
     "offset": 3.529977,
     "duration": 0.46,
-    "caption": "[startled squeal]"
+    "caption": "[startled metallic yelp]"
   },
   "ouch": {
     "offset": 4.109977,
@@ -43,22 +43,22 @@ export const voiceBank = {
   "ramp": {
     "offset": 4.86,
     "duration": 0.66,
-    "caption": "[rising excited chirps]"
+    "caption": "[rising excited burbles]"
   },
   "bridge": {
     "offset": 5.64,
     "duration": 0.690023,
-    "caption": "[joyful bridge trill]"
+    "caption": "[joyful electronic trill]"
   },
   "tunnel": {
     "offset": 6.450023,
     "duration": 0.850023,
-    "caption": "[curious whistle echoes]"
+    "caption": "[curious robot echoes]"
   },
   "save": {
     "offset": 7.420045,
     "duration": 0.510023,
-    "caption": "[relieved chirps]"
+    "caption": "[relieved electronic beeps]"
   },
   "circuit": {
     "offset": 8.050068,
@@ -68,12 +68,12 @@ export const voiceBank = {
   "drain": {
     "offset": 8.970068,
     "duration": 0.610023,
-    "caption": "[panicked descending squeal]"
+    "caption": "[panicked electronic groan]"
   },
   "over": {
     "offset": 9.700091,
     "duration": 0.729977,
-    "caption": "[wistful questioning whistle]"
+    "caption": "[wistful questioning burble]"
   }
 } as const;
 export type VoiceKey = keyof typeof voiceBank;

@@ -83,7 +83,7 @@ const out = 'artifacts/pivot';
       sim.ball.setLinvel({ x: 0, y: 0, z: 0 }, true);
       sim.paused = true; view.resetEffects(); view.render = window.restoreGuideRender;
     });
-    assert.equal(await page.locator('[data-camera], #camera-controls').count(), 0);
+    assert.equal(await page.locator('[data-camera], #camera-controls, #map-wrap, #minimap, .map-wrap').count(), 0);
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     const fit = await page.evaluate(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
       height: innerHeight, scrollHeight: document.documentElement.scrollHeight,

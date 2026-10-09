@@ -14,7 +14,8 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
     await server.listen();
     url = server.resolvedUrls.local[0];
   }
-  browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] });
+  const launchOptions = { headless: true, executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] };
+  browser = await chromium.launch(launchOptions);
   const errors = [];
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   page = await context.newPage();
@@ -43,7 +44,7 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   const pausePosition = await page.evaluate(() => window.orbitDebug.sim.position);
   await page.waitForTimeout(100); assert.deepEqual(await page.evaluate(() => window.orbitDebug.sim.position), pausePosition);
   await page.locator('#restart').click();
-  assert.equal(await page.locator('[data-camera], #camera-controls').count(), 0);
+  assert.equal(await page.locator('[data-camera], #camera-controls, #map-wrap, #minimap, .map-wrap').count(), 0);
   await rendered(page);
   await page.screenshot({ path: path.join(output, 'desktop-fpv-ready.png') });
   assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
@@ -99,12 +100,15 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   assert.equal(await page.locator('#score').textContent(), '00000');
   assert.ok(await page.evaluate(() => window.orbitDebug.view.renderer.info.render.calls > 20), '3D scene was not rendered');
 
+  // Use a fresh process for mobile; single-process Chromium cannot share contexts.
+  await browser.close(); page = undefined;
+  browser = await chromium.launch(launchOptions);
   const mobile = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
   const phone = await mobile.newPage(); phone.on('pageerror', e => errors.push(e.message));
   await phone.goto(url, { waitUntil: 'networkidle' });
   await phone.locator('#start:not([disabled])').waitFor({ timeout: 60000 }); await phone.locator('#start').tap();
   assert.equal(await phone.locator('#quality').textContent(), 'FX ECO', 'Touch device did not default to Eco');
-  assert.equal(await phone.locator('[data-camera], #camera-controls').count(), 0);
+  assert.equal(await phone.locator('[data-camera], #camera-controls, #map-wrap, #minimap, .map-wrap').count(), 0);
   await rendered(phone);
   const left = await phone.locator('#left').boundingBox(), right = await phone.locator('#right').boundingBox();
   const cdp = await mobile.newCDPSession(phone);

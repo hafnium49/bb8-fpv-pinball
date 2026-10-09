@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLE_RATE = 22050
 TAU = math.tau
+PITCH_SCALE = .60
 
 # (onset, duration, pitch contour in Hz, metallic color, flutter depth).
 # Different rhythms and contours carry emotion; warning motifs are stable
@@ -37,12 +38,12 @@ PHRASES = {
 CAPTIONS = {
     "left": "Left flipper!", "right": "Right flipper!",
     "both": "Both flippers!", "danger": "Watch the drain!",
-    "ready": "[ready chirps]", "launch": "[excited launch whistle]",
-    "whoa": "[startled squeal]", "ouch": "[pained electronic cry]",
-    "ramp": "[rising excited chirps]", "bridge": "[joyful bridge trill]",
-    "tunnel": "[curious whistle echoes]", "save": "[relieved chirps]",
-    "circuit": "[triumphant beeps]", "drain": "[panicked descending squeal]",
-    "over": "[wistful questioning whistle]",
+    "ready": "[ready electronic beeps]", "launch": "[excited electronic chatter]",
+    "whoa": "[startled metallic yelp]", "ouch": "[pained electronic cry]",
+    "ramp": "[rising excited burbles]", "bridge": "[joyful electronic trill]",
+    "tunnel": "[curious robot echoes]", "save": "[relieved electronic beeps]",
+    "circuit": "[triumphant beeps]", "drain": "[panicked electronic groan]",
+    "over": "[wistful questioning burble]",
 }
 
 
@@ -61,10 +62,15 @@ def render(name):
             fraction = position - segment
             glide = fraction * fraction * (3 - 2 * fraction)
             frequency = pitches[segment] + (pitches[segment + 1] - pitches[segment]) * glide
+            # Lower the carrier without slowing down time-critical motifs.
+            # Small pitch steps and a sub-octave body replace bird-like glides.
+            frequency = max(90, round(frequency * PITCH_SCALE / 24) * 24)
             frequency *= 1 + .012 * math.sin(TAU * 8.5 * t)
             phase += TAU * frequency / SAMPLE_RATE
-            metallic = color * math.sin(phase * 2.013 + .22 * math.sin(TAU * 27 * t))
-            signal = math.sin(phase + metallic) + .16 * math.sin(phase * 2.97)
+            metallic = (.7 + color * .8) * math.sin(phase * 2.013 + .32 * math.sin(TAU * 27 * t))
+            signal = (.64 * math.sin(phase + metallic)
+                      + .30 * math.sin(phase * .5 + .20 * math.sin(TAU * 13 * t))
+                      + .24 * math.tanh(2.4 * math.sin(phase)))
             attack = min(1, t / .007)
             release = min(1, (length - t) / .018)
             envelope = math.sin(attack * math.pi / 2) ** 2 * math.sin(release * math.pi / 2) ** 2
@@ -75,6 +81,12 @@ def render(name):
         for delay, level in [(round(.11 * SAMPLE_RATE), .28), (round(.22 * SAMPLE_RATE), .12)]:
             for i in range(len(samples) - delay):
                 samples[i + delay] += dry[i] * level
+    # Keep metallic harmonics, but soften the thin high-frequency edge.
+    alpha = 1 - math.exp(-TAU * 2600 / SAMPLE_RATE)
+    filtered = 0.0
+    for i, sample in enumerate(samples):
+        filtered += alpha * (sample - filtered)
+        samples[i] = filtered
     # Leave ample mixer headroom and avoid clicks at clip boundaries.
     peak = max(abs(sample) for sample in samples)
     return b"".join(struct.pack("<h", round(sample / peak * .64 * 32767)) for sample in samples)
