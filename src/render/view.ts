@@ -8,6 +8,8 @@ import { ElevatedCircuit } from './route-model';
 import { CameraClearance, RouteCamera } from './route-camera';
 import { ArcadePost } from './arcade-post';
 import { RenderBudget, renderPixelRatio } from './render-budget';
+import { ReferenceTable } from './reference-table';
+import { courseBumpers, courseTargets } from '../physics/reference-course';
 
 export type CameraMode = 'fpv' | 'spin';
 
@@ -22,7 +24,7 @@ export class PinballView {
   set heading(value: number) { this.routeCamera.heading = value; }
   highQuality = !window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 760;
   readonly budget = new RenderBudget();
-  private table: ArcadeTable;
+  private table: ArcadeTable | ReferenceTable;
   private post?: ArcadePost;
   private environment: THREE.WebGLRenderTarget;
   private circuit?: ElevatedCircuit;
@@ -40,7 +42,7 @@ export class PinballView {
     this.shadowRevision = -1; this.budget.reset(); this.resize();
   };
 
-  constructor(readonly container: HTMLElement, circuitEnabled = false) {
+  constructor(readonly container: HTMLElement, circuitEnabled = false, reference = false) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     this.renderer.setClearColor(0x06070a);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -62,8 +64,8 @@ export class PinballView {
     this.environment = this.createEnvironment();
     this.scene.environment = this.environment.texture; this.scene.environmentIntensity = 0.55;
     this.renderer.domElement.addEventListener('webglcontextrestored', this.restoreEnvironment);
-    this.table = new ArcadeTable(this.scene, circuitEnabled); this.effects = new ArcadeEffects(this.scene);
-    if (circuitEnabled) this.circuit = new ElevatedCircuit(this.scene);
+    this.table = reference ? new ReferenceTable(this.scene) : new ArcadeTable(this.scene, circuitEnabled); this.effects = new ArcadeEffects(this.scene);
+    if (circuitEnabled && !reference) this.circuit = new ElevatedCircuit(this.scene);
     this.setQuality(this.highQuality);
   }
 
@@ -108,8 +110,9 @@ export class PinballView {
     this.table.update(sim, visualDt);
     this.circuit?.update(sim);
     for (const event of sim.events) {
-      if (event.type === 'bumper') { const b = bumpers[event.index]; this.effects.hit(b.x, b.z, b.color, 100); }
-      if (event.type === 'target') { const t = targets[event.index]; this.effects.hit(t.x, t.z, t.color, 250); }
+      if (event.type === 'bumper') { const b = sim.reference ? courseBumpers[event.index] : bumpers[event.index]; this.effects.hit(b.x, b.z, b.color, event.points, 'y' in b ? b.y : 0); }
+      if (event.type === 'target') { const t = sim.reference ? courseTargets[event.index] : targets[event.index]; this.effects.hit('x' in t ? t.x : (t.ax + t.bx) / 2, 'z' in t ? t.z : (t.az + t.bz) / 2, 'color' in t ? t.color : 0xffb744, event.points, 'y' in t ? t.y : 0); }
+      if (event.type === 'ramp') this.effects.hit(p.x, p.z, 0x79ecf7, event.points, p.y - .28);
       if (event.type === 'circuit') this.effects.hit(p.x, p.z, 0x79ecf7, event.points);
     }
     this.effects.update(visualDt, p, Math.hypot(v.x, v.z), sim.phase === 'playing' && !sim.paused);
@@ -118,15 +121,23 @@ export class PinballView {
     this.forward.set(Math.sin(this.heading), 0, -Math.cos(this.heading));
     this.camera.up.set(0, 1, 0);
     if (sim.phase === 'intro') {
-      this.camera.fov = 48;
-      this.camera.position.set(0, this.camera.aspect < 1.2 ? 25 : 22, this.camera.aspect < 1.2 ? 16 : 19);
-      this.camera.lookAt(0, 0, -.7);
+      if (sim.reference) {
+        // Decomposed from the reference's public ground homography: uniform
+        // x/z scale .028, camera (240,1400,1400), focal length 1825.320805.
+        this.camera.fov = 25.31910433535;
+        this.camera.position.set(0, 39.2, 27.72); this.camera.lookAt(0, 0, .28);
+      } else {
+        this.camera.fov = 48;
+        this.camera.position.set(0, this.camera.aspect < 1.2 ? 25 : 22, this.camera.aspect < 1.2 ? 16 : 19);
+        this.camera.lookAt(0, 0, -.7);
+      }
     } else if (this.mode === 'spin') {
       this.camera.fov = 82; this.camera.position.set(p.x, p.y + 0.08, p.z);
       this.camera.quaternion.copy(this.table.ball.quaternion);
     } else {
       this.camera.fov = 82; this.position.set(p.x, p.y + 0.30, p.z);
-      this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 82, visualDt);
+      if (sim.reference?.guided) { this.camera.position.copy(this.position); this.camera.position.y -= .1; }
+      else this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 82, visualDt);
       this.look.copy(this.camera.position).addScaledVector(this.forward, 8 * Math.cos(this.routeCamera.pitch));
       this.look.y += 8 * Math.sin(this.routeCamera.pitch); this.camera.lookAt(this.look);
     }
@@ -135,6 +146,11 @@ export class PinballView {
       const tangent = Math.tan(this.camera.fov * Math.PI / 360);
       this.camera.near = Math.min(0.06, 0.24 / Math.sqrt(1 + tangent * tangent * (1 + this.camera.aspect * this.camera.aspect)));
       this.camera.updateProjectionMatrix(); this.projectionFov = this.camera.fov;
+    }
+    if (sim.phase === 'intro' && sim.reference) {
+      // The reference principal point is above the image centre.
+      this.camera.projectionMatrix.elements[9] = 2 * 374.28686481304 / 820 - 1;
+      this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
     }
     if (this.highQuality && this.shadowRevision !== this.table.shadowRevision) {
       this.renderer.shadowMap.needsUpdate = true; this.shadowRevision = this.table.shadowRevision;

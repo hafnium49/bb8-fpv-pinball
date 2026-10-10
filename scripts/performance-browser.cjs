@@ -20,7 +20,7 @@ let server, browser;
     if (m.type() === 'error' || (m.type() === 'warning' && /INVALID_|Shader Error|not compiled/.test(m.text()))) errors.push(m.text());
     if (m.text().startsWith('PERF ')) console.log(m.text());
   });
-  await page.goto(server.resolvedUrls.local[0] + '?circuit=1', { waitUntil: 'networkidle' });
+  await page.goto(server.resolvedUrls.local[0] + '?table=orbit&circuit=1', { waitUntil: 'networkidle' });
   await page.locator('#start:not([disabled])').waitFor();
   const report = await page.evaluate(async () => {
     const { sim, view, headLoss, begin, audio } = window.orbitDebug;

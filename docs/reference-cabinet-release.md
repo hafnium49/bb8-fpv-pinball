@@ -1,5 +1,7 @@
 # Reference cabinet and desktop console
 
+The [subsequent course correction](reference-course-release.md) replaces the original playable layout with measured reference coordinates. The contact dimensions and default-table statements below describe this earlier visual release.
+
 The [Hyperspace Pinball reference](https://pinball-fbd1a.firebaseapp.com/) has a distinctive physical cabinet and three-column desktop interface. ORBIT now recreates that visual composition with generated artwork and geometry, while keeping its first-person game and calibrated table contacts.
 
 ![Cabinet and PC console](assets/reference-design/cabinet-pc.jpg)

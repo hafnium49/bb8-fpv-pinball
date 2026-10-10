@@ -53,7 +53,7 @@ const groundProbes = async p => {
     p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   };
   monitor(page);
-  const url = server.resolvedUrls.local[0] + '?circuit=1';
+  const url = server.resolvedUrls.local[0] + '?table=orbit&circuit=1';
   const boot = async p => { await p.goto(url, { waitUntil: 'networkidle' }); await p.locator('#start:not([disabled])').waitFor({ timeout: 60000 }); await p.evaluate(() => { window.orbitDebug.headLoss.draw = () => 1; }); };
   const capture = async (p, name) => { await rendered(p); await p.screenshot({ path: `${out}/${name}.png`, timeout: 60000 }); screenshots.push(`${name}.png`); console.log(`Captured ${name}`); };
   const introFits = async p => {

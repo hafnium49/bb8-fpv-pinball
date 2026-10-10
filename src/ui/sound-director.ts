@@ -4,6 +4,8 @@ import type { RoutePhase } from '../physics/route-state';
 import { routeLength } from '../physics/route-geometry';
 import { BALL_RADIUS, FLIPPER_APPROACH_Z, bumpers, flippers, targets } from '../physics/table';
 import { voiceBank, type VoiceKey } from './voice-bank';
+import { COURSE_GRAVITY, courseBumpers, courseFlippers, courseTargets, deckHeight } from '../physics/reference-course';
+import type { ReferenceMotion } from '../physics/reference-motion';
 
 export interface SoundState {
   phase: Phase;
@@ -14,6 +16,7 @@ export interface SoundState {
   controls: Controls;
   charge: number;
   route: { phase: RoutePhase; active: boolean; projection: { s: number; vertical: number } };
+  reference?: ReferenceMotion;
 }
 export type CueKind = 'ready' | 'launch' | 'bumper' | 'target' | 'wall' | 'flipper' | 'save'
   | 'ascent' | 'bridge' | 'tunnel' | 'circuit' | 'drain' | 'over' | 'chatter' | 'warning' | 'head-loss';
@@ -41,6 +44,22 @@ export interface FlipperWarning { voice: 'left' | 'right' | 'both' | 'danger'; e
 // The centre gap/outlane can still drain even after a timely warning.
 export function flipperWarning(s: SoundState): FlipperWarning | undefined {
   if (s.paused || s.phase !== 'playing') return;
+  if (s.reference) {
+    const pair = s.reference.onDeck ? courseFlippers.slice(2) : courseFlippers.slice(0, 2), p=s.position,v=s.velocity;
+    if(v.z<1.2 || p.z>=pair[0].z-.35 || s.reference.guided)return;
+    const base=s.reference.onDeck?deckHeight:0, approach=pair[0].z-.7;
+    if(p.y>base+BALL_RADIUS+.4 || p.y<base-.1 || (!s.reference.onDeck && p.x>5.04))return;
+    const dz=approach-p.z;if(dz<=0)return;
+    const eta=(Math.sqrt(v.z*v.z+2*COURSE_GRAVITY*dz)-v.z)/COURSE_GRAVITY;
+    if(eta<.08 || eta>1.15)return;
+    const xAt=(z:number)=>p.x+v.x*(Math.sqrt(v.z*v.z+2*COURSE_GRAVITY*(z-p.z))-v.z)/COURSE_GRAVITY;
+    for(const b of courseBumpers)if(b.y===base&&b.z>p.z&&b.z<approach&&Math.abs(xAt(b.z)-b.x)<b.radius+BALL_RADIUS+.15)return;
+    for(const [i,t] of courseTargets.entries())if(t.y===base&&!s.reference.targetDown[i]){const z=(t.az+t.bz)/2;if(z>p.z&&z<approach&&Math.abs(xAt(z)-(t.ax+t.bx)/2)<.18+BALL_RADIUS+.15)return;}
+    const x=p.x+v.x*eta,mid=(pair[0].x+pair[1].x)/2;
+    const voice=x<pair[0].x-1.3||x>pair[1].x+1.3?'danger':x<mid-.35?'left':x>mid+.35?'right':'both';
+    if(voice==='left'&&s.controls.left||voice==='right'&&s.controls.right||voice==='both'&&s.controls.left&&s.controls.right)return;
+    return{voice,eta};
+  }
   const p = s.position, v = s.velocity;
   if (v.z < 1.2 || p.z >= flippers[0].z - 0.4) return;
   let eta: number, x: number;
@@ -101,7 +120,8 @@ export class SoundDirector {
       this.phase = s.phase;
     }
     if (s.velocity.z < -1.2 || s.phase !== 'playing') this.warned = false;
-    if (s.phase === 'playing' && (s.route.active ? Math.abs(s.route.projection.vertical) < 0.22 : s.position.y > 0.18 && s.position.y < BALL_RADIUS + 0.14)) {
+    const floor = s.reference?.onDeck ? deckHeight : 0;
+    if (s.phase === 'playing' && (s.route.active ? Math.abs(s.route.projection.vertical) < 0.22 : s.position.y > floor + 0.18 && s.position.y < floor + BALL_RADIUS + 0.14)) {
       frame.rolling = Math.min(1, frame.speed / 22);
     }
     for (const e of events) {
@@ -109,7 +129,19 @@ export class SoundDirector {
       if (e.type === 'launch') { say('launch', 'launch', 65); this.nextIdle = s.time + 6; }
       if (e.type === 'drain') say('drain', 'drain', 90);
       if (e.type === 'over') say('over', 'over', 95);
+      // Fixed-step phase events survive a render frame that crosses both
+      // ramp entry and bridge. Legacy routes retain the state fallback below.
+      if (e.type === 'route') {
+        this.route = e.phase;
+        if (e.phase === 'ascent') say('ascent', 'ramp', 50);
+        if (e.phase === 'bridge') say('bridge', 'bridge', 55);
+        if (e.phase === 'tunnel') say('tunnel', 'tunnel', 55);
+      }
       if (e.type === 'circuit') say('circuit', 'circuit', 65);
+      if (e.type === 'ramp') {
+        if (e.name === 'SPINNER') cues.push({ kind: 'target', strength: .4 });
+        else say('circuit', 'circuit', 65);
+      }
       if (e.type === 'flipper-hit' && s.velocity.z < -2 && s.time >= this.nextPhrase) say('save', 'save', 55);
       if (e.type === 'bumper' || e.type === 'target' || e.type === 'wall') {
         const kind = e.type, strength = e.type === 'wall' ? Math.min(1, e.speed / 16) : 0.8;

@@ -21,7 +21,13 @@ export class RouteCamera {
     this.previousPhase = sim.phase;
     const p = sim.position, v = sim.velocity, speed = Math.hypot(v.x, v.z);
     let targetHeading = this.heading, targetPitch = 0;
-    if (sim.route.active) {
+    if (sim.reference?.guided) {
+      const ahead = sim.reference.lookAhead();
+      if (ahead) {
+        const dx = ahead.x - p.x, dy = ahead.y - p.y, dz = ahead.z - p.z;
+        if (Math.hypot(dx, dz) > .12) { targetHeading = Math.atan2(dx, -dz); targetPitch = Math.atan2(dy, Math.hypot(dx, dz)); }
+      }
+    } else if (sim.route.active && !sim.reference) {
       if (!this.wasActive) { this.direction = 1; this.reverseTime = 0; }
       const frame = frames[sim.route.projection.index];
       const along = dot(v, frame.tangent);

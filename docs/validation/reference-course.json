@@ -1,0 +1,985 @@
+{
+  "result": "pass",
+  "verifiedUtc": "2026-10-10T08:00:21.801227+00:00",
+  "reference": "https://pinball-fbd1a.firebaseapp.com/",
+  "sourceSha256": {
+    "src/assets/droid-beeps.wav": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77",
+    "src/main.ts": "69af48ab1355d172980e7832466d51e6bbd989e3d057ee4201cfd7d8e2238faa",
+    "src/physics/reference-course-data.json": "63fd67e8825988f71e829381e0f952e9a04cc92031977d6c2330890b50c1e7c3",
+    "src/physics/reference-course.ts": "e3514fc5d6bb5f1f542ac2391992feed630e37a5d6c259b67b78c2259a5e716c",
+    "src/physics/reference-motion.ts": "ecc04c6ac72a789be513017e9f2ee6964b24c2eed1dab1fb5716f25873988f5c",
+    "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
+    "src/physics/route-state.ts": "3d03cc5a75ea62f82845d2552f41cce2964fcfb10ddf3e8568fc94b84d5b1be8",
+    "src/physics/simulation.ts": "64dc13abaf1718bc79aad4193fa3d104676ed67831bc7f3b316558fdb223cef9",
+    "src/physics/table.ts": "cc4ee3626284dc706fb5e350f3b1f1bdbebd52db05379f418ef946ed75e16bbf",
+    "src/render/arcade-post.ts": "f34c3b9a0ad11e5870cc0d81f64c1a7ac460da252b4a202e9ab0da55dd488d35",
+    "src/render/artwork.ts": "295b0688aff4e91dddbd2e629de4aa90b914702724e3ac85cd754d02d7843a07",
+    "src/render/cabinet-theme.ts": "b653f447dfe1ebdd92aed94cbbc3120382b5c045b35b2aa2f89389b0665f1137",
+    "src/render/effects.ts": "c8e38247e87e72107064246339676310b07894d1ecf154dee4c7a90dab2f4eb3",
+    "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
+    "src/render/reference-artwork.ts": "1f307420cefb9d513e2b9522d15467082549a0eac0b9f66387dfda00a891b271",
+    "src/render/reference-table.ts": "5a398bd3d3cdf048ee7bafcc66d1fab1d76046ebd4a1a6777276f9792f0e0b85",
+    "src/render/render-budget.ts": "6578ca7b5c7fa49cd362b35383a319d8ab6d1829a5f3e1778d86f338a6322a64",
+    "src/render/route-camera.ts": "816dc3d28a6cb4e639bf13b44c3abb9044b2b07127c916fbdbe6e6c694bf622c",
+    "src/render/route-model.ts": "3a1cf3b66705207a4f9bab89842d32fc5b73520111c588ad505459af4fe326ac",
+    "src/render/static-batch.ts": "e5bfd4ed4417a3c142b80916a7d3821ee94b701bc769710c4878e3ea8447c1e4",
+    "src/render/table-model.ts": "3278298e610fcb84ccd6566134de9d0bf3c473a23e178fae73ee222388a094b2",
+    "src/render/view.ts": "f6bad6243973263e16eba1b849e0d0052feb46254bdd1b39901886ad66e768de",
+    "src/style.css": "e8691c87b50e39fd810f3d84c0f40d697cf5f402419fba8ec36fbbd30386007b",
+    "src/ui/audio-presets.ts": "7dde7824734a311a7fdb7ebd7a1ebe3bb289b71ed0b2093f026aed5a698aa0e6",
+    "src/ui/audio.ts": "aa44a9bc4fd3ca6e7f8b8999224819250f48cd7fde477563f09016f5b8e308ef",
+    "src/ui/cabinet-display.ts": "0017ada96f8928b55308e9edfa440c9fb1e97d492183b27bbbf779a3b2986c41",
+    "src/ui/local-scores.ts": "d947b673c10656a65174d0d556da426726436b2a054aefd6b2ea996c01df694e",
+    "src/ui/music-pattern.ts": "1a8257b6ae57b23b148823c54c23096ff5ca66159bdc3d50fcffa695f8efdf61",
+    "src/ui/play-input.ts": "115e242eed4daa7aa7dd35db0157e774a542d110e405b2a37483d99d1572c52b",
+    "src/ui/sound-director.ts": "6e3e6d319710f4b0841e5165059f1b666f2cdc89269a00dbc976189f8bf3e41f",
+    "src/ui/voice-bank.ts": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac"
+  },
+  "course": {
+    "scale": 0.028,
+    "groundBumpers": 6,
+    "deckBumpers": 3,
+    "flippers": 4,
+    "targets": 12,
+    "ramps": 3,
+    "subways": 3,
+    "sourceRampSamples": [
+      480,
+      450,
+      198
+    ],
+    "deckHeight": 1.624,
+    "capturedCoordinatesSha256": "63fd67e8825988f71e829381e0f952e9a04cc92031977d6c2330890b50c1e7c3"
+  },
+  "unitTests": 80,
+  "build": "TypeScript and Vite pass; existing bundle-size warning",
+  "guideSweeps": {
+    "result": "pass",
+    "groups": [
+      {
+        "level": "ground",
+        "attempted": 882,
+        "excluded": 342,
+        "valid": 540,
+        "maxQuiet": 0.049999999999999996,
+        "failures": []
+      },
+      {
+        "level": "deck",
+        "attempted": 216,
+        "excluded": 117,
+        "valid": 99,
+        "maxQuiet": 0,
+        "failures": []
+      }
+    ],
+    "inputOnlyShots": [
+      {
+        "power": 0,
+        "timing": 7.6,
+        "expected": "SKY RAMP",
+        "completion": true,
+        "entrances": [
+          "BLACK HOLE",
+          "SKY RAMP"
+        ],
+        "awards": [
+          "BLACK HOLE",
+          "SLOT SCOOP",
+          "SKY RAMP"
+        ]
+      },
+      {
+        "power": 0,
+        "timing": 7.4,
+        "expected": "WIRE RAMP",
+        "completion": true,
+        "entrances": [
+          "BLACK HOLE",
+          "WIRE RAMP"
+        ],
+        "awards": [
+          "BLACK HOLE",
+          "SLOT SCOOP",
+          "SPINNER",
+          "WIRE RAMP"
+        ]
+      },
+      {
+        "power": 1,
+        "timing": 8,
+        "expected": "LEFT RAMP",
+        "completion": false,
+        "entrances": [
+          "LEFT RAMP",
+          "BLACK HOLE"
+        ],
+        "awards": [
+          "GRAVITY WELL",
+          "BLACK HOLE",
+          "SLOT SCOOP"
+        ]
+      }
+    ]
+  },
+  "browsers": [
+    {
+      "engine": "chromium",
+      "errors": [],
+      "cases": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "projectionMaxPx": 0.03940433617060535,
+          "flippers": 4,
+          "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
+          "render": [
+            {
+              "quality": "High",
+              "pose": "launch",
+              "calls": 96,
+              "triangles": 111322,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "ground",
+              "calls": 51,
+              "triangles": 92886,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "LEFT RAMP",
+              "calls": 54,
+              "triangles": 93555,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "WIRE RAMP",
+              "calls": 24,
+              "triangles": 74131,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "SKY RAMP",
+              "calls": 53,
+              "triangles": 96414,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "upper-deck",
+              "calls": 67,
+              "triangles": 102315,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "launch",
+              "calls": 95,
+              "triangles": 111321,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "ground",
+              "calls": 50,
+              "triangles": 92885,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "LEFT RAMP",
+              "calls": 53,
+              "triangles": 93554,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "WIRE RAMP",
+              "calls": 23,
+              "triangles": 74130,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "SKY RAMP",
+              "calls": 52,
+              "triangles": 96413,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "upper-deck",
+              "calls": 66,
+              "triangles": 102314,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            }
+          ],
+          "resources": {
+            "cached": 8,
+            "moving": 75,
+            "cachedAfter": 8,
+            "samples": [
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              }
+            ]
+          }
+        },
+        {
+          "viewport": {
+            "width": 1024,
+            "height": 600
+          },
+          "projectionMaxPx": 0.026001500738402683,
+          "flippers": 4,
+          "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
+          "render": [],
+          "resources": null
+        },
+        {
+          "viewport": {
+            "width": 844,
+            "height": 390
+          },
+          "projectionMaxPx": 0.01742368606181799,
+          "flippers": 4,
+          "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 107
+            },
+            "second": {
+              "revision": 1,
+              "calls": 107
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
+          "render": [],
+          "resources": null
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "errors": [],
+      "cases": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "projectionMaxPx": 0.03940433617060535,
+          "flippers": 4,
+          "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
+          "render": [
+            {
+              "quality": "High",
+              "pose": "launch",
+              "calls": 96,
+              "triangles": 111322,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "ground",
+              "calls": 51,
+              "triangles": 92886,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "LEFT RAMP",
+              "calls": 54,
+              "triangles": 93555,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "WIRE RAMP",
+              "calls": 24,
+              "triangles": 74131,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "SKY RAMP",
+              "calls": 53,
+              "triangles": 96414,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "High",
+              "pose": "upper-deck",
+              "calls": 67,
+              "triangles": 102315,
+              "memory": {
+                "geometries": 113,
+                "textures": 14
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "launch",
+              "calls": 95,
+              "triangles": 111321,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "ground",
+              "calls": 50,
+              "triangles": 92885,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "LEFT RAMP",
+              "calls": 53,
+              "triangles": 93554,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "WIRE RAMP",
+              "calls": 23,
+              "triangles": 74130,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "SKY RAMP",
+              "calls": 52,
+              "triangles": 96413,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            },
+            {
+              "quality": "Eco",
+              "pose": "upper-deck",
+              "calls": 66,
+              "triangles": 102314,
+              "memory": {
+                "geometries": 112,
+                "textures": 13
+              },
+              "size": [
+                906,
+                882
+              ]
+            }
+          ],
+          "resources": {
+            "cached": 8,
+            "moving": 75,
+            "cachedAfter": 8,
+            "samples": [
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              },
+              {
+                "geometries": 113,
+                "textures": 14
+              }
+            ]
+          }
+        },
+        {
+          "viewport": {
+            "width": 1024,
+            "height": 600
+          },
+          "projectionMaxPx": 0.026001500738402683,
+          "flippers": 4,
+          "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
+          "render": [],
+          "resources": null
+        },
+        {
+          "viewport": {
+            "width": 844,
+            "height": 390
+          },
+          "projectionMaxPx": 0.01742368606181799,
+          "flippers": 4,
+          "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 107
+            },
+            "second": {
+              "revision": 1,
+              "calls": 107
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
+          "render": [],
+          "resources": null
+        }
+      ]
+    }
+  ],
+  "defaultGameplay": {
+    "result": "pass",
+    "checks": [
+      "boot",
+      "real keyboard launch",
+      "simultaneous keyboard flippers",
+      "pause freezes physics",
+      "blur releases controls and pauses",
+      "FPV-only player camera and removed number-key shortcuts",
+      "FPV independent of ball rotation",
+      "game-over/restart/high score",
+      "rendered WebGL scene",
+      "High/Eco rendering and lower Eco draw calls",
+      "real bumper collision produces impact effects",
+      "restart clears effects",
+      "WebGL context recovery rebuilds reflections",
+      "touch defaults to Eco",
+      "simultaneous touch flippers",
+      "mobile landscape and portrait resize",
+      "reduced-motion suppresses impact animations"
+    ],
+    "browserErrors": [],
+    "screenshots": [
+      "desktop-intro.png",
+      "desktop-fpv.png",
+      "desktop-fpv-ready.png",
+      "desktop-eco.png",
+      "desktop-impact.png",
+      "mobile-landscape.png",
+      "mobile-portrait.png"
+    ]
+  },
+  "cabinetInputs": {
+    "result": "pass",
+    "viewports": 5,
+    "errors": []
+  },
+  "referenceAudio": {
+    "result": "pass",
+    "confirmationPeak": 0.010188447311520576,
+    "ramps": [
+      {
+        "name": "LEFT RAMP",
+        "history": [
+          {
+            "kind": "ascent",
+            "voice": "ramp",
+            "accepted": true,
+            "at": 0.5224489795918368
+          },
+          {
+            "kind": "bridge",
+            "voice": "bridge",
+            "accepted": true,
+            "at": 0.531156462585034
+          },
+          {
+            "kind": "circuit",
+            "voice": "circuit",
+            "accepted": true,
+            "at": 1.7211791383219954
+          },
+          {
+            "kind": "warning",
+            "voice": "danger",
+            "accepted": true,
+            "at": 1.7211791383219954
+          }
+        ],
+        "peak": 0.42761921882629395,
+        "completions": 1,
+        "onDeck": false
+      },
+      {
+        "name": "WIRE RAMP",
+        "history": [
+          {
+            "kind": "target",
+            "accepted": false,
+            "at": 1.7414965986394557
+          },
+          {
+            "kind": "ascent",
+            "voice": "ramp",
+            "accepted": true,
+            "at": 1.750204081632653
+          },
+          {
+            "kind": "bridge",
+            "voice": "bridge",
+            "accepted": true,
+            "at": 1.8401814058956916
+          },
+          {
+            "kind": "circuit",
+            "voice": "circuit",
+            "accepted": true,
+            "at": 2.911201814058957
+          },
+          {
+            "kind": "warning",
+            "voice": "danger",
+            "accepted": true,
+            "at": 2.911201814058957
+          }
+        ],
+        "peak": 0.42156317830085754,
+        "completions": 1,
+        "onDeck": false
+      },
+      {
+        "name": "SKY RAMP",
+        "history": [
+          {
+            "kind": "ascent",
+            "voice": "ramp",
+            "accepted": true,
+            "at": 2.9518367346938774
+          },
+          {
+            "kind": "bridge",
+            "voice": "bridge",
+            "accepted": true,
+            "at": 3.0505215419501135
+          },
+          {
+            "kind": "circuit",
+            "voice": "circuit",
+            "accepted": true,
+            "at": 3.4713832199546486
+          }
+        ],
+        "peak": 0.4857379198074341,
+        "completions": 1,
+        "onDeck": true
+      }
+    ],
+    "warnings": [
+      {
+        "deck": false,
+        "onDeck": false,
+        "priority": 100,
+        "caption": "Left flipper!"
+      },
+      {
+        "deck": true,
+        "onDeck": true,
+        "priority": 100,
+        "caption": "Left flipper!"
+      }
+    ],
+    "bed": {
+      "peak": 0.424837589263916,
+      "voiceReady": true,
+      "voiceFailed": false,
+      "effects": 0,
+      "music": 2,
+      "speaking": true,
+      "priority": 100,
+      "loops": 2,
+      "musicSteps": 19,
+      "warnings": 5,
+      "musicVolume": 0.6,
+      "lastVoice": "left"
+    },
+    "errors": []
+  },
+  "legacyRegression": {
+    "circuit": {
+      "cases": 63,
+      "spinPartial": 18,
+      "inputOnly": [
+        {
+          "power": 0.7,
+          "leftZ": 6.3,
+          "rightZ": 6.4,
+          "laneExit": true,
+          "leftContact": true,
+          "awards": 1,
+          "rightReturn": true,
+          "phase": "playing",
+          "duration": 10.891666666666689,
+          "score": 1100,
+          "velocity": {
+            "x": 1.8025131225585938,
+            "y": -0.026665296405553818,
+            "z": -16.340906143188477
+          },
+          "changes": [
+            [
+              643,
+              true,
+              false
+            ],
+            [
+              658,
+              false,
+              false
+            ],
+            [
+              939,
+              true,
+              false
+            ],
+            [
+              946,
+              false,
+              false
+            ],
+            [
+              1216,
+              false,
+              true
+            ]
+          ]
+        },
+        {
+          "power": 0.7,
+          "leftZ": 6.6,
+          "rightZ": 6.4,
+          "laneExit": true,
+          "leftContact": true,
+          "awards": 1,
+          "rightReturn": true,
+          "phase": "playing",
+          "duration": 10.57500000000004,
+          "score": 1100,
+          "velocity": {
+            "x": 1.9826079607009888,
+            "y": 0.102276511490345,
+            "z": -16.03177261352539
+          },
+          "changes": [
+            [
+              656,
+              true,
+              false
+            ],
+            [
+              663,
+              false,
+              false
+            ],
+            [
+              1178,
+              false,
+              true
+            ]
+          ]
+        }
+      ]
+    },
+    "guides": [
+      {
+        "table": "classic",
+        "attempted": 2196,
+        "valid": 1431,
+        "failures": []
+      },
+      {
+        "table": "circuit",
+        "attempted": 2196,
+        "valid": 1179,
+        "failures": []
+      }
+    ],
+    "audio": {
+      "cases": 2,
+      "errors": []
+    }
+  },
+  "limitations": [
+    "Coordinates and overview projection match the measured course; illustrations, materials, FPV presentation and rules are original.",
+    "Controlled strong shots complete every ramp. Input-only traces complete wire and sky; the left-ramp trace is a weak entrance/rollback. Human timing remains to be evaluated.",
+    "Software GPU counters do not establish physical PC frame rate.",
+    "Generated waveforms are measured; physical-speaker listening balance remains unverified."
+  ],
+  "reviewRegressions": {
+    "real50PointHitHasMappedPopup": true,
+    "spinnerSupportsAtMeasuredWorldPositions": 6,
+    "idleIntroShadowStable": true,
+    "hiddenBallInvalidatesOnce": true,
+    "spinnerDecaySettlesExactly": true,
+    "disabledDropTargetAllowsForecast": true,
+    "entryAndBridgeSoundsSurviveCoarseFrames": true
+  }
+}

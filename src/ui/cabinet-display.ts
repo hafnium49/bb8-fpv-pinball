@@ -4,6 +4,7 @@ import type { RoutePhase } from '../physics/route-state';
 export interface DisplaySnapshot {
   phase: Phase; paused: boolean; score: number; balls: number; charge: number;
   circuit: boolean; coarse: boolean; route: { active: boolean; phase: RoutePhase };
+  reference?: boolean; routeName?: string;
 }
 export function cabinetDisplay(s: DisplaySnapshot) {
   const count = Math.max(0, Math.min(3, Math.floor(s.balls)));
@@ -13,6 +14,7 @@ export function cabinetDisplay(s: DisplaySnapshot) {
   else if (s.paused) status = 'PAUSED';
   else if (s.phase === 'ready') status = s.charge > 0 ? 'RELEASE TO LAUNCH' : s.coarse ? 'HOLD LAUNCH · RELEASE TO FIRE' : 'HOLD SPACE · RELEASE TO FIRE';
   else if (s.phase === 'draining') status = 'BALL LOST · NEXT ORBIT';
+  else if (s.reference) status = s.routeName || 'LEFT · WIRE · SKY RAMPS';
   else if (s.route.active) status = `CIRCUIT / ${s.route.phase.toUpperCase()}`;
   else status = s.circuit ? 'LEFT RAMP → CIRCUIT +750' : 'REACTORS +100 · TARGETS +250';
   return {

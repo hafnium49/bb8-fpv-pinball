@@ -57,9 +57,10 @@ const rendered = p => p.evaluate(() => new Promise(resolve => requestAnimationFr
   await page.screenshot({ path: path.join(output, 'desktop-eco.png') });
   await page.locator('#quality').click(); await rendered(page);
   // Use a real bumper collision, then hold the simulation to inspect the resulting effects.
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     const s = window.orbitDebug.sim; s.launch(0.5);
-    s.ball.setTranslation({ x: -1.8, y: 0.305, z: -6.4 }, true);
+    const b = (await import('/src/physics/reference-course.ts')).courseBumpers[0];
+    s.ball.setTranslation({ x: b.x - 1.4, y: 0.295, z: b.z }, true);
     s.ball.setLinvel({ x: 9, y: 0, z: 0 }, true); s.events.length = 0;
     for (let i = 0; i < 18; i++) s.step(); s.paused = true;
   });
