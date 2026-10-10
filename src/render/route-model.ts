@@ -21,10 +21,10 @@ export class ElevatedCircuit {
     const chrome = this.keep(new THREE.MeshStandardMaterial({ color: 0xc9deea, metalness: 0.94, roughness: 0.28, envMapIntensity: 0.85 }));
     const deck = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x28434b, ...cabinetMaterials.deck, side: THREE.DoubleSide }));
     const glass = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x76d6e8, metalness: 0.12, roughness: 0.23, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide }));
-    const canopy = this.keep(new THREE.MeshStandardMaterial({ color: cabinetPalette.panel, ...cabinetMaterials.paint, side: THREE.DoubleSide }));
+    const canopy = this.keep(new THREE.MeshPhysicalMaterial({ color: cabinetPalette.panel, ...cabinetMaterials.paint, side: THREE.DoubleSide }));
     this.mesh(mergeData([ascentFloor, descentFloor, apronData]), deck);
     this.mesh(wireData, chrome);
-    const support = this.keep(new THREE.MeshStandardMaterial({ color: 0x73858b, ...cabinetMaterials.steel }));
+    const support = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x73858b, ...cabinetMaterials.steel }));
     this.mesh(mergeData([tiesData, supportData]), support);
     this.mesh(sideData, glass, false);
     this.mesh(roofData, glass, false);

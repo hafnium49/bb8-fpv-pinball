@@ -218,7 +218,8 @@ async function boot() {
         const key = hold.id === 'left' ? 'left' : hold.id === 'right' ? 'right' : 'launch';
         heldUiKey = { code: e.code, key }; sim.controls[key] = true; void activateSound(); return;
       }
-      if (!hold && target?.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
+      if (target?.closest('input, select, textarea, [contenteditable="true"]')) return;
+      if (!hold && target?.closest('button, a') && ['Space', 'Enter'].includes(e.code)) return;
       if (['ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
       if (!['KeyA', 'ArrowLeft', 'KeyD', 'ArrowRight', 'Space'].includes(e.code)) return;
       void activateSound();
@@ -227,7 +228,7 @@ async function boot() {
       if (e.code === 'Space') sim.controls.launch = true;
     });
     window.addEventListener('keyup', e => {
-      if (heldUiKey?.code === e.code) { sim.controls[heldUiKey.key] = false; heldUiKey = undefined; }
+      if (heldUiKey?.code === e.code) { sim.controls[heldUiKey.key] = false; heldUiKey = undefined; return; }
       if (e.code === 'KeyA' || e.code === 'ArrowLeft') sim.controls.left = false;
       if (e.code === 'KeyD' || e.code === 'ArrowRight') sim.controls.right = false;
       if (e.code === 'Space') sim.controls.launch = false;

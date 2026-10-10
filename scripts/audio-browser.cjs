@@ -294,6 +294,10 @@ const out = 'artifacts/audio';
     await page.screenshot({ path: `${out}/${name}-sound-on.png`, timeout: 90000 }); screenshots.push(`${name}-sound-on.png`);
     console.log(`Captured ${name} sound-on`);
     await page.evaluate(() => { window.orbitDebug.sim.paused = false; window.orbitDebug.view.render = () => {}; });
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.loops === 2);
+    await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0));
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.music === 0);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.loops), 2, 'Music mute preserves rolling/motor until lifecycle shutdown');
     for (let ball = 0; ball < 3; ball++) {
       await page.evaluate(() => {
         const s = window.orbitDebug.sim; if (s.phase === 'ready') s.launch(0.5);
@@ -307,6 +311,7 @@ const out = 'artifacts/audio';
     await activate(page.locator('#restart'));
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 3);
     await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.loops === 2);
+    await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0.6));
     console.log(`${name}: pause/blur and three-ball audio lifecycle`);
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND ON');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 0, 'Remembering preference must not autoplay');

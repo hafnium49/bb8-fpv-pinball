@@ -240,7 +240,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 39
+      "programs": 37
     },
     {
       "variant": "circuit",
@@ -266,7 +266,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 39
+      "programs": 37
     },
     {
       "variant": "circuit",
@@ -292,7 +292,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 39
+      "programs": 37
     },
     {
       "variant": "circuit",
@@ -318,7 +318,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -344,7 +344,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -370,7 +370,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -396,7 +396,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -422,7 +422,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -448,7 +448,7 @@
         "geometries": 141,
         "textures": 10
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -474,7 +474,7 @@
         "geometries": 141,
         "textures": 10
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -500,7 +500,7 @@
         "geometries": 141,
         "textures": 10
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -526,7 +526,7 @@
         "geometries": 141,
         "textures": 10
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -552,7 +552,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -578,7 +578,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -604,7 +604,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     },
     {
       "variant": "circuit",
@@ -630,7 +630,7 @@
         "geometries": 141,
         "textures": 23
       },
-      "programs": 40
+      "programs": 38
     }
   ],
   "limitations": [
@@ -638,7 +638,7 @@
     "Draw calls and triangles include all High composer/shadow passes; compare the same pose/quality/viewport and warm-up order.",
     "Ball poses are held by the dev inspection hook; they are not gameplay success trials."
   ],
-  "observedUtc": "2026-10-09T23:57:49.804601+00:00",
+  "observedUtc": "2026-10-10T00:10:28.733706+00:00",
   "implementationBaseCommit": "e74e2e6f5d2d8749e9bf109e948b780791b93c63",
   "comparison": {
     "result": "pass",
@@ -970,7 +970,7 @@
     "src/render/effects.ts": "75c858572ea06cac5318563ff208bde89c4742cfebb97b49d781ee927c422080",
     "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
     "src/render/route-camera.ts": "a84d91b9922723b252ebc952433e72b935b7bf19c15e4cd0019be2b876171de6",
-    "src/render/route-model.ts": "f481f49a92b8aca0f96cff9d11d1d821393242adfd8e22f6d9561e8f8137a284",
+    "src/render/route-model.ts": "78dce4d6d7d3e35aab5d275042000c4039c13ea45c7bb0d88f1070161d0d12ea",
     "src/render/table-model.ts": "324142434fae379d3ca7d0f3fc64fe7c3af36d55d7e0932ff5d69421560d2dcb",
     "src/render/view.ts": "8f5d7b2536b07620484a599cc195f7345fa84df2595c6294d084e5862a78ff3f"
   }

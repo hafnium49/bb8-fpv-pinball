@@ -304,7 +304,7 @@ export class GameAudio {
     }
     if (!frame.music || this.musicVolume === 0) {
       if (this.musicActive) for (const layer of [...this.layers]) if (layer.bus === 'music') this.clean(layer);
-      if (!frame.music && this.musicActive && !frame.rolling && !frame.charge) {
+      if (!frame.music && !frame.rolling && !frame.charge) {
         for (const source of mix.continuous) { try { source.stop(); } catch { /* Already ended. */ } source.disconnect(); }
         mix.continuous.length = 0;
       }

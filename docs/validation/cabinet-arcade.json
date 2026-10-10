@@ -1,6 +1,6 @@
 {
   "result": "pass",
-  "observedUtc": "2026-10-09T23:57:49.845181+00:00",
+  "observedUtc": "2026-10-10T00:10:28.735452+00:00",
   "implementationBaseCommit": "e74e2e6f5d2d8749e9bf109e948b780791b93c63",
   "environment": {
     "browser": "Chrome for Testing 155.0.8059.39",
@@ -27,20 +27,20 @@
     "standaloneHasNoExternalScriptOrStylesheet": true,
     "files": {
       "dist/index.html": {
-        "sha256": "29ab5b788a988f02b6f2e0cb3aee9fb68cf2eddad5cf21d797a9263b2bd453c7",
+        "sha256": "974166095e68473357695affd061e6075704cfb3239f65dcf847e0a8c4946bee",
         "bytes": 661
       },
-      "dist/assets/index-78NUwZCW.js": {
-        "sha256": "deb65d6e7fd7990a6463320d25f0415131c3ed42882963a873502b000abe2033",
-        "bytes": 5602336
+      "dist/assets/index-D38QwNq3.js": {
+        "sha256": "e323e88e3e5f7997e0244caf4d245b5c0fd85bef48a739ff7afc22b415ccf4bf",
+        "bytes": 5602376
       },
       "dist/assets/index-nwRmP1p2.css": {
         "sha256": "f9284c1933a41ee8ecf407c78e8b619efe7c4648b557e7792496ae155b876d78",
         "bytes": 10747
       },
       "artifacts/ORBIT-FPV-Pinball.html": {
-        "sha256": "9af1c45e6dc96128c124e39e6dfb76678fceec0d2b19942cdddb0154bd8cad45",
-        "bytes": 5626141
+        "sha256": "937887a196258d757343f168e3476777fb3cc20390f2188bed45a15549c9d775",
+        "bytes": 5626181
       }
     }
   },
@@ -205,8 +205,11 @@
           ],
           "checks": [
             "ordinary button owns Space",
+            "toolbar focus preserves letter/arrow flippers",
+            "restored pause-button focus preserves flippers",
             "simultaneous keyboard flippers",
             "focused launch hold/release",
+            "mixed pointer launch and focused Space flipper stay independent",
             "modal focus/inert/Tab trap",
             "music slider keyboard control/persistence",
             "large score fits",
@@ -323,8 +326,11 @@
           ],
           "checks": [
             "ordinary button owns Space",
+            "toolbar focus preserves letter/arrow flippers",
+            "restored pause-button focus preserves flippers",
             "simultaneous keyboard flippers",
             "focused launch hold/release",
+            "mixed pointer launch and focused Space flipper stay independent",
             "modal focus/inert/Tab trap",
             "music slider keyboard control/persistence",
             "large score fits",
@@ -441,8 +447,11 @@
           ],
           "checks": [
             "ordinary button owns Space",
+            "toolbar focus preserves letter/arrow flippers",
+            "restored pause-button focus preserves flippers",
             "simultaneous keyboard flippers",
             "focused launch hold/release",
+            "mixed pointer launch and focused Space flipper stay independent",
             "modal focus/inert/Tab trap",
             "music slider keyboard control/persistence",
             "large score fits",
@@ -559,8 +568,11 @@
           ],
           "checks": [
             "ordinary button owns Space",
+            "toolbar focus preserves letter/arrow flippers",
+            "restored pause-button focus preserves flippers",
             "simultaneous keyboard flippers",
             "focused launch hold/release",
+            "mixed pointer launch and focused Space flipper stay independent",
             "modal focus/inert/Tab trap",
             "music slider keyboard control/persistence",
             "large score fits",
@@ -677,8 +689,11 @@
           ],
           "checks": [
             "ordinary button owns Space",
+            "toolbar focus preserves letter/arrow flippers",
+            "restored pause-button focus preserves flippers",
             "simultaneous keyboard flippers",
             "focused launch hold/release",
+            "mixed pointer launch and focused Space flipper stay independent",
             "modal focus/inert/Tab trap",
             "music slider keyboard control/persistence",
             "large score fits",
@@ -696,11 +711,11 @@
         {
           "name": "desktop-classic",
           "result": "pass",
-          "confirmationPeak": 0.019357556477189064,
+          "confirmationPeak": 0.013036484830081463,
           "voiceReady": true,
-          "wallPeak": 0.031207412481307983,
-          "bedPeak": 0.06769399344921112,
-          "warningStarted": 12.541678004535147,
+          "wallPeak": 0.13674528896808624,
+          "bedPeak": 0.06914567947387695,
+          "warningStarted": 15.830204081632653,
           "warningPans": [
             {
               "voice": "left",
@@ -773,8 +788,8 @@
             "speaking": false,
             "priority": 0,
             "loops": 2,
-            "musicSteps": 46,
-            "warnings": 8,
+            "musicSteps": 44,
+            "warnings": 7,
             "musicVolume": 0.6,
             "lastVoice": "left"
           },
@@ -819,9 +834,9 @@
           "result": "pass",
           "confirmationPeak": 0.010188447311520576,
           "voiceReady": true,
-          "wallPeak": 0.04986299201846123,
-          "bedPeak": 0.06949880719184875,
-          "warningStarted": 11.461950113378684,
+          "wallPeak": 0.022272367030382156,
+          "bedPeak": 0.06917901337146759,
+          "warningStarted": 11.21233560090703,
           "warningPans": [
             {
               "voice": "left",
@@ -894,7 +909,7 @@
             "speaking": false,
             "priority": 0,
             "loops": 2,
-            "musicSteps": 52,
+            "musicSteps": 51,
             "warnings": 8,
             "musicVolume": 0.6,
             "lastVoice": "left"
@@ -964,10 +979,10 @@
   },
   "sourceSha256": {
     "package.json": "acb4c4fe63325f3e1f4f752e1876c79e789b73d5fa71d7d0acfd4094dd1b6145",
-    "scripts/audio-browser.cjs": "8e1c99b6fd2264455082a33bcb33d4867d30a3d260730ca2ca47b8b4b77357cf",
-    "scripts/cabinet-browser.cjs": "b0a72ea79d37f98d1b793c2ec2264caf794f20169071e8767f061e52477032ce",
+    "scripts/audio-browser.cjs": "8561a8a0cd75b7475a21161dc8d9cb52792582dc5acf286a851d5b4fbcf84b00",
+    "scripts/cabinet-browser.cjs": "dc11466ccaf127b344b7b1b06cb745d3b9afdb88ad516010930e30a2a783f21f",
     "src/assets/droid-beeps.wav": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77",
-    "src/main.ts": "32b2ff49163ba479f44b9ef6132d500cca4cbb615bf51232e9b7b3791dc5199b",
+    "src/main.ts": "df39e7394238ca1a0040d5a7dcad6df8f376e416c2d81cb94ca191c7596636f8",
     "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
     "src/physics/route-state.ts": "3d03cc5a75ea62f82845d2552f41cce2964fcfb10ddf3e8568fc94b84d5b1be8",
     "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
@@ -977,12 +992,12 @@
     "src/render/effects.ts": "75c858572ea06cac5318563ff208bde89c4742cfebb97b49d781ee927c422080",
     "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
     "src/render/route-camera.ts": "a84d91b9922723b252ebc952433e72b935b7bf19c15e4cd0019be2b876171de6",
-    "src/render/route-model.ts": "f481f49a92b8aca0f96cff9d11d1d821393242adfd8e22f6d9561e8f8137a284",
+    "src/render/route-model.ts": "78dce4d6d7d3e35aab5d275042000c4039c13ea45c7bb0d88f1070161d0d12ea",
     "src/render/table-model.ts": "324142434fae379d3ca7d0f3fc64fe7c3af36d55d7e0932ff5d69421560d2dcb",
     "src/render/view.ts": "8f5d7b2536b07620484a599cc195f7345fa84df2595c6294d084e5862a78ff3f",
     "src/style.css": "3d7ee21ac22320b7895c5eb87c70d78d3c3cc472149d98b0f1b8159c1d370143",
     "src/ui/audio-presets.ts": "7dde7824734a311a7fdb7ebd7a1ebe3bb289b71ed0b2093f026aed5a698aa0e6",
-    "src/ui/audio.ts": "095befb151a0e0869c18420b914e170de7d97299841299084f87651c0f1753c6",
+    "src/ui/audio.ts": "aa44a9bc4fd3ca6e7f8b8999224819250f48cd7fde477563f09016f5b8e308ef",
     "src/ui/cabinet-display.ts": "2299ee18dfaa9c923e087576895b0183deed3f14015df269631e9eea86f2c3b4",
     "src/ui/music-pattern.ts": "1a8257b6ae57b23b148823c54c23096ff5ca66159bdc3d50fcffa695f8efdf61",
     "src/ui/sound-director.ts": "16cd791e8a034b9b606f3e2698a9e13ac40f0edb39716edc377963976d0f827c",
@@ -1000,5 +1015,40 @@
     "Chromium Web Audio signal checks do not establish physical iPhone speaker balance, Silent Mode or Bluetooth routing.",
     "Perceived soundtrack quality and screen-reader announcement timing require human playtesting.",
     "The reference event pacing informs original synthesis; its continuous music was not verified by listening."
-  ]
+  ],
+  "reviewFixes": {
+    "toolbarFocus": {
+      "result": "pass",
+      "testedAtFiveViewports": true,
+      "keys": [
+        "KeyA",
+        "KeyD",
+        "ArrowLeft",
+        "ArrowRight"
+      ],
+      "pauseFocusRestore": true
+    },
+    "mixedInput": {
+      "result": "pass",
+      "pointerHeldLaunchSurvivesSpaceFlipperRelease": true,
+      "realChargeBeforeRelease": true
+    },
+    "zeroMusicGameOver": {
+      "result": "pass",
+      "devices": [
+        "desktop-classic",
+        "mobile-circuit"
+      ],
+      "threeBallLifecycle": true,
+      "continuousSourcesAfterGameOver": 0,
+      "continuousSourcesAfterRestart": 2,
+      "waitsForMixerRestartAfterScreenshotPause": true
+    },
+    "materialFinish": {
+      "result": "pass",
+      "physicalMaterialForSharedPresets": true,
+      "browserRejectsUnsupportedMaterialWarnings": true,
+      "renderBudgetRechecked": true
+    }
+  }
 }

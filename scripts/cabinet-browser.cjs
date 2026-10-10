@@ -11,6 +11,7 @@ let server, browser, activePage;
   browser=await chromium.launch(launch);
   const page=await browser.newPage({viewport:{width,height},hasTouch:width<1000,isMobile:width<1000,deviceScaleFactor:1});activePage=page;page.setDefaultTimeout(60000);
   page.on('pageerror',e=>errors.push(e.message));
+  page.on('console',m=>{if(m.type()==='warning'&&m.text().includes('is not a property of'))errors.push(m.text());});
   await page.goto(server.resolvedUrls.local[0]+'?circuit=1',{waitUntil:'networkidle'});await page.locator('#start:not([disabled])').waitFor();
   await page.locator('#start').click();
   await page.evaluate(()=>{const {sim,view,headLoss}=window.orbitDebug;headLoss.draw=()=>1;window.cabinetRender=view.render.bind(view);view.render=()=>{};sim.paused=true;});
@@ -23,6 +24,14 @@ let server, browser, activePage;
   assert.equal(await page.locator('#sound').textContent(),'SOUND ON');
   await page.locator('#sound').focus();await page.keyboard.press('Space');
   assert.equal(await page.locator('#sound').textContent(),'SOUND OFF');
+  for(const id of ['sound','quality','fullscreen']){
+   await page.locator(`#${id}`).focus();
+   for(const keys of [['KeyA','KeyD'],['ArrowLeft','ArrowRight']]){
+    await page.keyboard.down(keys[0]);await page.keyboard.down(keys[1]);
+    assert.deepEqual(await page.evaluate(()=>[window.orbitDebug.sim.controls.left,window.orbitDebug.sim.controls.right]),[true,true],`${id} focus blocks flippers`);
+    await page.keyboard.up(keys[0]);await page.keyboard.up(keys[1]);
+   }
+  }
   await page.locator('#game').focus();await page.keyboard.down('KeyA');await page.keyboard.down('KeyD');
   assert.deepEqual(await page.evaluate(()=>[window.orbitDebug.sim.controls.left,window.orbitDebug.sim.controls.right]),[true,true]);
   await page.keyboard.up('KeyA');await page.keyboard.up('KeyD');
@@ -42,8 +51,23 @@ let server, browser, activePage;
   await page.locator('#resume').click();
   await page.locator('#pause').click();
   assert.equal(await page.locator('#music-volume').inputValue(),'100');
+  await page.locator('#resume').click();
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'pause');
+  await page.keyboard.down('KeyA');await page.keyboard.down('KeyD');
+  assert.deepEqual(await page.evaluate(()=>[window.orbitDebug.sim.controls.left,window.orbitDebug.sim.controls.right]),[true,true],'restored pause-button focus blocks flippers');
+  await page.keyboard.up('KeyA');await page.keyboard.up('KeyD');
+  await page.locator('#pause').click();
   await page.locator('#restart').click();
   assert.equal(await page.evaluate(()=>document.activeElement.id),'game');
+  await page.locator('#left').focus();
+  const launcher=await page.locator('#launch').boundingBox();
+  await page.mouse.move(launcher.x+launcher.width/2,launcher.y+launcher.height/2);await page.mouse.down();
+  await page.waitForFunction(()=>window.orbitDebug.sim.charge>0.1);
+  await page.keyboard.down('Space');
+  assert.deepEqual(await page.evaluate(()=>[window.orbitDebug.sim.controls.left,window.orbitDebug.sim.controls.launch]),[true,true]);
+  await page.keyboard.up('Space');
+  assert.deepEqual(await page.evaluate(()=>[window.orbitDebug.sim.controls.left,window.orbitDebug.sim.controls.launch]),[false,true],'focused flipper release interrupts pointer-held launch');
+  await page.mouse.up();await page.waitForFunction(()=>window.orbitDebug.sim.phase==='playing');
   await page.evaluate(()=>{const {sim,view}=window.orbitDebug;sim.score=123456789;window.cabinetRender(sim,1/60);});
   await page.waitForFunction(()=>document.querySelector('#score').textContent==='123456789');
   const bounds=await page.evaluate(()=>{
@@ -56,7 +80,8 @@ let server, browser, activePage;
   const a=bounds.find(r=>r.id==='left'),b=bounds.find(r=>r.id==='launch'),c=bounds.find(r=>r.id==='right');assert.ok(a.x+a.width<=b.x&&b.x+b.width<=c.x,'touch controls overlap');
   assert.equal(await page.locator('[data-camera], #map-wrap, #minimap, #camera-controls').count(),0);
   await page.screenshot({path:`${out}/${width}x${height}.png`});
-  cases.push({viewport:{width,height},bounds,checks:['ordinary button owns Space','simultaneous keyboard flippers','focused launch hold/release','modal focus/inert/Tab trap','music slider keyboard control/persistence','large score fits','44px action targets','nonoverlapping controls','FPV-only UI']});
+  cases.push({viewport:{width,height},bounds,checks:['ordinary button owns Space','toolbar focus preserves letter/arrow flippers','restored pause-button focus preserves flippers','simultaneous keyboard flippers','focused launch hold/release','mixed pointer launch and focused Space flipper stay independent','modal focus/inert/Tab trap','music slider keyboard control/persistence','large score fits','44px action targets','nonoverlapping controls','FPV-only UI']});
+  console.log(`${width}x${height}: cabinet/input checks pass`);
   await browser.close();browser=undefined;
  }
  assert.deepEqual(errors,[]);writeFileSync(`${out}/report.json`,JSON.stringify({result:'pass',cases,errors},null,2)+'\n');console.log(JSON.stringify({result:'pass',viewports:cases.length}));
