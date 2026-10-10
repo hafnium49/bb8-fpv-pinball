@@ -4,26 +4,26 @@ PC browsers are the primary target of this release. The previous High preset dre
 
 ## Rendering changes
 
-- **Static GPU batches:** 57 stationary meshes become 20 material/shadow/spatial batches. Six-unit cells retain useful FPV culling. World transforms, normals and UVs are baked once, indexed vertex reuse is retained, and batch origins sit at their bounds centers for depth sorting; moving flippers, bumper caps, the intro ball, portal arcs and transparent surfaces keep independent transforms/sorting. This uses ordinary WebGL 2 geometry buffers and works without a multi-draw extension.
+- **Static GPU batches:** 57 stationary meshes become 20 material/shadow/spatial batches. Six-unit cells retain useful FPV culling. World transforms, normals and UVs are baked once, indexed vertex reuse is retained, and batch origins sit at their bounds centers for depth sorting; moving flippers, bumper caps, the intro ball, portal arcs and transparent surfaces keep independent transforms/sorting. The scene root continues updating dynamic descendants and later-added effects. This uses ordinary WebGL 2 geometry buffers and works without a multi-draw extension.
 - **Cached shadows:** regenerate the map when a flipper, bumper cap or visible intro ball changes, or after a quality/context reset. Following the moving ball with the camera does not invalidate a world-space shadow map. Tests distinguish the initial shadow draw, idle frames and moving mechanisms.
-- **One glow/output pass:** a single HDR scene target and full-screen resolve replace the bloom mip chain and separate output pass. Four nearby bright samples supply restrained emissive glow, then the existing ACES exposure and sRGB conversion apply. Reflections, geometry and artwork remain. Eco has no post target; switching modes releases its GPU resources. Half-float HDR is used when supported, with an unsigned-byte fallback.
+- **One glow/output pass:** a single HDR scene target and full-screen resolve replace the bloom mip chain and separate output pass. Four nearby bright samples supply restrained emissive glow, then the existing ACES exposure and sRGB conversion apply. Reflections, geometry and artwork remain. Eco has no post target; switching modes releases its GPU resources. Half-float HDR is used when supported. GPUs without float render targets use direct tone-mapped output with High shadows and no glow pass, avoiding clipped RGBA8 intermediates.
 - **Automatic resolution:** High retains native 1920×1080 on a 1× display and caps work at three million pixels/density 1.5. Eco caps at two million pixels/density 1. A bounded 30-frame history detects recurring slow delivery, including fast RAF bursts interrupted by GPU stalls. Two pressured deliveries and a sustained window prevent one isolated hiccup from changing quality. Render scale steps through 1, .85, .7, .6 and .5; recovery requires six seconds of headroom. Only the canvas buffer changes: the HTML controls and display stay at CSS resolution. This targets smooth 60 Hz play; it does not guarantee 60 FPS on every GPU.
 - **Frame preparation:** warm shaders asynchronously before enabling Start, using the actual HDR/direct target. Rebuild the camera projection only on FOV/aspect changes. Hide/stop uploads for idle particle pools, cache unchanged HUD/control values, and schedule sound/input feedback before submitting graphics.
 
-Full-quality glow is deliberately tighter than the former multi-scale blur. Desktop cabinet, FPV and mobile landscape screenshots were inspected after the shader fix.
+Full-quality glow is deliberately tighter than the former multi-scale blur. Desktop cabinet, FPV and mobile landscape screenshots were inspected after the rendering fixes.
 
 ## Measured result
 
 | High scene | Before calls | After calls | Software GPU median, before → after |
 | --- | ---: | ---: | ---: |
-| launch | 194 | 92 | 891.92 → 757.16 ms |
-| ground | 161 | 71 | 859.83 → 762.55 ms |
-| bridge | 146 | 56 | 500.16 → 487.72 ms |
-| tunnel | 160 | 52 | 769.12 → 728.77 ms |
+| launch | 194 | 91 | 867.71 → 769.79 ms |
+| ground | 161 | 71 | 781.86 → 765.55 ms |
+| bridge | 146 | 56 | 525.40 → 471.78 ms |
+| tunnel | 160 | 53 | 713.73 → 659.39 ms |
 
-All fixed cases have 16 GPU timer samples at identical resolution and camera coordinates. High draw calls fall by 52.58–67.50%; its isolated software-GPU medians fall by 2.49–15.11%. Eco removes draw calls but its GPU timings are mixed: the launch fixture is 11.09% slower. These results support the desktop High work reduction and the need to adapt pixel load; they do not establish a universal FPS improvement. The live optimized trial reaches scale .7 while following actual physics.
+All fixed cases have 16 GPU timer samples at identical resolution and camera coordinates. Raw GPU samples are retained; even-count medians average the two middle sorted values. High draw calls fall by 53.09–66.88%; its isolated software-GPU median changes range from -11.29 to -2.09%. Eco median changes range from -5.63 to +6.57%. These timings describe this runner and do not establish a universal FPS improvement. The live optimized trial reaches scale 0.7 while following actual physics.
 
-The full 56-test suite, circuit/guide checks, Chromium gameplay checks, five cabinet layouts, both Web Audio cases, and desktop renderer regressions in Chromium/WebKit pass. Renderer checks verify unchanged control bounds at scale .5, correct shadow refresh, stable texture counts across five quality round trips, idle particle buffers, projection caching and the 4K pixel cap.
+The full 56-test suite, circuit/guide checks, Chromium gameplay checks, five cabinet layouts, both Web Audio cases, and desktop renderer regressions in Chromium/WebKit pass. Renderer checks verify rendered flipper/bumper/score-sprite world transforms, direct output without HDR support, unchanged control bounds at scale .5, correct shadow refresh, stable texture counts across five quality round trips, idle particle buffers, projection caching and the 4K pixel cap.
 
 ## Technology choice
 

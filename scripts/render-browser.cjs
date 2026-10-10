@@ -23,11 +23,20 @@ let server, browser;
     view.render = () => {}; view.budget.enabled = false; sim.paused = true;
     view.setQuality(true); render(sim, 0); const cold = view.renderer.info.render.calls;
     render(sim, 0); const cached = view.renderer.info.render.calls;
+    const beforeFlipperWorld = [...view.table.flipperGroups[0].matrixWorld.elements];
     sim.paused = false; sim.controls.left = true; sim.update(1 / 60); sim.controls.left = false; sim.paused = true;
     render(sim, 0); const flipper = view.renderer.info.render.calls;
+    const flipperWorld = [...view.table.flipperGroups[0].matrixWorld.elements], flipperAngle = view.table.flipperGroups[0].rotation.y;
     render(sim, 0); const flipperCached = view.renderer.info.render.calls;
     sim.events.push({ type: 'bumper', index: 0, points: 100 }); render(sim, 0);
     const bumper = view.renderer.info.render.calls; sim.events.length = 0;
+    const cap = view.table.caps[0], popup = view.effects.popups.find(p => p.sprite.visible).sprite;
+    const motion = { sceneTraverses: view.scene.matrixWorldAutoUpdate,
+      flipperChanged: flipperWorld.some((v, i) => Math.abs(v - beforeFlipperWorld[i]) > 1e-6),
+      flipperMatches: Math.abs(flipperWorld[0] - Math.cos(flipperAngle)) < 1e-6 && Math.abs(flipperWorld[8] - Math.sin(flipperAngle)) < 1e-6,
+      bumperY: cap.matrixWorld.elements[13], bumperLocalY: cap.position.y,
+      popupWorld: [popup.matrixWorld.elements[12], popup.matrixWorld.elements[13], popup.matrixWorld.elements[14]],
+      popupLocal: popup.position.toArray() };
     view.effects.reset(); render(sim, 0);
     const positionVersion = view.effects.geometry.attributes.position.version;
     let projections = 0; const projection = view.camera.updateProjectionMatrix.bind(view.camera);
@@ -45,6 +54,15 @@ let server, browser;
     const texturesBefore = view.renderer.info.memory.textures;
     for (let i = 0; i < 5; i++) { view.setQuality(false); render(sim, 0); view.setQuality(true); render(sim, 0); }
     const texturesAfter = view.renderer.info.memory.textures;
+    // Emulate a GPU without float render targets. High retains its cabinet and
+    // shadows, using direct tone-mapped output instead of clipping into RGBA8.
+    view.setQuality(false);
+    const has = view.renderer.extensions.has.bind(view.renderer.extensions);
+    view.renderer.extensions.has = name => name === 'EXT_color_buffer_float' ? false : has(name);
+    view.setQuality(true); render(sim, 0);
+    const fallback = { direct: !view.post, high: view.highQuality, calls: view.renderer.info.render.calls };
+    view.renderer.extensions.has = has;
+    view.setQuality(false); view.setQuality(true); render(sim, 0);
     const rect = () => { const r = document.getElementById('left').getBoundingClientRect(); return [r.x, r.y, r.width, r.height]; };
     const controlsBefore = rect();
     view.budget.enabled = true; view.budget.reset(); sim.paused = false;
@@ -63,18 +81,24 @@ let server, browser;
       } catch (e) { adapterError = String(e); }
     }
     return { cold, cached, flipper, flipperCached, bumper, idleProjections, resizeProjections,
-      positionVersion, idlePositionVersion, particlesVisible, expiredVisible,
-      texturesBefore, texturesAfter, controlsBefore, adapted, capped, batching: view.table.batching,
+      positionVersion, idlePositionVersion, particlesVisible, expiredVisible, motion,
+      texturesBefore, texturesAfter, fallback, controlsBefore, adapted, capped, batching: view.table.batching,
       webgpu: { exposed: !!navigator.gpu, adapter, adapterError }, hdr: view.post.target.texture.type,
       extensions: { parallelCompile: !!gl.getExtension('KHR_parallel_shader_compile'), timer: !!gl.getExtension('EXT_disjoint_timer_query_webgl2') } };
   });
   assert.ok(result.cold > result.cached + 10, 'Idle frames rerender the cabinet shadows');
   assert.ok(result.flipper > result.flipperCached + 10, 'Moving flippers did not invalidate cached shadows');
   assert.ok(result.bumper > result.cached + 10, 'Moving bumper caps did not invalidate cached shadows');
+  assert.equal(result.motion.sceneTraverses, true);
+  assert.equal(result.motion.flipperChanged && result.motion.flipperMatches, true, 'Flipper world transform did not reach the renderer');
+  assert.equal(result.motion.bumperY, result.motion.bumperLocalY, 'Bumper cap world transform is frozen');
+  assert.deepEqual(result.motion.popupWorld, result.motion.popupLocal, 'Later-added score sprites have frozen world transforms');
   assert.equal(result.idleProjections, 0); assert.equal(result.resizeProjections, 1);
   assert.equal(result.positionVersion, result.idlePositionVersion, 'Idle particles keep uploading buffers');
   assert.equal(result.particlesVisible, true); assert.equal(result.expiredVisible, false);
   assert.equal(result.texturesAfter, result.texturesBefore, 'Quality switches leak render targets');
+  assert.equal(result.fallback.direct && result.fallback.high, true, 'Unsupported HDR targets need direct tone-mapped output');
+  assert.ok(result.fallback.calls > 10, 'Fallback did not render the scene');
   assert.equal(result.adapted.scale, .5); assert.equal(result.adapted.pixelRatio, .5);
   assert.equal(result.adapted.high, true); assert.deepEqual(result.controlsBefore, result.adapted.controls);
   assert.ok(result.capped.width * result.capped.height <= 3_000_000);

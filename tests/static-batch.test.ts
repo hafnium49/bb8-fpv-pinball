@@ -38,8 +38,11 @@ test('moving descendants and transparent surfaces retain independent transforms 
   root.add(glass);
   batchStaticMeshes(root, new Set([moving]));
   assert.equal(moving.children.length, 2); assert.equal(glass.parent, root);
+  assert.equal(root.matrixWorldAutoUpdate, true, 'Renderer must continue traversing the scene');
   assert.equal(moving.matrixWorldAutoUpdate, true);
-  moving.rotation.y = Math.PI / 2; root.updateMatrixWorld();
+  moving.rotation.y = Math.PI / 2;
+  // Match the renderer's gate instead of bypassing it with an unconditional update.
+  if (root.matrixWorldAutoUpdate) root.updateMatrixWorld();
   assert.ok(Math.abs(moving.children[0].matrixWorld.elements[0]) < 1e-6);
 });
 

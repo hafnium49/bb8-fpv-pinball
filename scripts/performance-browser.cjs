@@ -27,10 +27,12 @@ let server, browser;
     const geo = await import('/src/physics/route-geometry.ts');
     const gl = view.renderer.getContext(), debug = gl.getExtension('WEBGL_debug_renderer_info');
     const timer = gl.getExtension('EXT_disjoint_timer_query_webgl2');
-    const stats = values => {
+    const stats = (values, retain = false) => {
       if (!values.length) return null;
       const a = [...values].sort((a, b) => a - b);
-      return { median: a[Math.floor(a.length / 2)], p95: a[Math.min(a.length - 1, Math.floor(a.length * .95))], samples: a.length };
+      const middle = Math.floor(a.length / 2);
+      return { median: a.length % 2 ? a[middle] : (a[middle - 1] + a[middle]) / 2,
+        p95: a[Math.min(a.length - 1, Math.ceil(a.length * .95) - 1)], samples: a.length, ...(retain ? { values } : {}) };
     };
     const measure = () => {
       if (!timer) return null;
@@ -99,7 +101,7 @@ let server, browser;
           size: [view.renderer.domElement.width, view.renderer.domElement.height],
           calls: view.renderer.info.render.calls, triangles: view.renderer.info.render.triangles,
           memory: { ...view.renderer.info.memory }, programs: view.renderer.info.programs.length,
-          submitMs: stats(submit), rafMs: timer ? null : stats(intervals), gpuMs: stats(gpuTimes),
+          submitMs: stats(submit), rafMs: timer ? null : stats(intervals), gpuMs: stats(gpuTimes, true),
           camera: view.camera.position.toArray() });
         console.log('PERF ' + (high ? 'High' : 'Eco') + ' ' + pose.name + ' captured');
       }

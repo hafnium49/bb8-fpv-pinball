@@ -76,7 +76,9 @@ export class PinballView {
   setQuality(high: boolean) {
     this.budget.reset(); this.shadowRevision = -1;
     this.highQuality = high; this.renderer.shadowMap.enabled = high; this.table.setQuality(high);
-    if (high && !this.post) this.post = new ArcadePost(this.renderer);
+    // Render directly on older GPUs: an RGBA8 intermediate would clip HDR
+    // before tone mapping and could never reach the glow's HDR threshold.
+    if (high && !this.post && this.renderer.extensions.has('EXT_color_buffer_float')) this.post = new ArcadePost(this.renderer);
     if (!high && this.post) { this.post.dispose(); this.post = undefined; }
     this.resize();
   }

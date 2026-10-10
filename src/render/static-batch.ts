@@ -48,6 +48,9 @@ export function batchStaticMeshes(root: THREE.Object3D, moving: Set<THREE.Object
   // flippers, bumper caps, the intro ball and portals keep normal updates.
   root.updateMatrixWorld(true);
   root.traverse(object => {
+    // WebGLRenderer gates the entire scene update on this flag. Keep the
+    // root traversing so exempt mechanisms and later-added effects move.
+    if (object === root) return;
     for (let ancestor: THREE.Object3D | null = object; ancestor; ancestor = ancestor.parent) if (moving.has(ancestor)) return;
     object.updateMatrix(); object.matrixAutoUpdate = false; object.matrixWorldAutoUpdate = false;
   });

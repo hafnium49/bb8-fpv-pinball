@@ -30,8 +30,8 @@ export class ArcadePost {
   private quad = new FullScreenQuad(this.material);
 
   constructor(renderer: THREE.WebGLRenderer) {
-    const type = renderer.extensions.has('EXT_color_buffer_float') ? THREE.HalfFloatType : THREE.UnsignedByteType;
-    this.target = new THREE.WebGLRenderTarget(1, 1, { type, depthBuffer: true, stencilBuffer: false });
+    if (!renderer.extensions.has('EXT_color_buffer_float')) throw new Error('HDR glow requires a floating-point render target');
+    this.target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: true, stencilBuffer: false });
     this.target.texture.name = 'Arcade HDR scene'; this.material.uniforms.image.value = this.target.texture;
   }
   resize(width: number, height: number) {
