@@ -24,7 +24,10 @@ test('visible mobile blur releases keyboard holds while fingers remain independe
 test('mobile pausing follows visibility, while desktop window blur still pauses', () => {
   assert.equal(pauseOnWindowBlur(false, true, 'touch'), false);
   assert.equal(pauseOnWindowBlur(false, false, 'touch'), false);
+  assert.equal(pauseOnWindowBlur(false, true, ''), false);
   assert.equal(pauseOnWindowBlur(true, true, 'touch'), true);
+  assert.equal(pauseOnWindowBlur(false, true, 'mouse'), true);
+  assert.equal(pauseOnWindowBlur(false, true, 'keyboard'), true);
   assert.equal(pauseOnWindowBlur(false, false, 'mouse'), true);
   assert.equal(pauseOnWindowBlur(false, false, ''), true);
 });

@@ -1,6 +1,6 @@
 {
   "result": "pass",
-  "observedUtc": "2026-10-10T00:49:08.857467+00:00",
+  "observedUtc": "2026-10-10T00:57:10.462864+00:00",
   "implementationBaseCommit": "612d6cb791cae9b8c2cb2fbf2ffd33fd5520a468",
   "unitAndIntegration": {
     "result": "pass",
@@ -20,19 +20,19 @@
     "files": {
       "dist/index.html": {
         "bytes": 661,
-        "sha256": "58980fc7b506538d29ce3c358270da2ad907a5b11c2ef35527a56ba00c16a8ac"
+        "sha256": "48362ed823721a55976299c605b852070f2d7887d385cb27037ffc95abb78264"
       },
-      "dist/assets/index-Cidg6wnB.js": {
-        "bytes": 5604410,
-        "sha256": "af785cbe5a4ba8e73ef9b7f6b59bb8e98d058e03d8c775f6a081c71c433b9701"
+      "dist/assets/index-dF3hE9wC.js": {
+        "bytes": 5604420,
+        "sha256": "adde166c3697226b0e3aa77a3e6c85ccad39acf82e9d1e608782a920dd652ae3"
       },
       "dist/assets/index-2RWKCKNU.css": {
         "bytes": 11704,
         "sha256": "2e57754c7d7da431da3a38f61ca005692ebe0cc686b5a3efb95403be3c3cae8a"
       },
       "artifacts/ORBIT-FPV-Pinball.html": {
-        "bytes": 5629172,
-        "sha256": "1a8fbecbbc8be30997434d944f4ab772a93d7bcbc42bddb13e4cc12c90e3b8c3"
+        "bytes": 5629182,
+        "sha256": "3290bb956d81f213e4686ad2ff90a38fe44dc3ee9c855fa3d15fc949040fb534"
       }
     }
   },
@@ -997,6 +997,7 @@
             "lost capture and global pointer release clear only their owner",
             "pagehide pauses and releases every hold",
             "explicit pause/resume works; subsequent flipper tap keeps playing",
+            "switching touch device to keyboard/mouse restores desktop blur pause",
             "muted warning survives later head reaction; new game clears caption priority",
             "44px targets fit portrait/landscape",
             "actual intro/launch/held-ground WebGL frames captured"
@@ -1051,6 +1052,7 @@
             "lost capture and global pointer release clear only their owner",
             "pagehide pauses and releases every hold",
             "explicit pause/resume works; subsequent flipper tap keeps playing",
+            "switching touch device to keyboard/mouse restores desktop blur pause",
             "muted warning survives later head reaction; new game clears caption priority",
             "44px targets fit portrait/landscape",
             "actual intro/launch/held-ground WebGL frames captured"
@@ -1116,6 +1118,7 @@
             "lost capture and global pointer release clear only their owner",
             "pagehide pauses and releases every hold",
             "explicit pause/resume works; subsequent flipper tap keeps playing",
+            "switching touch device to keyboard/mouse restores desktop blur pause",
             "muted warning survives later head reaction; new game clears caption priority",
             "44px targets fit portrait/landscape",
             "actual intro/launch/held-ground WebGL frames captured"
@@ -1170,6 +1173,7 @@
             "lost capture and global pointer release clear only their owner",
             "pagehide pauses and releases every hold",
             "explicit pause/resume works; subsequent flipper tap keeps playing",
+            "switching touch device to keyboard/mouse restores desktop blur pause",
             "muted warning survives later head reaction; new game clears caption priority",
             "44px targets fit portrait/landscape",
             "actual intro/launch/held-ground WebGL frames captured"
@@ -1199,12 +1203,12 @@
     "result": "pass",
     "inspected": {
       "artifacts/touch-chromium/844x390-intro.png": {
-        "bytes": 288898,
-        "sha256": "d450ca3e7c388b3e0edd3592e23e029c68b16317a09cecdfad57b6337e41a8ce"
+        "bytes": 288902,
+        "sha256": "54640922f46110ea50ef116f2b2fe8262498f574671ee79089c8f079fad83b57"
       },
       "artifacts/touch-webkit/844x390-ground.png": {
-        "bytes": 221746,
-        "sha256": "cef3f2d67ecbbabdfb88154013af2ee1f37b0f52b86c5d7dfc9be35fcf972d8c"
+        "bytes": 221674,
+        "sha256": "10cbb4e2360998bbcfded848d1ac2d73beb62ec444b426962d9bf414ba73db0e"
       },
       "artifacts/cabinet/1440x900.png": {
         "bytes": 663148,
@@ -1250,19 +1254,20 @@
     "src/ui/audio.ts": "aa44a9bc4fd3ca6e7f8b8999224819250f48cd7fde477563f09016f5b8e308ef",
     "src/ui/cabinet-display.ts": "2299ee18dfaa9c923e087576895b0183deed3f14015df269631e9eea86f2c3b4",
     "src/ui/music-pattern.ts": "1a8257b6ae57b23b148823c54c23096ff5ca66159bdc3d50fcffa695f8efdf61",
-    "src/ui/play-input.ts": "c1cfb513573e64830c26c4844582a148729db220a8b01eade8e42420e6cbc51e",
+    "src/ui/play-input.ts": "115e242eed4daa7aa7dd35db0157e774a542d110e405b2a37483d99d1572c52b",
     "src/ui/sound-director.ts": "16cd791e8a034b9b606f3e2698a9e13ac40f0edb39716edc377963976d0f827c",
     "src/ui/voice-bank.ts": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac",
-    "scripts/touch-browser.cjs": "b92fb7fe080cccddcd79597ab3c436a879c4e47d404a09ba0b25a96b29942ce9",
+    "scripts/touch-browser.cjs": "0df9d01008c9297e2d10f2e84b57700d28620b22be038e843ff79e147d7c1020",
     "scripts/audio-browser.cjs": "bcfc8f363bfeda51fd36e7a919d714be776c53b404b932a0bc3b8ee5115824f9",
     "scripts/cabinet-browser.cjs": "dc11466ccaf127b344b7b1b06cb745d3b9afdb88ad516010930e30a2a783f21f",
-    "scripts/browser-smoke.cjs": "6a0e4d494d9ed0d94537f4befaa683b42ca194b9d9520801f47063e43aa3cf5a"
+    "scripts/browser-smoke.cjs": "6a0e4d494d9ed0d94537f4befaa683b42ca194b9d9520801f47063e43aa3cf5a",
+    "tests/play-input.test.ts": "63cac8fc12987a7deae9170d48fee9c29e9603985f7e53f683035c1b3a334634"
   },
   "limits": [
     "WebKit 26.5 on Linux and Chromium 155 use touch emulation; neither is a physical iPhone test.",
     "Native repeated taps are real browser input; blur/pagehide/cancellation regressions are injected fixtures.",
     "Linux WebKit does not implement iOS touch-callout CSS; context-menu cancellation and user-select/touch-action are checked.",
     "No claim about iOS browser chrome, Silent Mode/Bluetooth routing, actual phone FPS or subjective soundtrack quality.",
-    "Gameplay/cabinet checks preceded the final caption priority correction; the final touch and audio harnesses verify that correction."
+    "Gameplay/cabinet checks preceded the caption priority correction, which final touch/audio checks verify; full audio and render counters precede the hybrid-blur policy refinement, which final unit/touch checks verify."
   ]
 }

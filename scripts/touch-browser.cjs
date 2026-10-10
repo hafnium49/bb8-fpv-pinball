@@ -83,6 +83,21 @@ const out = `artifacts/touch-${engine}`;
     await page.locator('#pause').tap(); assert.equal((await state()).paused, true);
     await page.locator('#resume').tap(); await page.locator('#left').tap();
     assert.equal((await state()).paused, false);
+    // A touch/coarse device can switch to a keyboard or mouse. Those visible
+    // focus losses must retain desktop-style pause and release every owner.
+    await page.keyboard.down('KeyA');
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    assert.equal((await state()).paused, true);
+    assert.deepEqual((await state()).controls, { left: false, right: false, launch: false });
+    await page.keyboard.up('KeyA'); await page.locator('#resume').tap();
+    const pad = await page.locator('#left').boundingBox();
+    await page.mouse.move(pad.x + pad.width / 2, pad.y + pad.height / 2); await page.mouse.down();
+    assert.equal((await state()).controls.left, true);
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    assert.equal((await state()).paused, true);
+    assert.deepEqual((await state()).controls, { left: false, right: false, launch: false });
+    await page.mouse.up(); await page.locator('#resume').tap(); await page.locator('#left').tap();
+    assert.equal((await state()).paused, false);
     // Caption priority must also work with sound off. Freeze only physics for
     // these short cross-frame warning/reaction fixtures, then restore it.
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.enabled), false);
@@ -126,7 +141,8 @@ const out = `artifacts/touch-${engine}`;
       checks: ['24 native alternating flipper taps never pause', 'injected visible blur preserves touch and releases keyboard only',
         'long hold keeps simulation running and suppresses context menu', 'two fingers on one pad survive independent cancellation',
         'lost capture and global pointer release clear only their owner', 'pagehide pauses and releases every hold',
-        'explicit pause/resume works; subsequent flipper tap keeps playing', 'muted warning survives later head reaction; new game clears caption priority',
+        'explicit pause/resume works; subsequent flipper tap keeps playing', 'switching touch device to keyboard/mouse restores desktop blur pause',
+        'muted warning survives later head reaction; new game clears caption priority',
         '44px targets fit portrait/landscape', 'actual intro/launch/held-ground WebGL frames captured'] });
     console.log(`${engine} ${version} ${width}x${height}: touch checks pass`);
     await browser.close(); browser = undefined; page = undefined;

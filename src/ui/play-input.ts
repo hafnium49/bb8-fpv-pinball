@@ -24,5 +24,6 @@ export class PlayInput {
 // Mobile focus can change while the page stays visible and a finger is down.
 // Background/navigation lifecycle events still pause immediately on all devices.
 export function pauseOnWindowBlur(hidden: boolean, coarse: boolean, lastPointerType: string) {
-  return hidden || (!coarse && lastPointerType !== 'touch');
+  const touchFocus = lastPointerType === 'touch' || (coarse && lastPointerType === '');
+  return hidden || !touchFocus;
 }
