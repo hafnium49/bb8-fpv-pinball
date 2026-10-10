@@ -1,0 +1,170 @@
+{
+  "licensing": {
+    "selected": "MIT-licensed MCP-Muse code adapted to generate new oscillator audio locally",
+    "commit": "8a23fd9e429a799324f0f98f93dd20647326bd6a",
+    "officialBb8Recordings": "excluded: no reuse license established",
+    "ttastromechSamples": "excluded: code MIT, bundled recordings trace to Scratch with unclear original provenance",
+    "freesound331490": "creator states Aalto synthesis and CC0; file retrieval returned HTTP 403; no audio imported",
+    "vendoredSourceHashes": {
+      "r2d2.rs": {
+        "sha256": "683f24ca815b938a6bebcd5d7528f8e914ac1ee5a197aadedfa3fb12cf337837",
+        "gitBlobSha": "d311106d45a2ec1ba1aabcbcd32264f3c9a67daa"
+      },
+      "synth.rs": {
+        "sha256": "904fd113f667bed17f32c3c89f1d5620ee5c45040ff1bfd2564553603fa44dd8",
+        "gitBlobSha": "21850769a182acaa941fc38e4c06da0effe731b2"
+      }
+    }
+  },
+  "candidates": {
+    "deep": {
+      "clips": {
+        "Thoughtful": {
+          "rms": 0.19281,
+          "peak": 0.55,
+          "centroidHz": 156.3,
+          "energyAbove2k": 0.0
+        },
+        "Curious": {
+          "rms": 0.19131,
+          "peak": 0.55,
+          "centroidHz": 185.1,
+          "energyAbove2k": 0.0
+        },
+        "Surprised": {
+          "rms": 0.19197,
+          "peak": 0.55,
+          "centroidHz": 234.2,
+          "energyAbove2k": 1e-05
+        },
+        "Worried": {
+          "rms": 0.18467,
+          "peak": 0.55,
+          "centroidHz": 204.9,
+          "energyAbove2k": 1e-05
+        },
+        "Excited": {
+          "rms": 0.18324,
+          "peak": 0.55,
+          "centroidHz": 240.5,
+          "energyAbove2k": 1e-05
+        },
+        "Sad": {
+          "rms": 0.2015,
+          "peak": 0.55,
+          "centroidHz": 144.8,
+          "energyAbove2k": 0.0
+        }
+      },
+      "combined": {
+        "rms": 0.15578,
+        "peak": 0.55,
+        "centroidHz": 189.4,
+        "energyAbove2k": 0.0
+      }
+    },
+    "warm": {
+      "clips": {
+        "Thoughtful": {
+          "rms": 0.19168,
+          "peak": 0.55,
+          "centroidHz": 229.7,
+          "energyAbove2k": 1e-05
+        },
+        "Curious": {
+          "rms": 0.18929,
+          "peak": 0.55,
+          "centroidHz": 271.9,
+          "energyAbove2k": 1e-05
+        },
+        "Surprised": {
+          "rms": 0.19001,
+          "peak": 0.55,
+          "centroidHz": 341.8,
+          "energyAbove2k": 3e-05
+        },
+        "Worried": {
+          "rms": 0.18304,
+          "peak": 0.55,
+          "centroidHz": 299.2,
+          "energyAbove2k": 2e-05
+        },
+        "Excited": {
+          "rms": 0.17917,
+          "peak": 0.55,
+          "centroidHz": 354.1,
+          "energyAbove2k": 4e-05
+        },
+        "Sad": {
+          "rms": 0.20075,
+          "peak": 0.55,
+          "centroidHz": 212.4,
+          "energyAbove2k": 1e-05
+        }
+      },
+      "combined": {
+        "rms": 0.15422,
+        "peak": 0.55,
+        "centroidHz": 277.2,
+        "energyAbove2k": 2e-05
+      }
+    },
+    "bright": {
+      "clips": {
+        "Thoughtful": {
+          "rms": 0.18844,
+          "peak": 0.55,
+          "centroidHz": 386.9,
+          "energyAbove2k": 6e-05
+        },
+        "Curious": {
+          "rms": 0.18587,
+          "peak": 0.55,
+          "centroidHz": 452.9,
+          "energyAbove2k": 0.00012
+        },
+        "Surprised": {
+          "rms": 0.18691,
+          "peak": 0.55,
+          "centroidHz": 563.6,
+          "energyAbove2k": 0.00027
+        },
+        "Worried": {
+          "rms": 0.17998,
+          "peak": 0.55,
+          "centroidHz": 497.7,
+          "energyAbove2k": 0.00019
+        },
+        "Excited": {
+          "rms": 0.17782,
+          "peak": 0.55,
+          "centroidHz": 581.7,
+          "energyAbove2k": 0.00029
+        },
+        "Sad": {
+          "rms": 0.19827,
+          "peak": 0.55,
+          "centroidHz": 357.3,
+          "energyAbove2k": 4e-05
+        }
+      },
+      "combined": {
+        "rms": 0.152,
+        "peak": 0.55,
+        "centroidHz": 461.3,
+        "energyAbove2k": 0.00015
+      }
+    }
+  },
+  "chosen": "warm",
+  "limits": [
+    "Signal measurements do not establish subjective similarity to BB-8 or speaker quality."
+  ],
+  "oldVoice": {
+    "rms": 0.21333,
+    "peak": 0.63998,
+    "centroidHz": 739.2,
+    "energyAbove2k": 0.05416
+  },
+  "decision": "Warm retains audible midrange for small speakers, with substantially less high-frequency energy than the old voice. Deep risks losing body on small speakers; bright returns toward the rejected soprano character. All candidates use discrete syllables without fast amplitude flutter or formant-filter vocalization."
+}

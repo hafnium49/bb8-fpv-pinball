@@ -347,7 +347,7 @@ function frame(now: number) {
     if (lit !== reactorLit[i]) { reactorLit[i] = lit; window.classList.toggle('hit', lit); }
   });
   const soundFrame = soundDirector.update(sim, sim.events);
-  if (cameraFrame.started) soundFrame.cues.unshift({ kind: 'head-loss', voice: 'ouch', strength: 1, priority: 85, caption: HEAD_LOSS_CAPTION });
+  if (cameraFrame.started) soundFrame.cues.unshift({ kind: 'head-loss', voice: 'head-loss', strength: 1, priority: 85, caption: HEAD_LOSS_CAPTION });
   audio.update(soundFrame);
   for (const cue of soundFrame.cues) {
     const vocalized = audio.play(cue);

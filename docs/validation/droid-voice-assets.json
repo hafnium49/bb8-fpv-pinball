@@ -1,0 +1,285 @@
+{
+  "source": "Original oscillator audio using adapted MIT-licensed MCP-Muse code",
+  "variants": 46,
+  "bytes": 1432842,
+  "sampleRate": 22050,
+  "spriteSha256": "91e157ce6962186722e60f9f8707b8c1ecfb6288c6d804da692f9da0245f02cd",
+  "clips": {
+    "left:0": {
+      "duration": 0.34,
+      "rms": 0.20615,
+      "peak": 0.58,
+      "sha256": "c4876fe994dece851760fea2b0043a0a497fb65cb739badbbdbde8cc7bd85f94"
+    },
+    "right:0": {
+      "duration": 0.409977,
+      "rms": 0.1973,
+      "peak": 0.58,
+      "sha256": "f42c1b988771136b98a4c2f6534098359d87f4ee2758358edd4a4fbf0552381d"
+    },
+    "both:0": {
+      "duration": 0.46,
+      "rms": 0.19368,
+      "peak": 0.58,
+      "sha256": "d48f4659f15a0ea54724220880682b6e8fe2b8ee29f2ee3e6fc9909d10c65a40"
+    },
+    "danger:0": {
+      "duration": 0.489977,
+      "rms": 0.20699,
+      "peak": 0.58,
+      "sha256": "84233e99341d8e70c7d8a011a94090f48f449fa7d2b7ebd0febcb6c4c3cf5160"
+    },
+    "ready:0": {
+      "duration": 0.6,
+      "rms": 0.18639,
+      "peak": 0.55,
+      "sha256": "dd6442bf9aad7775ac2b6c022b46a6ddf27d0f33b429a59a9246050a104b07c8"
+    },
+    "ready:1": {
+      "duration": 0.6,
+      "rms": 0.18705,
+      "peak": 0.55,
+      "sha256": "759c497cd309f6b945784c3bedc3a47a5c6f9377439079943827983d7b7f5676"
+    },
+    "ready:2": {
+      "duration": 0.6,
+      "rms": 0.18637,
+      "peak": 0.55,
+      "sha256": "07258449eae85cfeca4dc851399495b2dfce645ebceb48addb62ca15ac920e49"
+    },
+    "launch:0": {
+      "duration": 0.569977,
+      "rms": 0.18293,
+      "peak": 0.55,
+      "sha256": "d54f28b6a689c5f314628623e65068a1f300075ce4217af9cef2e092c1607603"
+    },
+    "launch:1": {
+      "duration": 0.569977,
+      "rms": 0.18502,
+      "peak": 0.55,
+      "sha256": "d39ab6eaacab03c6ffbe5a769f33084ab10e6ce7645d2ee591d545b7824d476d"
+    },
+    "launch:2": {
+      "duration": 0.569977,
+      "rms": 0.1835,
+      "peak": 0.55,
+      "sha256": "29b5759625a4c12b6e65241145d5b0a3e36a64b112a742b1769f903317454e9b"
+    },
+    "whoa:0": {
+      "duration": 0.46,
+      "rms": 0.19001,
+      "peak": 0.55,
+      "sha256": "3a449dda2e9cac51a6c377d00c78ef3c7e5e01ac41a7e56852f26d4242667d94"
+    },
+    "whoa:1": {
+      "duration": 0.46,
+      "rms": 0.18997,
+      "peak": 0.55,
+      "sha256": "cb3d27eb5d4d98f4fa5e7cb48e3872e4f0b1fa976467939fdd75e8e8b06ae1ca"
+    },
+    "whoa:2": {
+      "duration": 0.46,
+      "rms": 0.18942,
+      "peak": 0.55,
+      "sha256": "ac23bcd1d3ba9e1c1cfbdfc0a3da6d6650cd759e6d52036e0ec2cb32e3075e0f"
+    },
+    "ouch:0": {
+      "duration": 0.56,
+      "rms": 0.19524,
+      "peak": 0.55,
+      "sha256": "d9fe4b2074697ee3b14167e87cbda49b2ac43e533ab8d6357f13cad3a45ffc8b"
+    },
+    "ouch:1": {
+      "duration": 0.56,
+      "rms": 0.1959,
+      "peak": 0.55,
+      "sha256": "a801fe1a9e22264721d30e92395ec88033d29c1d3f952112a1f2dbd2cfc3598a"
+    },
+    "ouch:2": {
+      "duration": 0.56,
+      "rms": 0.1953,
+      "peak": 0.55,
+      "sha256": "abfcc451defd1954209a2da1dd7219faba15cd863423ede92353e41b2f2326e2"
+    },
+    "ramp:0": {
+      "duration": 0.66,
+      "rms": 0.18907,
+      "peak": 0.55,
+      "sha256": "bd1bc9921411e5d6a5171d12dfebb8a5d85a6a567b536789ad66bf12576b3ede"
+    },
+    "ramp:1": {
+      "duration": 0.66,
+      "rms": 0.18947,
+      "peak": 0.55,
+      "sha256": "6d1265a74edf88a3afe363c4e05b4dc62af177903672153b033f0e3a22cb536a"
+    },
+    "ramp:2": {
+      "duration": 0.66,
+      "rms": 0.18876,
+      "peak": 0.55,
+      "sha256": "9c98f66e2bb5c90c7ee3d94f6658233c53f15d0180368d1f015ca00674d3c503"
+    },
+    "bridge:0": {
+      "duration": 0.689977,
+      "rms": 0.17834,
+      "peak": 0.55,
+      "sha256": "d9cd13891e08583dd3bb3cfbf52b2164952d4611015308448cc6a16bb536042a"
+    },
+    "bridge:1": {
+      "duration": 0.689977,
+      "rms": 0.17967,
+      "peak": 0.55,
+      "sha256": "0bff3f31c5e24f5d7c4972360c717a563ae38db6c3fc8be563e8e30818861c11"
+    },
+    "bridge:2": {
+      "duration": 0.689977,
+      "rms": 0.17798,
+      "peak": 0.55,
+      "sha256": "39d49ce14f3abaecc65669f512a334c43abeea151b3bb8848ebd87b26c42729e"
+    },
+    "tunnel:0": {
+      "duration": 0.849977,
+      "rms": 0.15221,
+      "peak": 0.55,
+      "sha256": "8352ad3af6bf883dfa17f0e7ee358cbca0ce2e25b0c7dda31697ab9732e3164b"
+    },
+    "tunnel:1": {
+      "duration": 0.849977,
+      "rms": 0.15762,
+      "peak": 0.55,
+      "sha256": "404051801abb313fee5ba40b87c412801b9bebc8a2962f37072538663bfbc39a"
+    },
+    "tunnel:2": {
+      "duration": 0.849977,
+      "rms": 0.16225,
+      "peak": 0.55,
+      "sha256": "bf4c682e03e21917297a99577db00fbeb02789c5f97e9b589e298a8f4cab852f"
+    },
+    "save:0": {
+      "duration": 0.510023,
+      "rms": 0.18148,
+      "peak": 0.55,
+      "sha256": "1b969eaeb0cca02c7693a98098451b1bc18561501763f23305fec420f250277e"
+    },
+    "save:1": {
+      "duration": 0.510023,
+      "rms": 0.18193,
+      "peak": 0.55,
+      "sha256": "a0401d9c5578a752c36eddd53d56789fdfc78cbdb44dc082fffeaf58c1d2d43c"
+    },
+    "save:2": {
+      "duration": 0.510023,
+      "rms": 0.1814,
+      "peak": 0.55,
+      "sha256": "accc65db72c3095f112eec8455909a12285d13ad94c4780ae97b53709c488ebf"
+    },
+    "circuit:0": {
+      "duration": 0.8,
+      "rms": 0.18255,
+      "peak": 0.55,
+      "sha256": "8a0f420c2cd4d60f13b8d740011733e033c3a1bfd8db3b5e39b5e6f5ebd207d3"
+    },
+    "circuit:1": {
+      "duration": 0.8,
+      "rms": 0.18354,
+      "peak": 0.55,
+      "sha256": "2f9d2964f4d9f58c688f17912254e76c29e54dd2ed3cd4ddab11cdf5b8b56399"
+    },
+    "circuit:2": {
+      "duration": 0.8,
+      "rms": 0.18211,
+      "peak": 0.55,
+      "sha256": "8fc2979cf41f7d8408876da8bf004640a4e82674e4701574ba0865eeeb141c5c"
+    },
+    "drain:0": {
+      "duration": 0.609977,
+      "rms": 0.18696,
+      "peak": 0.55,
+      "sha256": "597e1858cdf20948c6d2319dfef3cb9e6721c65e37b19d5f77d35ba943980568"
+    },
+    "drain:1": {
+      "duration": 0.609977,
+      "rms": 0.18747,
+      "peak": 0.55,
+      "sha256": "f99cae0ad9af3ebadcd1f8e11ccf8dd98093e88b0c47214408c606d68d5d4050"
+    },
+    "drain:2": {
+      "duration": 0.609977,
+      "rms": 0.18698,
+      "peak": 0.55,
+      "sha256": "0afa848f39244393f2b39a8f161fc7d48fce5a2d2c8dc12a80353ed827e7bf2d"
+    },
+    "over:0": {
+      "duration": 0.729977,
+      "rms": 0.19994,
+      "peak": 0.55,
+      "sha256": "cea262b0115ee757893bed7519bd92c8b64947390e89104323c414bacb59d432"
+    },
+    "over:1": {
+      "duration": 0.729977,
+      "rms": 0.19944,
+      "peak": 0.55,
+      "sha256": "186b5c23084811ee135da49f9b6760629fe6c8c57d899d848061c7f44b99cb73"
+    },
+    "over:2": {
+      "duration": 0.729977,
+      "rms": 0.19911,
+      "peak": 0.55,
+      "sha256": "75505f041f82b99bffa51ea21d39fac701b5e8f52683c114623bdcfeed0b7e7b"
+    },
+    "tap:0": {
+      "duration": 0.230023,
+      "rms": 0.20372,
+      "peak": 0.55,
+      "sha256": "f9580a75964c5b0d2d5c7855c1246ceec1c37767516be697b7e15625609872ff"
+    },
+    "tap:1": {
+      "duration": 0.230023,
+      "rms": 0.20561,
+      "peak": 0.55,
+      "sha256": "6fcc5c2f4cbac63512baf4463d41338b11487326496ab9d64f8ac4942a630c14"
+    },
+    "tap:2": {
+      "duration": 0.230023,
+      "rms": 0.20361,
+      "peak": 0.55,
+      "sha256": "a18b9bccc294ee561f398ef75ba2186ef3f0621a823a0c95b877d4f35b2bde6b"
+    },
+    "idle:0": {
+      "duration": 0.68,
+      "rms": 0.19168,
+      "peak": 0.55,
+      "sha256": "69ae3cb2bd47a2cd1c0ac1696710011b78ddbce0f7e944b169e724c2ac2faf86"
+    },
+    "idle:1": {
+      "duration": 0.68,
+      "rms": 0.19204,
+      "peak": 0.55,
+      "sha256": "ef89500d3ac769326b9ec304879166d274cdaa2960e3b02f09edef6a5b73d307"
+    },
+    "idle:2": {
+      "duration": 0.68,
+      "rms": 0.19132,
+      "peak": 0.55,
+      "sha256": "7d2a831c15c634bfcd547fc4cf4a65a93f4fcb42d8761ce44dd1a5b245f880ad"
+    },
+    "head-loss:0": {
+      "duration": 0.78,
+      "rms": 0.18326,
+      "peak": 0.55,
+      "sha256": "4328b66edb42c7a9b3cca4037ea53c8feaecf1d2838461f587ae5e4a840d786f"
+    },
+    "head-loss:1": {
+      "duration": 0.78,
+      "rms": 0.18329,
+      "peak": 0.55,
+      "sha256": "8f4ec4c07dcf5fc5c6650c5668bb31e3c73403086ae227d2a5f87c0e7d917408"
+    },
+    "head-loss:2": {
+      "duration": 0.78,
+      "rms": 0.18338,
+      "peak": 0.55,
+      "sha256": "cc13000532a16c12adf130481a3553db7f9438493e385fe53c74eab3168216ea"
+    }
+  }
+}

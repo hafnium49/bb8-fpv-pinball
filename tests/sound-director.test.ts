@@ -68,8 +68,8 @@ test('frequent collisions retain mechanical feedback while budgeting droid react
   const next = director.update({ ...s, time: 10.04 }, [hit, hit]);
   assert.equal(next.cues.filter(c => c.kind === 'wall').length, 2);
   assert.equal(next.cues.filter(c => c.kind === 'chatter').length, 0);
-  const later = director.update({ ...s, time: 10.3 }, [hit]);
-  assert.ok(later.cues.some(c => c.kind === 'chatter' && !c.voice));
+  const later = director.update({ ...s, time: 10.55 }, [hit]);
+  assert.ok(later.cues.some(c => c.kind === 'chatter' && c.voice === 'tap'));
 });
 
 test('rolling follows contact and route textures; drains and restart reset the sound state', () => {
