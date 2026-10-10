@@ -1,0 +1,351 @@
+{
+  "fixed": [
+    {
+      "quality": "High",
+      "pose": "launch",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 92,
+      "triangles": 64907,
+      "memory": {
+        "geometries": 103,
+        "textures": 12
+      },
+      "programs": 20,
+      "submitMs": {
+        "median": 1.9000000022351742,
+        "p95": 2.800000000745058,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 757.16064,
+        "p95": 872.809333,
+        "samples": 16
+      },
+      "camera": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ]
+    },
+    {
+      "quality": "High",
+      "pose": "ground",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 71,
+      "triangles": 55501,
+      "memory": {
+        "geometries": 103,
+        "textures": 12
+      },
+      "programs": 20,
+      "submitMs": {
+        "median": 2.100000001490116,
+        "p95": 6.800000000745058,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 762.550754,
+        "p95": 882.456283,
+        "samples": 16
+      },
+      "camera": [
+        -4,
+        0.6050000071525574,
+        -1
+      ]
+    },
+    {
+      "quality": "High",
+      "pose": "bridge",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 56,
+      "triangles": 47953,
+      "memory": {
+        "geometries": 103,
+        "textures": 12
+      },
+      "programs": 20,
+      "submitMs": {
+        "median": 1.5,
+        "p95": 2,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 487.723465,
+        "p95": 568.907865,
+        "samples": 16
+      },
+      "camera": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ]
+    },
+    {
+      "quality": "High",
+      "pose": "tunnel",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 52,
+      "triangles": 32603,
+      "memory": {
+        "geometries": 103,
+        "textures": 12
+      },
+      "programs": 20,
+      "submitMs": {
+        "median": 1.300000000745058,
+        "p95": 2.099999997764826,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 728.769916,
+        "p95": 869.094709,
+        "samples": 16
+      },
+      "camera": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ]
+    },
+    {
+      "quality": "Eco",
+      "pose": "launch",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 91,
+      "triangles": 64906,
+      "memory": {
+        "geometries": 102,
+        "textures": 11
+      },
+      "programs": 32,
+      "submitMs": {
+        "median": 1.5,
+        "p95": 2,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 835.92349,
+        "p95": 958.311935,
+        "samples": 16
+      },
+      "camera": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ]
+    },
+    {
+      "quality": "Eco",
+      "pose": "ground",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 70,
+      "triangles": 55500,
+      "memory": {
+        "geometries": 102,
+        "textures": 11
+      },
+      "programs": 32,
+      "submitMs": {
+        "median": 1.4000000022351742,
+        "p95": 1.7000000029802322,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 712.898991,
+        "p95": 814.412586,
+        "samples": 16
+      },
+      "camera": [
+        -4,
+        0.6050000071525574,
+        -1
+      ]
+    },
+    {
+      "quality": "Eco",
+      "pose": "bridge",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 55,
+      "triangles": 47952,
+      "memory": {
+        "geometries": 102,
+        "textures": 11
+      },
+      "programs": 32,
+      "submitMs": {
+        "median": 1.300000000745058,
+        "p95": 1.5,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 497.177962,
+        "p95": 597.854091,
+        "samples": 16
+      },
+      "camera": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ]
+    },
+    {
+      "quality": "Eco",
+      "pose": "tunnel",
+      "size": [
+        1440,
+        900
+      ],
+      "calls": 51,
+      "triangles": 32602,
+      "memory": {
+        "geometries": 102,
+        "textures": 11
+      },
+      "programs": 32,
+      "submitMs": {
+        "median": 1.1000000014901161,
+        "p95": 1.5,
+        "samples": 16
+      },
+      "rafMs": null,
+      "gpuMs": {
+        "median": 597.988819,
+        "p95": 716.223168,
+        "samples": 16
+      },
+      "camera": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ]
+    }
+  ],
+  "heldPhases": {
+    "physics": {
+      "median": 0,
+      "p95": 0,
+      "samples": 7490
+    },
+    "mechanisms": {
+      "median": 0,
+      "p95": 0.10000000149011612,
+      "samples": 176
+    },
+    "particles": {
+      "median": 0,
+      "p95": 0,
+      "samples": 176
+    },
+    "cameraSweep": {
+      "median": 0.09999999776482582,
+      "p95": 0.19999999925494194,
+      "samples": 176
+    },
+    "cameraHeading": {
+      "median": 0,
+      "p95": 0,
+      "samples": 176
+    },
+    "audio": {
+      "median": 0,
+      "p95": 0,
+      "samples": 7490
+    }
+  },
+  "live": {
+    "durationSeconds": 11.018599999997765,
+    "frames": 38,
+    "rafMs": {
+      "median": 16.70000000001164,
+      "p95": 1449.8999999999942,
+      "samples": 38
+    },
+    "phase": "playing",
+    "finalPixelRatio": 0.7,
+    "budget": {
+      "scale": 0.7,
+      "level": 2
+    },
+    "phases": {
+      "physics": {
+        "median": 0.4000000022351742,
+        "p95": 2.400000002235174,
+        "samples": 39
+      },
+      "mechanisms": {
+        "median": 0,
+        "p95": 0.10000000149011612,
+        "samples": 39
+      },
+      "particles": {
+        "median": 0,
+        "p95": 0.10000000149011612,
+        "samples": 39
+      },
+      "cameraSweep": {
+        "median": 0,
+        "p95": 0.5,
+        "samples": 39
+      },
+      "cameraHeading": {
+        "median": 0,
+        "p95": 0.09999999776482582,
+        "samples": 39
+      },
+      "audio": {
+        "median": 0,
+        "p95": 0.10000000149011612,
+        "samples": 39
+      }
+    }
+  },
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "parallelCompile": false,
+  "multiDraw": true,
+  "webgpuAvailable": true,
+  "label": "desktop-optimized",
+  "baseCommit": "b980a1a3e0968b58b9f72800a006fed507f088ae",
+  "browser": "155.0.8059.39",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "devicePixelRatio": 1
+  },
+  "errors": [],
+  "limitations": [
+    "Linux Chromium with ANGLE SwiftShader; timings compare this runner only, not a physical PC GPU.",
+    "Fixed samples use identical held poses, warm-up and resolution with adaptive quality disabled.",
+    "submitMs is JavaScript submission time; rafMs includes GPU/compositor work. gpuMs uses nonblocking EXT_disjoint_timer_query_webgl2 when available.",
+    "Timed fixed frames are paced one in flight; they measure isolated GPU workloads, not presented gameplay FPS.",
+    "The live ten-second trial follows actual physics; trajectories and automatic quality can differ."
+  ]
+}

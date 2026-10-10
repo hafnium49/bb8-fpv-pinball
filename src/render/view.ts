@@ -1,8 +1,4 @@
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { bumpers, targets } from '../physics/table';
 import type { PinballSimulation } from '../physics/simulation';
@@ -10,6 +6,8 @@ import { ArcadeTable } from './table-model';
 import { ArcadeEffects } from './effects';
 import { ElevatedCircuit } from './route-model';
 import { CameraClearance, RouteCamera } from './route-camera';
+import { ArcadePost } from './arcade-post';
+import { RenderBudget, renderPixelRatio } from './render-budget';
 
 export type CameraMode = 'fpv' | 'spin';
 
@@ -23,10 +21,9 @@ export class PinballView {
   get heading() { return this.routeCamera.heading; }
   set heading(value: number) { this.routeCamera.heading = value; }
   highQuality = !window.matchMedia('(pointer: coarse)').matches && window.innerWidth > 760;
+  readonly budget = new RenderBudget();
   private table: ArcadeTable;
-  private composer: EffectComposer;
-  private bloom: UnrealBloomPass;
-  private output: OutputPass;
+  private post?: ArcadePost;
   private environment: THREE.WebGLRenderTarget;
   private circuit?: ElevatedCircuit;
   private clearance = new CameraClearance();
@@ -34,9 +31,13 @@ export class PinballView {
   private look = new THREE.Vector3();
   private position = new THREE.Vector3();
   private forward = new THREE.Vector3();
+  private lastSubmitMs = 0;
+  private shadowRevision = -1;
+  private projectionFov = -1;
   private restoreEnvironment = () => {
     this.environment.dispose(); this.environment = this.createEnvironment();
     this.scene.environment = this.environment.texture;
+    this.shadowRevision = -1; this.budget.reset(); this.resize();
   };
 
   constructor(readonly container: HTMLElement, circuitEnabled = false) {
@@ -46,6 +47,7 @@ export class PinballView {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.98;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.autoUpdate = false;
     this.renderer.info.autoReset = false;
     this.renderer.domElement.setAttribute('aria-label', 'Illuminated orbital arcade pinball table');
     container.appendChild(this.renderer.domElement);
@@ -62,10 +64,6 @@ export class PinballView {
     this.renderer.domElement.addEventListener('webglcontextrestored', this.restoreEnvironment);
     this.table = new ArcadeTable(this.scene, circuitEnabled); this.effects = new ArcadeEffects(this.scene);
     if (circuitEnabled) this.circuit = new ElevatedCircuit(this.scene);
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.07, 0.1, 2.0);
-    this.output = new OutputPass(); this.composer.addPass(this.bloom); this.composer.addPass(this.output);
     this.setQuality(this.highQuality);
   }
 
@@ -76,27 +74,34 @@ export class PinballView {
 
   /** Eco keeps the same artwork and mechanics, with fewer pixels and no bloom/shadow pass. */
   setQuality(high: boolean) {
+    this.budget.reset(); this.shadowRevision = -1;
     this.highQuality = high; this.renderer.shadowMap.enabled = high; this.table.setQuality(high);
-    this.scene.traverse(object => {
-      if (object instanceof THREE.Mesh) {
-        const materials = Array.isArray(object.material) ? object.material : [object.material];
-        for (const material of materials) material.needsUpdate = true;
-      }
-    });
+    if (high && !this.post) this.post = new ArcadePost(this.renderer);
+    if (!high && this.post) { this.post.dispose(); this.post = undefined; }
     this.resize();
   }
 
   resize() {
     const w = Math.max(1, this.container.clientWidth), h = Math.max(1, this.container.clientHeight);
-    const ratio = Math.min(window.devicePixelRatio, this.highQuality ? 1.5 : 1);
+    const ratio = renderPixelRatio(w, h, window.devicePixelRatio, this.highQuality, this.budget.scale);
     this.renderer.setPixelRatio(ratio); this.renderer.setSize(w, h);
-    this.composer.setPixelRatio(ratio); this.composer.setSize(w, h);
-    this.camera.aspect = w / h; this.camera.updateProjectionMatrix();
+    this.post?.resize(this.renderer.domElement.width, this.renderer.domElement.height);
+    this.camera.aspect = w / h; this.projectionFov = -1;
+  }
+
+  async warmup() {
+    try {
+      if (this.post) this.renderer.setRenderTarget(this.post.target);
+      await this.renderer.compileAsync(this.scene, this.camera);
+    } finally { this.renderer.setRenderTarget(null); }
+    await this.post?.warmup(this.renderer);
   }
 
   resetEffects() { this.effects.reset(); this.routeCamera.reset(); this.clearance.reset(); }
 
-  render(sim: PinballSimulation, dt: number) {
+  render(sim: PinballSimulation, dt: number, frameMs = dt * 1000) {
+    if (this.budget.sample(frameMs, this.lastSubmitMs, !sim.paused && !document.hidden && sim.phase !== 'over')) this.resize();
+    const start = performance.now();
     const p = sim.position, v = sim.velocity, visualDt = sim.paused ? 0 : dt;
     this.table.update(sim, visualDt);
     this.circuit?.update(sim);
@@ -123,16 +128,22 @@ export class PinballView {
       this.look.y += 8 * Math.sin(this.routeCamera.pitch); this.camera.lookAt(this.look);
     }
     // Keep the near-plane corners within the swept envelope at extreme aspect ratios.
-    const tangent = Math.tan(this.camera.fov * Math.PI / 360);
-    this.camera.near = Math.min(0.06, 0.24 / Math.sqrt(1 + tangent * tangent * (1 + this.camera.aspect * this.camera.aspect)));
-    this.camera.updateProjectionMatrix();
+    if (this.projectionFov !== this.camera.fov) {
+      const tangent = Math.tan(this.camera.fov * Math.PI / 360);
+      this.camera.near = Math.min(0.06, 0.24 / Math.sqrt(1 + tangent * tangent * (1 + this.camera.aspect * this.camera.aspect)));
+      this.camera.updateProjectionMatrix(); this.projectionFov = this.camera.fov;
+    }
+    if (this.highQuality && this.shadowRevision !== this.table.shadowRevision) {
+      this.renderer.shadowMap.needsUpdate = true; this.shadowRevision = this.table.shadowRevision;
+    }
     this.renderer.info.reset();
-    if (this.highQuality) this.composer.render(); else this.renderer.render(this.scene, this.camera);
+    if (this.post) this.post.render(this.renderer, this.scene, this.camera); else this.renderer.render(this.scene, this.camera);
+    this.lastSubmitMs = performance.now() - start;
   }
 
   dispose() {
     this.renderer.domElement.removeEventListener('webglcontextrestored', this.restoreEnvironment);
     this.effects.dispose(); this.circuit?.dispose(); this.table.dispose(); this.environment.dispose();
-    this.bloom.dispose(); this.output.dispose(); this.composer.dispose(); this.renderer.dispose();
+    this.post?.dispose(); this.renderer.dispose();
   }
 }

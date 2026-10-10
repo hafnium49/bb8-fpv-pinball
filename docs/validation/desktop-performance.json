@@ -1,0 +1,980 @@
+{
+  "target": "PC browsers",
+  "baselineCommit": "b980a1a3e0968b58b9f72800a006fed507f088ae",
+  "baselineTree": "9e799b77b1d7743c3ca72d7096d8dd2581c8f1a0",
+  "result": "pass",
+  "unitTests": {
+    "total": 56,
+    "passed": 56
+  },
+  "physicsAndAudioInputSourcesUnchanged": true,
+  "sourceSha256": {
+    "package.json": "4f2c0190360f87314f121ce24901a6aa0ec2ef0f4c54dd429434101d6235a8c1",
+    "scripts/performance-browser.cjs": "500224b897198028bf8e18b5d42a911596125ed7fb1c133d41032e4ca81224ac",
+    "scripts/render-browser.cjs": "03c7f765874a5c3a0526634c4b1259e56e6e0e722de549176dc0af147aab9b4d",
+    "src/assets/droid-beeps.wav": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77",
+    "src/main.ts": "3f86bc5b9de5cdf67f810215bb1963ac669965f5c7df69b0693e282944656f05",
+    "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
+    "src/physics/route-state.ts": "3d03cc5a75ea62f82845d2552f41cce2964fcfb10ddf3e8568fc94b84d5b1be8",
+    "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
+    "src/physics/table.ts": "cc4ee3626284dc706fb5e350f3b1f1bdbebd52db05379f418ef946ed75e16bbf",
+    "src/render/arcade-post.ts": "34ed826ded3e702847eed3a3b780262353c8d80f2133587585c5eedcbc93fa4b",
+    "src/render/artwork.ts": "1f3ecf8d0c95cf29b19fc21234d8f25a752f5544e43e913b8411e4e5d2c08ee2",
+    "src/render/cabinet-theme.ts": "b653f447dfe1ebdd92aed94cbbc3120382b5c045b35b2aa2f89389b0665f1137",
+    "src/render/effects.ts": "ca612b113008e15bf2e6e87ca315da0f7e2b32f703eb107770975b617ebe0123",
+    "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
+    "src/render/render-budget.ts": "6578ca7b5c7fa49cd362b35383a319d8ab6d1829a5f3e1778d86f338a6322a64",
+    "src/render/route-camera.ts": "a84d91b9922723b252ebc952433e72b935b7bf19c15e4cd0019be2b876171de6",
+    "src/render/route-model.ts": "78dce4d6d7d3e35aab5d275042000c4039c13ea45c7bb0d88f1070161d0d12ea",
+    "src/render/static-batch.ts": "cc121384130e4072a0db5b770985fe8bda8c5ae7400c1b441e0966be861b3d62",
+    "src/render/table-model.ts": "20a1d8a5396b0704d7e2be8845c5f84a057c1b4babb034ab534a581154f791ee",
+    "src/render/view.ts": "db22536ed35a0e2dcff5b660b75ace270b117c9c1be5596c5508f48463fb56c8",
+    "src/style.css": "2ecb6f4d928374e1cf0f215a2584abf2e57c939b2e55a2bc202092d60c3c439f",
+    "src/ui/audio-presets.ts": "7dde7824734a311a7fdb7ebd7a1ebe3bb289b71ed0b2093f026aed5a698aa0e6",
+    "src/ui/audio.ts": "aa44a9bc4fd3ca6e7f8b8999224819250f48cd7fde477563f09016f5b8e308ef",
+    "src/ui/cabinet-display.ts": "2299ee18dfaa9c923e087576895b0183deed3f14015df269631e9eea86f2c3b4",
+    "src/ui/music-pattern.ts": "1a8257b6ae57b23b148823c54c23096ff5ca66159bdc3d50fcffa695f8efdf61",
+    "src/ui/play-input.ts": "115e242eed4daa7aa7dd35db0157e774a542d110e405b2a37483d99d1572c52b",
+    "src/ui/sound-director.ts": "16cd791e8a034b9b606f3e2698a9e13ac40f0edb39716edc377963976d0f827c",
+    "src/ui/voice-bank.ts": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac",
+    "tests/audio.test.ts": "30d4b15c8bc903585e111fb18cc770814d1e5b1aacefbc3ec221da431c158234",
+    "tests/cabinet-audio.test.ts": "5dcc196a7e6e3e3bc03f9c5b3694e6525f351763a8ed04903d353dda11ff12a7",
+    "tests/circuit.test.ts": "f11332b987ddf67ffed0b663e2d3d42e82657813c0b9dfe5a5f953eca544ce2c",
+    "tests/flipper-guides.test.ts": "23740d0c7c50de8d50ff21c2a0a41c71fdc30aee1b764c68a0ebc8bc0c0c0c7b",
+    "tests/head-loss.test.ts": "0a60165ec7a435307d5a23845201744798882d7b783189708665855844affeba",
+    "tests/physics.test.ts": "8faffc434d050e5e3641dea835000253b391c2d31ed4de7dbaec370a668bb050",
+    "tests/play-input.test.ts": "63cac8fc12987a7deae9170d48fee9c29e9603985f7e53f683035c1b3a334634",
+    "tests/render-budget.test.ts": "6d315c79964d4cde7b9b80863970dc70925f70a82ab762499c04a76e3fa52b29",
+    "tests/sound-director.test.ts": "d93fc50f695e06be1822efef1ecbc3c31ef01d542197f6040b74afadb1cce01d",
+    "tests/static-batch.test.ts": "a839805a66d336d6ebc297b9867dbfe84286477c3be90ea5a0e97de01aad26ce"
+  },
+  "comparison": [
+    {
+      "quality": "High",
+      "pose": "launch",
+      "beforeCalls": 194,
+      "afterCalls": 92,
+      "callsSavedPercent": 52.58,
+      "beforeGpuMedianMs": 891.918749,
+      "afterGpuMedianMs": 757.16064,
+      "gpuMedianChangePercent": -15.11
+    },
+    {
+      "quality": "High",
+      "pose": "ground",
+      "beforeCalls": 161,
+      "afterCalls": 71,
+      "callsSavedPercent": 55.9,
+      "beforeGpuMedianMs": 859.827399,
+      "afterGpuMedianMs": 762.550754,
+      "gpuMedianChangePercent": -11.31
+    },
+    {
+      "quality": "High",
+      "pose": "bridge",
+      "beforeCalls": 146,
+      "afterCalls": 56,
+      "callsSavedPercent": 61.64,
+      "beforeGpuMedianMs": 500.157998,
+      "afterGpuMedianMs": 487.723465,
+      "gpuMedianChangePercent": -2.49
+    },
+    {
+      "quality": "High",
+      "pose": "tunnel",
+      "beforeCalls": 160,
+      "afterCalls": 52,
+      "callsSavedPercent": 67.5,
+      "beforeGpuMedianMs": 769.117341,
+      "afterGpuMedianMs": 728.769916,
+      "gpuMedianChangePercent": -5.25
+    },
+    {
+      "quality": "Eco",
+      "pose": "launch",
+      "beforeCalls": 112,
+      "afterCalls": 91,
+      "callsSavedPercent": 18.75,
+      "beforeGpuMedianMs": 752.448705,
+      "afterGpuMedianMs": 835.92349,
+      "gpuMedianChangePercent": 11.09
+    },
+    {
+      "quality": "Eco",
+      "pose": "ground",
+      "beforeCalls": 79,
+      "afterCalls": 70,
+      "callsSavedPercent": 11.39,
+      "beforeGpuMedianMs": 704.945667,
+      "afterGpuMedianMs": 712.898991,
+      "gpuMedianChangePercent": 1.13
+    },
+    {
+      "quality": "Eco",
+      "pose": "bridge",
+      "beforeCalls": 64,
+      "afterCalls": 55,
+      "callsSavedPercent": 14.06,
+      "beforeGpuMedianMs": 488.515189,
+      "afterGpuMedianMs": 497.177962,
+      "gpuMedianChangePercent": 1.77
+    },
+    {
+      "quality": "Eco",
+      "pose": "tunnel",
+      "beforeCalls": 78,
+      "afterCalls": 51,
+      "callsSavedPercent": 34.62,
+      "beforeGpuMedianMs": 598.997677,
+      "afterGpuMedianMs": 597.988819,
+      "gpuMedianChangePercent": -0.17
+    }
+  ],
+  "renderChecks": {
+    "chromium": {
+      "engine": "chromium",
+      "browser": "155.0.8059.39",
+      "result": {
+        "cold": 136,
+        "cached": 92,
+        "flipper": 136,
+        "flipperCached": 92,
+        "bumper": 139,
+        "idleProjections": 0,
+        "resizeProjections": 1,
+        "positionVersion": 3,
+        "idlePositionVersion": 3,
+        "particlesVisible": true,
+        "expiredVisible": false,
+        "texturesBefore": 14,
+        "texturesAfter": 14,
+        "controlsBefore": [
+          16,
+          806,
+          155,
+          80
+        ],
+        "adapted": {
+          "scale": 0.5,
+          "pixelRatio": 0.5,
+          "width": 720,
+          "height": 450,
+          "controls": [
+            16,
+            806,
+            155,
+            80
+          ],
+          "high": true
+        },
+        "capped": {
+          "width": 2309,
+          "height": 1299
+        },
+        "batching": {
+          "removed": 57,
+          "batches": 20
+        },
+        "webgpu": {
+          "exposed": true,
+          "adapter": null,
+          "adapterError": null
+        },
+        "hdr": 1016,
+        "extensions": {
+          "parallelCompile": false,
+          "timer": true
+        }
+      },
+      "errors": []
+    },
+    "webkit": {
+      "engine": "webkit",
+      "browser": "26.5",
+      "result": {
+        "cold": 136,
+        "cached": 92,
+        "flipper": 136,
+        "flipperCached": 92,
+        "bumper": 139,
+        "idleProjections": 0,
+        "resizeProjections": 1,
+        "positionVersion": 3,
+        "idlePositionVersion": 3,
+        "particlesVisible": true,
+        "expiredVisible": false,
+        "texturesBefore": 14,
+        "texturesAfter": 14,
+        "controlsBefore": [
+          16,
+          806,
+          155,
+          80
+        ],
+        "adapted": {
+          "scale": 0.5,
+          "pixelRatio": 0.5,
+          "width": 720,
+          "height": 450,
+          "controls": [
+            16,
+            806,
+            155,
+            80
+          ],
+          "high": true
+        },
+        "capped": {
+          "width": 2309,
+          "height": 1299
+        },
+        "batching": {
+          "removed": 57,
+          "batches": 20
+        },
+        "webgpu": {
+          "exposed": false,
+          "adapter": null,
+          "adapterError": null
+        },
+        "hdr": 1016,
+        "extensions": {
+          "parallelCompile": true,
+          "timer": false
+        }
+      },
+      "errors": []
+    }
+  },
+  "gameplayChecks": {
+    "result": "pass",
+    "checks": [
+      "boot",
+      "real keyboard launch",
+      "simultaneous keyboard flippers",
+      "pause freezes physics",
+      "blur releases controls and pauses",
+      "FPV-only player camera and removed number-key shortcuts",
+      "FPV independent of ball rotation",
+      "game-over/restart/high score",
+      "rendered WebGL scene",
+      "High/Eco rendering and lower Eco draw calls",
+      "real bumper collision produces impact effects",
+      "restart clears effects",
+      "WebGL context recovery rebuilds reflections",
+      "touch defaults to Eco",
+      "simultaneous touch flippers",
+      "mobile landscape and portrait resize",
+      "reduced-motion suppresses impact animations"
+    ],
+    "browserErrors": [],
+    "screenshots": [
+      "desktop-intro.png",
+      "desktop-fpv.png",
+      "desktop-fpv-ready.png",
+      "desktop-eco.png",
+      "desktop-impact.png",
+      "mobile-landscape.png",
+      "mobile-portrait.png"
+    ]
+  },
+  "cabinetChecks": {
+    "result": "pass",
+    "cases": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "bounds": [
+          {
+            "id": "hud",
+            "x": 550,
+            "y": 8,
+            "width": 340,
+            "height": 79.1875,
+            "scrollWidth": 334,
+            "clientWidth": 334
+          },
+          {
+            "id": "score",
+            "x": 567,
+            "y": 32,
+            "width": 224,
+            "height": 21,
+            "scrollWidth": 224,
+            "clientWidth": 224
+          },
+          {
+            "id": "balls",
+            "x": 803,
+            "y": 32,
+            "width": 70,
+            "height": 27,
+            "scrollWidth": 70,
+            "clientWidth": 70
+          },
+          {
+            "id": "hint",
+            "x": 567,
+            "y": 61,
+            "width": 306,
+            "height": 16.1875,
+            "scrollWidth": 306,
+            "clientWidth": 306
+          },
+          {
+            "id": "quality",
+            "x": 1180,
+            "y": 25.59375,
+            "width": 58,
+            "height": 44,
+            "scrollWidth": 56,
+            "clientWidth": 56
+          },
+          {
+            "id": "sound",
+            "x": 1244,
+            "y": 25.59375,
+            "width": 80,
+            "height": 44,
+            "scrollWidth": 78,
+            "clientWidth": 78
+          },
+          {
+            "id": "pause",
+            "x": 1330,
+            "y": 25.59375,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "fullscreen",
+            "x": 1380,
+            "y": 25.59375,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "left",
+            "x": 16,
+            "y": 806,
+            "width": 155,
+            "height": 80,
+            "scrollWidth": 151,
+            "clientWidth": 151
+          },
+          {
+            "id": "right",
+            "x": 1269,
+            "y": 806,
+            "width": 155,
+            "height": 80,
+            "scrollWidth": 151,
+            "clientWidth": 151
+          },
+          {
+            "id": "launch",
+            "x": 652.5,
+            "y": 830,
+            "width": 135,
+            "height": 56,
+            "scrollWidth": 133,
+            "clientWidth": 133
+          }
+        ],
+        "checks": [
+          "ordinary button owns Space",
+          "toolbar focus preserves letter/arrow flippers",
+          "restored pause-button focus preserves flippers",
+          "simultaneous keyboard flippers",
+          "focused launch hold/release",
+          "mixed pointer launch and focused Space flipper stay independent",
+          "modal focus/inert/Tab trap",
+          "music slider keyboard control/persistence",
+          "large score fits",
+          "44px action targets",
+          "nonoverlapping controls",
+          "FPV-only UI"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "bounds": [
+          {
+            "id": "hud",
+            "x": 306,
+            "y": 8,
+            "width": 270,
+            "height": 61.1875,
+            "scrollWidth": 264,
+            "clientWidth": 264
+          },
+          {
+            "id": "score",
+            "x": 319,
+            "y": 16,
+            "width": 162,
+            "height": 18.890625,
+            "scrollWidth": 162,
+            "clientWidth": 162
+          },
+          {
+            "id": "balls",
+            "x": 493,
+            "y": 16,
+            "width": 70,
+            "height": 27,
+            "scrollWidth": 70,
+            "clientWidth": 70
+          },
+          {
+            "id": "hint",
+            "x": 319,
+            "y": 45,
+            "width": 244,
+            "height": 16.1875,
+            "scrollWidth": 244,
+            "clientWidth": 244
+          },
+          {
+            "id": "quality",
+            "x": 584,
+            "y": 16.59375,
+            "width": 58,
+            "height": 44,
+            "scrollWidth": 56,
+            "clientWidth": 56
+          },
+          {
+            "id": "sound",
+            "x": 648,
+            "y": 16.59375,
+            "width": 80,
+            "height": 44,
+            "scrollWidth": 78,
+            "clientWidth": 78
+          },
+          {
+            "id": "pause",
+            "x": 734,
+            "y": 16.59375,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "fullscreen",
+            "x": 784,
+            "y": 16.59375,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "left",
+            "x": 16,
+            "y": 314,
+            "width": 125,
+            "height": 64,
+            "scrollWidth": 121,
+            "clientWidth": 121
+          },
+          {
+            "id": "right",
+            "x": 703,
+            "y": 314,
+            "width": 125,
+            "height": 64,
+            "scrollWidth": 121,
+            "clientWidth": 121
+          },
+          {
+            "id": "launch",
+            "x": 370,
+            "y": 326,
+            "width": 104,
+            "height": 52,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ],
+        "checks": [
+          "ordinary button owns Space",
+          "toolbar focus preserves letter/arrow flippers",
+          "restored pause-button focus preserves flippers",
+          "simultaneous keyboard flippers",
+          "focused launch hold/release",
+          "mixed pointer launch and focused Space flipper stay independent",
+          "modal focus/inert/Tab trap",
+          "music slider keyboard control/persistence",
+          "large score fits",
+          "44px action targets",
+          "nonoverlapping controls",
+          "FPV-only UI"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "bounds": [
+          {
+            "id": "hud",
+            "x": 12,
+            "y": 58,
+            "width": 366,
+            "height": 79.1875,
+            "scrollWidth": 360,
+            "clientWidth": 360
+          },
+          {
+            "id": "score",
+            "x": 29,
+            "y": 82,
+            "width": 250,
+            "height": 21,
+            "scrollWidth": 250,
+            "clientWidth": 250
+          },
+          {
+            "id": "balls",
+            "x": 291,
+            "y": 82,
+            "width": 70,
+            "height": 27,
+            "scrollWidth": 70,
+            "clientWidth": 70
+          },
+          {
+            "id": "hint",
+            "x": 29,
+            "y": 111,
+            "width": 332,
+            "height": 16.1875,
+            "scrollWidth": 332,
+            "clientWidth": 332
+          },
+          {
+            "id": "quality",
+            "x": 154,
+            "y": 8,
+            "width": 50,
+            "height": 44,
+            "scrollWidth": 48,
+            "clientWidth": 48
+          },
+          {
+            "id": "sound",
+            "x": 208,
+            "y": 8,
+            "width": 74,
+            "height": 44,
+            "scrollWidth": 72,
+            "clientWidth": 72
+          },
+          {
+            "id": "pause",
+            "x": 286,
+            "y": 8,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "fullscreen",
+            "x": 334,
+            "y": 8,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "left",
+            "x": 12,
+            "y": 754,
+            "width": 97.5,
+            "height": 76,
+            "scrollWidth": 94,
+            "clientWidth": 94
+          },
+          {
+            "id": "right",
+            "x": 280.5,
+            "y": 754,
+            "width": 97.5,
+            "height": 76,
+            "scrollWidth": 94,
+            "clientWidth": 94
+          },
+          {
+            "id": "launch",
+            "x": 143,
+            "y": 774,
+            "width": 104,
+            "height": 56,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ],
+        "checks": [
+          "ordinary button owns Space",
+          "toolbar focus preserves letter/arrow flippers",
+          "restored pause-button focus preserves flippers",
+          "simultaneous keyboard flippers",
+          "focused launch hold/release",
+          "mixed pointer launch and focused Space flipper stay independent",
+          "modal focus/inert/Tab trap",
+          "music slider keyboard control/persistence",
+          "large score fits",
+          "44px action targets",
+          "nonoverlapping controls",
+          "FPV-only UI"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "bounds": [
+          {
+            "id": "hud",
+            "x": 12,
+            "y": 58,
+            "width": 296,
+            "height": 79.1875,
+            "scrollWidth": 290,
+            "clientWidth": 290
+          },
+          {
+            "id": "score",
+            "x": 29,
+            "y": 82,
+            "width": 180,
+            "height": 21,
+            "scrollWidth": 180,
+            "clientWidth": 180
+          },
+          {
+            "id": "balls",
+            "x": 221,
+            "y": 82,
+            "width": 70,
+            "height": 27,
+            "scrollWidth": 70,
+            "clientWidth": 70
+          },
+          {
+            "id": "hint",
+            "x": 29,
+            "y": 111,
+            "width": 262,
+            "height": 16.1875,
+            "scrollWidth": 262,
+            "clientWidth": 262
+          },
+          {
+            "id": "quality",
+            "x": 84,
+            "y": 8,
+            "width": 50,
+            "height": 44,
+            "scrollWidth": 48,
+            "clientWidth": 48
+          },
+          {
+            "id": "sound",
+            "x": 138,
+            "y": 8,
+            "width": 74,
+            "height": 44,
+            "scrollWidth": 72,
+            "clientWidth": 72
+          },
+          {
+            "id": "pause",
+            "x": 216,
+            "y": 8,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "fullscreen",
+            "x": 264,
+            "y": 8,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "left",
+            "x": 12,
+            "y": 478,
+            "width": 92,
+            "height": 76,
+            "scrollWidth": 88,
+            "clientWidth": 88
+          },
+          {
+            "id": "right",
+            "x": 216,
+            "y": 478,
+            "width": 92,
+            "height": 76,
+            "scrollWidth": 88,
+            "clientWidth": 88
+          },
+          {
+            "id": "launch",
+            "x": 112,
+            "y": 498,
+            "width": 96,
+            "height": 56,
+            "scrollWidth": 94,
+            "clientWidth": 94
+          }
+        ],
+        "checks": [
+          "ordinary button owns Space",
+          "toolbar focus preserves letter/arrow flippers",
+          "restored pause-button focus preserves flippers",
+          "simultaneous keyboard flippers",
+          "focused launch hold/release",
+          "mixed pointer launch and focused Space flipper stay independent",
+          "modal focus/inert/Tab trap",
+          "music slider keyboard control/persistence",
+          "large score fits",
+          "44px action targets",
+          "nonoverlapping controls",
+          "FPV-only UI"
+        ]
+      },
+      {
+        "viewport": {
+          "width": 568,
+          "height": 320
+        },
+        "bounds": [
+          {
+            "id": "hud",
+            "x": 48,
+            "y": 8,
+            "width": 276,
+            "height": 61.1875,
+            "scrollWidth": 270,
+            "clientWidth": 270
+          },
+          {
+            "id": "score",
+            "x": 61,
+            "y": 16,
+            "width": 168,
+            "height": 18.890625,
+            "scrollWidth": 168,
+            "clientWidth": 168
+          },
+          {
+            "id": "balls",
+            "x": 241,
+            "y": 16,
+            "width": 70,
+            "height": 27,
+            "scrollWidth": 70,
+            "clientWidth": 70
+          },
+          {
+            "id": "hint",
+            "x": 61,
+            "y": 45,
+            "width": 250,
+            "height": 16.1875,
+            "scrollWidth": 250,
+            "clientWidth": 250
+          },
+          {
+            "id": "quality",
+            "x": 332,
+            "y": 16.59375,
+            "width": 50,
+            "height": 44,
+            "scrollWidth": 48,
+            "clientWidth": 48
+          },
+          {
+            "id": "sound",
+            "x": 386,
+            "y": 16.59375,
+            "width": 74,
+            "height": 44,
+            "scrollWidth": 72,
+            "clientWidth": 72
+          },
+          {
+            "id": "pause",
+            "x": 464,
+            "y": 16.59375,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "fullscreen",
+            "x": 512,
+            "y": 16.59375,
+            "width": 44,
+            "height": 44,
+            "scrollWidth": 42,
+            "clientWidth": 42
+          },
+          {
+            "id": "left",
+            "x": 12,
+            "y": 252,
+            "width": 125,
+            "height": 56,
+            "scrollWidth": 121,
+            "clientWidth": 121
+          },
+          {
+            "id": "right",
+            "x": 431,
+            "y": 252,
+            "width": 125,
+            "height": 56,
+            "scrollWidth": 121,
+            "clientWidth": 121
+          },
+          {
+            "id": "launch",
+            "x": 232,
+            "y": 256,
+            "width": 104,
+            "height": 52,
+            "scrollWidth": 102,
+            "clientWidth": 102
+          }
+        ],
+        "checks": [
+          "ordinary button owns Space",
+          "toolbar focus preserves letter/arrow flippers",
+          "restored pause-button focus preserves flippers",
+          "simultaneous keyboard flippers",
+          "focused launch hold/release",
+          "mixed pointer launch and focused Space flipper stay independent",
+          "modal focus/inert/Tab trap",
+          "music slider keyboard control/persistence",
+          "large score fits",
+          "44px action targets",
+          "nonoverlapping controls",
+          "FPV-only UI"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "audioChecks": {
+    "result": "pass",
+    "cases": [
+      {
+        "viewport": null,
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom",
+          "gesture resumes suspended context without recreating it",
+          "desktop blur/mobile pagehide stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      },
+      {
+        "viewport": null,
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom",
+          "gesture resumes suspended context without recreating it",
+          "desktop blur/mobile pagehide stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      }
+    ]
+  },
+  "build": {
+    "production": {
+      "dist/index.html": {
+        "bytes": 661,
+        "sha256": "9097ad00022fde3e2fd12fc29fde8de4c295721b26ff9a02b73c6a04e062cdf2"
+      },
+      "dist/assets/index-CEL5fNvt.js": {
+        "bytes": 5595358,
+        "sha256": "b6aaf13c8218fbf0684f888db66092da8568853b7ad536a30493e2343c1769e2"
+      },
+      "dist/assets/index-2RWKCKNU.css": {
+        "bytes": 11704,
+        "sha256": "2e57754c7d7da431da3a38f61ca005692ebe0cc686b5a3efb95403be3c3cae8a"
+      }
+    },
+    "offline": {
+      "bytes": 5620120,
+      "sha256": "2dfdc51db05ab13c2ae38347f7956e973424a6d7e3934f62dcd070440eff69e2",
+      "externalBundleRefs": false,
+      "devHook": false
+    }
+  },
+  "inspectedScreenshots": {
+    "artifacts/desktop-intro.png": "3553e593bbbf6653b658a29b3e9a338b017ceac6582ff235d7fea9b1c969a468",
+    "artifacts/render-chromium/desktop.png": "bd60ce0fb469b421c770727b8239d223e92e9d459bc17457aa13ec4c4022693a",
+    "artifacts/mobile-landscape.png": "b8503428ce1ee56074377a74d824c88b5d3efd7dbb7723bbe3504bee4b7f4423"
+  },
+  "limitations": [
+    "Software GPU timings compare this runner only; physical Windows/macOS GPU FPS remains unverified.",
+    "Isolated held-scene GPU times, JS submission and live callback delivery measure different things.",
+    "High GPU medians improved 2.49\u201315.11 percent; Eco timings were mixed, including an 11.09 percent increase in the launch fixture.",
+    "Adaptive resolution is exercised live and with synthetic sustained/burst pressure; 60 FPS is a target, rather than a measured hardware guarantee.",
+    "Chromium and Linux WebKit engine checks do not certify every browser/GPU driver."
+  ]
+}
