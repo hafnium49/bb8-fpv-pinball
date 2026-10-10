@@ -10,6 +10,7 @@
     "test": "node --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/browser-smoke.cjs",
     "test:cabinet:browser": "node scripts/cabinet-browser.cjs",
+    "test:touch:browser": "node scripts/touch-browser.cjs",
     "test:audio:browser": "node scripts/audio-browser.cjs",
     "test:circuit": "node --import tsx scripts/circuit-check.ts",
     "test:guides": "node --import tsx scripts/flipper-guide-check.ts",

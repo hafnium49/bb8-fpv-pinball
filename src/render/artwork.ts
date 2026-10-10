@@ -15,8 +15,8 @@ export function playfieldTexture(circuitEnabled = false) {
   const { image, c } = canvas(1024, 2048), rand = random();
   const x = (v: number) => (v + 6) / 12 * 1024, z = (v: number) => (v + 11) / 22 * 2048;
   const background = c.createLinearGradient(0, 0, 1024, 2048);
-  background.addColorStop(0, '#0e2546'); background.addColorStop(0.38, '#1d2c33');
-  background.addColorStop(0.7, '#101d34'); background.addColorStop(1, '#07222e');
+  background.addColorStop(0, '#201d39'); background.addColorStop(0.38, '#392c49');
+  background.addColorStop(0.7, '#302239'); background.addColorStop(1, '#242334');
   c.fillStyle = background; c.fillRect(0, 0, 1024, 2048);
   const haze = c.createRadialGradient(330, 900, 0, 330, 900, 740);
   haze.addColorStop(0, '#744ca922'); haze.addColorStop(0.45, '#293e7244'); haze.addColorStop(1, '#08152c00');
@@ -44,7 +44,7 @@ export function playfieldTexture(circuitEnabled = false) {
   }
   // A large illustrated planet gives the field its own arcade artwork.
   const px = x(-0.45), py = z(0.45), radius = 228;
-  c.save(); c.globalAlpha = 0.42; c.translate(px, py); c.rotate(-0.36);
+  c.save(); c.globalAlpha = 0.68; c.translate(px, py); c.rotate(-0.36);
   c.strokeStyle = '#62c9ed'; c.lineWidth = 5; c.shadowColor = '#42bbff'; c.shadowBlur = 17;
   c.beginPath(); c.ellipse(0, 0, 330, 126, 0, 0, Math.PI * 2); c.stroke(); c.shadowBlur = 0;
   c.save(); c.beginPath(); c.arc(0, 0, radius, 0, Math.PI * 2); c.clip();
@@ -91,6 +91,16 @@ export function playfieldTexture(circuitEnabled = false) {
     path([[a - side * 0.12, 6.5], [a, 6.75], [a + side * 0.12, 6.5]], side < 0 ? '#68ebfa' : '#ffbc76', 5, 9);
   }
   c.fillStyle = '#ffb966'; c.font = 'bold 26px monospace'; c.fillText(circuitEnabled ? 'LEFT RAMP / BRIDGE / RIGHT RETURN' : 'LAUNCH / REACTORS / REPEAT', x(0), z(10.2));
+  // Printed apron cards belong to the cabinet artwork, not floating HUD panels.
+  for (const side of [-1, 1]) {
+    const cx = x(side * 3.6), cy = z(9.8);
+    c.fillStyle = '#ded9be'; c.fillRect(cx - 84, cy - 43, 168, 86);
+    c.strokeStyle = '#9f957b'; c.lineWidth = 2; c.strokeRect(cx - 80, cy - 39, 160, 78);
+    c.fillStyle = '#292925'; c.font = 'bold 15px monospace'; c.fillText(side < 0 ? 'SCORING' : 'ORBIT PINBALL', cx, cy - 15);
+    c.font = '12px monospace';
+    c.fillText(side < 0 ? 'REACTORS +100' : 'HOLD / RELEASE', cx, cy + 7);
+    c.fillText(side < 0 ? 'TARGETS +250' : circuitEnabled ? 'CIRCUIT +750' : 'THREE BALLS', cx, cy + 25);
+  }
   return texture(image);
 }
 
@@ -108,18 +118,37 @@ export function backboardTexture() {
   return texture(image);
 }
 
-export function railTexture() {
-  const { image, c } = canvas(1024, 128);
-  c.fillStyle = '#0b1930'; c.fillRect(0, 0, 1024, 128);
-  for (let n = 0; n < 8; n++) {
-    const x = n * 128;
-    c.fillStyle = n % 2 ? '#152b46' : '#12233e'; c.fillRect(x + 3, 20, 122, 91);
-    c.strokeStyle = '#395875'; c.lineWidth = 1; c.strokeRect(x + 9, 27, 110, 76);
-    for (let v = 0; v < 5; v++) { c.fillStyle = '#07101f'; c.fillRect(x + 23 + v * 17, 49, 8, 39); }
-    c.fillStyle = '#4ab8d6'; c.fillRect(x + 23, 34, 14, 3);
-    c.fillStyle = '#6a88a7'; c.font = '9px monospace'; c.fillText(`ORBIT / 0${n + 1}`, x + 51, 40);
+export function woodTexture() {
+  const { image, c } = canvas(512, 256), rand = random(83);
+  const finish = c.createLinearGradient(0, 0, 0, 256);
+  finish.addColorStop(0, '#84502d'); finish.addColorStop(0.45, '#63351e'); finish.addColorStop(1, '#9b6037');
+  c.fillStyle = finish; c.fillRect(0, 0, 512, 256);
+  for (let y = 0; y < 256; y += 2) {
+    c.strokeStyle = rand() > 0.6 ? '#efbc7c25' : '#32190935'; c.lineWidth = 0.5 + rand();
+    c.beginPath(); c.moveTo(0, y);
+    for (let x = 0; x <= 512; x += 16) c.lineTo(x, y + Math.sin(x * 0.022 + y * 0.15) * (1 + rand() * 2));
+    c.stroke();
   }
-  c.fillStyle = '#22415d'; c.fillRect(0, 114, 1024, 2); c.fillStyle = '#376078'; c.fillRect(0, 11, 1024, 2);
+  return texture(image);
+}
+
+export function railTexture(wood = false) {
+  const { image, c } = canvas(1024, 128);
+  const rand = random(wood ? 83 : 91);
+  const finish = c.createLinearGradient(0, 0, 0, 128);
+  finish.addColorStop(0, wood ? '#875738' : '#626968');
+  finish.addColorStop(1, wood ? '#654127' : '#494f50');
+  c.fillStyle = finish; c.fillRect(0, 0, 1024, 128);
+  // Fine, low-contrast grain stays subtle at grazing FPV angles instead of
+  // turning the launch lane into two large ribbed walls.
+  c.lineWidth = 0.5;
+  for (let y = 0; y < 128; y += 2) {
+    c.strokeStyle = wood ? y % 3 ? '#3523120a' : '#dfac700a' : y % 3 ? '#151b2208' : '#e0e2d30a';
+    c.beginPath(); c.moveTo(0, y); c.bezierCurveTo(330, y + rand() * 4, 660, y - rand() * 3, 1024, y); c.stroke();
+  }
+  c.fillStyle = '#111617'; c.fillRect(0, 93, 1024, 35);
+  c.fillStyle = '#c6c5b7'; c.fillRect(0, 5, 1024, 4);
+  c.fillStyle = '#8c989c'; c.fillRect(0, 89, 1024, 3);
   return texture(image);
 }
 

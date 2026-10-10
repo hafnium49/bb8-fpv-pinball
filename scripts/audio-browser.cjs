@@ -110,8 +110,10 @@ const out = 'artifacts/audio';
     assert.equal(warningPans[2].pan, 0); assert.equal(warningPans[3].pan, 0);
     // Exercise actual Rapier collisions while observing the real audio mixer.
     const place = async (position, velocity) => page.evaluate(({ position, velocity }) => {
-      const { sim, audio, soundDirector } = window.orbitDebug;
-      sim.start(); sim.launch(0.5); sim.events.length = 0; soundDirector.reset(); audio.reset(); audio.history.length = 0;
+      const { sim, audio, begin } = window.orbitDebug;
+      // Use the actual new-game lifecycle so independent fixtures also clear
+      // captions, touch owners and head-loss state rather than only physics.
+      begin(); sim.launch(0.5); sim.events.length = 0; audio.history.length = 0;
       sim.ball.setTranslation(position, true); sim.ball.setLinvel(velocity, true); sim.ball.setAngvel({ x: 0, y: 0, z: 0 }, true);
       window.audioProbe.peak = 0;
     }, { position, velocity });
@@ -215,8 +217,12 @@ const out = 'artifacts/audio';
       return e.life.every(l => l === 0) && e.rings.every(r => !r.mesh.visible) && e.popups.every(p => !p.sprite.visible);
     }), 'Old hit effects must not return when reduced motion is disabled');
     await place({ x: -1.7, y: .305, z: 2 }, { x: 0, y: 0, z: 4 });
-    await page.evaluate(() => { const { sim, headLoss } = window.orbitDebug; headLoss.reset(); headLoss.draw = () => 0; sim.events.push({ type: 'launch' }); });
     await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'warning' && c.accepted));
+    assert.equal(await page.locator('#droid-line').textContent(), 'Left flipper!');
+    // Start the forced reaction in a later frame, while the warning is active.
+    // This catches a lower-priority caption overwriting an earlier warning.
+    await page.evaluate(() => { const { sim, headLoss } = window.orbitDebug; headLoss.reset(); headLoss.draw = () => 0; sim.events.push({ type: 'launch' }); });
+    await page.waitForFunction(() => window.orbitDebug.view.mode === 'spin');
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.priority), 100);
     assert.equal(await page.locator('#droid-line').textContent(), 'Left flipper!');
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'head-loss', voice: 'ouch', strength: 1, priority: 85 })), false);
@@ -278,13 +284,13 @@ const out = 'artifacts/audio';
     await activate(page.locator('#pause')); await activate(page.locator('#resume'));
     await page.waitForFunction(() => window.audioProbe.contexts[0].state === 'running');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 1);
-    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await page.evaluate(touch => window.dispatchEvent(new Event(touch ? 'pagehide' : 'blur')), !!options.hasTouch);
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), true);
     assert.deepEqual(await page.evaluate(() => {
       const d = window.orbitDebug.audio.diagnostics; return [d.effects, d.music, d.loops, d.speaking];
     }), [0, 0, 0, false]);
     await page.waitForTimeout(150); await page.evaluate(() => { window.audioProbe.peak = 0; }); await page.waitForTimeout(120);
-    assert.equal(await page.evaluate(() => window.audioProbe.peak), 0, 'Blur must stop every sound layer');
+    assert.equal(await page.evaluate(() => window.audioProbe.peak), 0, 'Desktop blur/mobile pagehide must stop every sound layer');
     await activate(page.locator('#resume'));
     // Preserve an actual warning frame while freezing physics for screenshots.
     await place({ x: -1.7, y: 0.305, z: 2 }, { x: 0, y: 0, z: 4 });
@@ -312,7 +318,7 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 3);
     await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.loops === 2);
     await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0.6));
-    console.log(`${name}: pause/blur and three-ball audio lifecycle`);
+    console.log(`${name}: pause/background and three-ball audio lifecycle`);
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND ON');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 0, 'Remembering preference must not autoplay');
     await page.evaluate(() => {
@@ -355,7 +361,7 @@ const out = 'artifacts/audio';
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, warningPans, fallbackMotifs, bounded,
       headLoss: { spinUp, spinDuration, cue: 'nonverbal ouch cry', caption: 'Oh no, BB-8 lost its head!', captionTracksSimulationTime: true, automaticFpvReturn: true, pauseCancels: true, reducedMotionCancelsAndSuppressesDraw: true, reducedMotionClearsExistingEffects: true, warningsTakePrecedence: true, cameraControlsAndShortcutsRemoved: true, noRadarDuringSpin: true },
-      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
+      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom', 'gesture resumes suspended context without recreating it', 'desktop blur/mobile pagehide stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     await browser.close(); browser = undefined; activePage = undefined;
   }

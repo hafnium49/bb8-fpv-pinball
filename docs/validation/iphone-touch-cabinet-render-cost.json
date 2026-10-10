@@ -1,0 +1,1158 @@
+{
+  "comparisonBaselineCommit": "51b452b91fee4fd1233dc0d69030ee46d65eafcf",
+  "scope": "Static render-cost samples of the checked-out FPV renderer",
+  "browser": "155.0.8059.39",
+  "gpu": "ANGLE SwiftShader",
+  "browserViewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "cases": [
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 97,
+      "triangles": 35368,
+      "memory": {
+        "geometries": 127,
+        "textures": 24
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 69,
+      "triangles": 26700,
+      "memory": {
+        "geometries": 127,
+        "textures": 24
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 175,
+      "triangles": 51474,
+      "memory": {
+        "geometries": 127,
+        "textures": 24
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 147,
+      "triangles": 42806,
+      "memory": {
+        "geometries": 127,
+        "textures": 24
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 100,
+      "triangles": 36268,
+      "memory": {
+        "geometries": 127,
+        "textures": 11
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 69,
+      "triangles": 26700,
+      "memory": {
+        "geometries": 127,
+        "textures": 11
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 178,
+      "triangles": 52374,
+      "memory": {
+        "geometries": 127,
+        "textures": 24
+      },
+      "programs": 32
+    },
+    {
+      "variant": "classic",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 147,
+      "triangles": 42806,
+      "memory": {
+        "geometries": 127,
+        "textures": 24
+      },
+      "programs": 32
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 112,
+      "triangles": 62504,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 39
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 79,
+      "triangles": 53400,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 39
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 64,
+      "triangles": 43752,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 39
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "Eco",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 78,
+      "triangles": 31704,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 194,
+      "triangles": 97778,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 161,
+      "triangles": 88674,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 146,
+      "triangles": 79026,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "quality": "High",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 160,
+      "triangles": 66978,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 116,
+      "triangles": 63406,
+      "memory": {
+        "geometries": 141,
+        "textures": 12
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 79,
+      "triangles": 53400,
+      "memory": {
+        "geometries": 141,
+        "textures": 12
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 77,
+      "triangles": 50124,
+      "memory": {
+        "geometries": 141,
+        "textures": 12
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "Eco",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 81,
+      "triangles": 32604,
+      "memory": {
+        "geometries": 141,
+        "textures": 12
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "launch",
+      "ballPosition": {
+        "x": 5.18,
+        "y": 0.31,
+        "z": 8.7
+      },
+      "cameraPosition": [
+        5.179999828338623,
+        0.6100000023841858,
+        8.699999809265137
+      ],
+      "calls": 198,
+      "triangles": 98680,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "ground-bumpers",
+      "ballPosition": {
+        "x": -4,
+        "y": 0.305,
+        "z": -1
+      },
+      "cameraPosition": [
+        -4,
+        0.6050000071525574,
+        -1
+      ],
+      "calls": 161,
+      "triangles": 88674,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "bridge",
+      "ballPosition": {
+        "x": 0.49514235250754346,
+        "z": -5.718801487555273,
+        "y": 2.48
+      },
+      "cameraPosition": [
+        0.4951423406600952,
+        2.780000019073486,
+        -5.718801498413086
+      ],
+      "calls": 159,
+      "triangles": 85398,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    },
+    {
+      "variant": "circuit",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "quality": "High",
+      "pose": "tunnel",
+      "ballPosition": {
+        "x": 3.249912720363918,
+        "z": 0.7403509231013518,
+        "y": 1.9994520260549873
+      },
+      "cameraPosition": [
+        3.249912738800049,
+        2.299451994895935,
+        0.7403509020805359
+      ],
+      "calls": 163,
+      "triangles": 67878,
+      "memory": {
+        "geometries": 141,
+        "textures": 25
+      },
+      "programs": 40
+    }
+  ],
+  "limitations": [
+    "Not a device FPS benchmark or mobile device emulation.",
+    "Draw calls and triangles include all High composer/shadow passes; compare the same pose/quality/viewport and warm-up order.",
+    "Ball poses are held by the dev inspection hook; they are not gameplay success trials."
+  ],
+  "budgetComparison": {
+    "result": "pass",
+    "designBaseline": "51b452b91fee4fd1233dc0d69030ee46d65eafcf",
+    "previousRelease": "612d6cb791cae9b8c2cb2fbf2ffd33fd5520a468",
+    "maxDeltaFromDesignBaseline": {
+      "calls": 4,
+      "triangles": -7048,
+      "geometries": -5,
+      "textures": 2
+    },
+    "matchedSamples": [
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "Eco",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -6,
+          "triangles": -21032,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "Eco",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -6,
+          "triangles": -21000,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "High",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -3,
+          "triangles": -20952,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "High",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -3,
+          "triangles": -20920,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "Eco",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -6,
+          "triangles": -21032,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "Eco",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -6,
+          "triangles": -21000,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "High",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -3,
+          "triangles": -20952,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "classic",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "High",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -3,
+          "triangles": -20920,
+          "geometries": -6,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "Eco",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -5,
+          "triangles": -21032,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "Eco",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -5,
+          "triangles": -21000,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "Eco",
+        "pose": "bridge",
+        "deltaFromDesignBaseline": {
+          "calls": -1,
+          "triangles": -7128,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "Eco",
+        "pose": "tunnel",
+        "deltaFromDesignBaseline": {
+          "calls": 0,
+          "triangles": -18336,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "High",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -1,
+          "triangles": -20952,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "High",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -1,
+          "triangles": -20920,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "High",
+        "pose": "bridge",
+        "deltaFromDesignBaseline": {
+          "calls": 3,
+          "triangles": -7048,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "quality": "High",
+        "pose": "tunnel",
+        "deltaFromDesignBaseline": {
+          "calls": 4,
+          "triangles": -18256,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "Eco",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -5,
+          "triangles": -21032,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "Eco",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -5,
+          "triangles": -21000,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "Eco",
+        "pose": "bridge",
+        "deltaFromDesignBaseline": {
+          "calls": -1,
+          "triangles": -7128,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "Eco",
+        "pose": "tunnel",
+        "deltaFromDesignBaseline": {
+          "calls": 0,
+          "triangles": -18336,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "High",
+        "pose": "launch",
+        "deltaFromDesignBaseline": {
+          "calls": -1,
+          "triangles": -20952,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "High",
+        "pose": "ground-bumpers",
+        "deltaFromDesignBaseline": {
+          "calls": -1,
+          "triangles": -20920,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "High",
+        "pose": "bridge",
+        "deltaFromDesignBaseline": {
+          "calls": 3,
+          "triangles": -7048,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      },
+      {
+        "variant": "circuit",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "quality": "High",
+        "pose": "tunnel",
+        "deltaFromDesignBaseline": {
+          "calls": 4,
+          "triangles": -18256,
+          "geometries": -5,
+          "textures": 2
+        },
+        "deltaFromPreviousRelease": {
+          "calls": 0,
+          "triangles": 0,
+          "geometries": 0,
+          "textures": 2
+        }
+      }
+    ]
+  }
+}

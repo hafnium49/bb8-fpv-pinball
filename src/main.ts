@@ -1,5 +1,6 @@
 import './style.css';
 import { cabinetDisplay } from './ui/cabinet-display';
+import { PlayInput, pauseOnWindowBlur } from './ui/play-input';
 import { PinballSimulation } from './physics/simulation';
 import { PinballView } from './render/view';
 import { HeadLossCamera, HEAD_LOSS_CAPTION } from './render/head-loss';
@@ -48,7 +49,8 @@ let commsUntil = 0;
 const coarseInput = matchMedia('(pointer: coarse)');
 let displayCache = '';
 let focusBeforeDialog: HTMLElement | null = null;
-let heldUiKey: { code: string; key: 'left' | 'right' | 'launch' } | undefined;
+let playInput: PlayInput;
+let lastPointerType = '';
 try {
   const saved = localStorage.getItem('orbit-pinball-music-volume');
   if (saved !== null && saved.trim()) audio.setMusicVolume(Number(saved));
@@ -94,6 +96,10 @@ function clearComms() {
 }
 function showComms(cue: SoundCue) {
   if (!cue.caption) return;
+  // An urgent instruction keeps its reading window even if a later reaction
+  // is forced visually (for example the lost-head caption with muted audio).
+  const region = $('droid-comms');
+  if (cue.kind !== 'warning' && !region.classList.contains('sr-only') && region.classList.contains('urgent') && performance.now() < commsUntil) return;
   // The region stays in the accessibility tree between cues. Set priority
   // before changing text so urgent advice can interrupt ordinary announcements.
   $('droid-comms').setAttribute('aria-live', cue.kind === 'warning' ? 'assertive' : 'polite');
@@ -143,7 +149,7 @@ $('sound').addEventListener('click', toggleSound);
 $('dialog-sound').addEventListener('click', toggleSound);
 function begin() {
   sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); void activateSound();
-  displayCache = ''; previousPhase = 'ready'; heldUiKey = undefined;
+  displayCache = ''; previousPhase = 'ready'; playInput.clear();
   setDialog(false); $('toast').classList.remove('visible'); toastUntil = 0;
   $('intro').hidden = true; $('game').focus(); refreshDisplay();
   for (const id of ['hud', 'play-controls']) $(id).hidden = false;
@@ -152,10 +158,10 @@ function begin() {
 function showPause() {
   audio.setPaused(true); clearComms(); headLoss.reset(); if (view) view.mode = 'fpv';
   if (sim.phase === 'intro' || sim.phase === 'over') return;
-  sim.paused = true; sim.releaseControls();
+  sim.paused = true; playInput.clear(); sim.releaseControls();
   $('modal-kicker').textContent = 'TAKE A BREATHER'; $('modal-title').textContent = 'Paused.';
   $('modal-copy').textContent = 'Your orbit will be right here.'; $('resume').hidden = false;
-  $('restart').textContent = 'Start a new game'; heldUiKey = undefined; setDialog(true); refreshDisplay();
+  $('restart').textContent = 'Start a new game'; setDialog(true); refreshDisplay();
 }
 function resume() { sim.paused = false; sim.releaseControls(); soundDirector.resume(); audio.setPaused(false); setDialog(false); refreshDisplay(); last = performance.now(); void activateSound(); }
 function gameOver() {
@@ -163,20 +169,25 @@ function gameOver() {
   $('best-score').textContent = String(best).padStart(5, '0');
   $('modal-kicker').textContent = 'ORBIT COMPLETE'; $('modal-title').textContent = String(sim.score).padStart(5, '0');
   $('modal-copy').textContent = 'Three balls. One more orbit?'; $('resume').hidden = true;
-  $('restart').textContent = 'PLAY AGAIN ↗'; heldUiKey = undefined; setDialog(true); refreshDisplay();
+  $('restart').textContent = 'PLAY AGAIN ↗'; playInput.clear(); setDialog(true); refreshDisplay();
 }
 function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
   const button = $<HTMLButtonElement>(id);
   button.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault(); if (sim.paused || sim.phase === 'intro' || sim.phase === 'over') return;
-    button.setPointerCapture(e.pointerId); sim.controls[key] = true; void activateSound();
+    lastPointerType = e.pointerType;
+    try { button.setPointerCapture(e.pointerId); } catch { /* Global release handlers cover unavailable capture. */ }
+    playInput.holdPointer(e.pointerId, key); void activateSound();
   });
-  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => { sim.controls[key] = false; });
+  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'] as const)
+    button.addEventListener(name, e => playInput.releasePointer(e.pointerId));
+  button.addEventListener('contextmenu', e => e.preventDefault());
 }
 
 async function boot() {
   try {
-    sim = await PinballSimulation.create({ circuit: circuitEnabled }); view = new PinballView($('viewport'), circuitEnabled);
+    sim = await PinballSimulation.create({ circuit: circuitEnabled }); playInput = new PlayInput(sim.controls); view = new PinballView($('viewport'), circuitEnabled);
     const updateQuality = () => {
       $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
       $('quality').setAttribute('aria-pressed', String(view.highQuality));
@@ -198,7 +209,9 @@ async function boot() {
     });
     pointerButton('left', 'left'); pointerButton('right', 'right'); pointerButton('launch', 'launch');
     $('viewport').addEventListener('pointerdown', () => { if (!sim.paused) $('game').focus(); });
+    window.addEventListener('pointerdown', e => { lastPointerType = e.pointerType; });
     window.addEventListener('keydown', e => {
+      lastPointerType = 'keyboard';
       if (!$('modal').hidden && e.code === 'Tab') {
         const controls = Array.from($('modal').querySelectorAll<HTMLElement>('button:not([hidden]), input'))
           .filter(el => !el.hasAttribute('disabled'));
@@ -216,31 +229,34 @@ async function boot() {
       if (hold && ['Space', 'Enter'].includes(e.code)) {
         e.preventDefault(); if (hold.disabled) return;
         const key = hold.id === 'left' ? 'left' : hold.id === 'right' ? 'right' : 'launch';
-        heldUiKey = { code: e.code, key }; sim.controls[key] = true; void activateSound(); return;
+        playInput.holdKey(e.code, key); void activateSound(); return;
       }
       if (target?.closest('input, select, textarea, [contenteditable="true"]')) return;
       if (!hold && target?.closest('button, a') && ['Space', 'Enter'].includes(e.code)) return;
       if (['ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
       if (!['KeyA', 'ArrowLeft', 'KeyD', 'ArrowRight', 'Space'].includes(e.code)) return;
       void activateSound();
-      if (e.code === 'KeyA' || e.code === 'ArrowLeft') sim.controls.left = true;
-      if (e.code === 'KeyD' || e.code === 'ArrowRight') sim.controls.right = true;
-      if (e.code === 'Space') sim.controls.launch = true;
+      if (e.code === 'KeyA' || e.code === 'ArrowLeft') playInput.holdKey(e.code, 'left');
+      if (e.code === 'KeyD' || e.code === 'ArrowRight') playInput.holdKey(e.code, 'right');
+      if (e.code === 'Space') playInput.holdKey(e.code, 'launch');
     });
     window.addEventListener('keyup', e => {
-      if (heldUiKey?.code === e.code) { sim.controls[heldUiKey.key] = false; heldUiKey = undefined; return; }
-      if (e.code === 'KeyA' || e.code === 'ArrowLeft') sim.controls.left = false;
-      if (e.code === 'KeyD' || e.code === 'ArrowRight') sim.controls.right = false;
-      if (e.code === 'Space') sim.controls.launch = false;
+      playInput.releaseKey(e.code);
     });
-    window.addEventListener('blur', showPause);
+    for (const name of ['pointerup', 'pointercancel'] as const)
+      window.addEventListener(name, e => playInput.releasePointer(e.pointerId));
+    window.addEventListener('blur', () => {
+      if (pauseOnWindowBlur(document.hidden, coarseInput.matches, lastPointerType)) showPause();
+      else playInput.clearKeyboard();
+    });
+    window.addEventListener('pagehide', showPause);
     document.addEventListener('visibilitychange', () => { if (document.hidden) showPause(); else if (!$('modal').hidden) ($('resume').hidden ? $('restart') : $('resume')).focus(); });
     window.addEventListener('resize', () => view.resize());
     view.renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); showPause(); toast('Graphics paused · waiting for recovery', 20); });
     view.renderer.domElement.addEventListener('webglcontextrestored', () => { toast('Graphics restored · resume when ready'); });
 
     // A development-only inspection hook supports browser QA without changing the production UI.
-    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector, headLoss } });
+    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector, headLoss, begin } });
     requestAnimationFrame(frame);
   } catch (error) {
     $('loading-error').hidden = false;
