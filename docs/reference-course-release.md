@@ -23,6 +23,8 @@ Free balls, contacts and all four flippers use Rapier's fixed 120 Hz simulation 
 
 The original nonverbal droid voice, music and cabinet mixer remain. New paths produce ascent, bridge and completion reactions, subways produce tunnel reactions, and flipper forecasts account for the upper deck. Spinner clicks no longer announce a completed ramp. Browser audio probes observe actual Web Audio output, accepted voice cues, warnings on both levels, and sustained music/rolling sound.
 
+Ramp entry and bridge reactions are queued by fixed-step phase events, so a slow render frame cannot skip them. Disabled drop targets no longer suppress advice for a clear return. The complete score-texture cache includes the two 50-point bumpers. Idle opening frames reuse their shadows, hiding the intro ball invalidates its shadow once, and spinner decay reaches zero so its shadow can settle. Spinner supports remain stationary scene objects; both endpoints of all three spinners are checked against their measured world coordinates before static batching.
+
 ## Provenance
 
 Coordinate facts are snapshotted in `src/physics/reference-course-data.json`; gameplay and rendering code were written for this project. No reference images, audio recordings or JavaScript modules are shipped. The publicly served files were inspected on 2026-10-10:

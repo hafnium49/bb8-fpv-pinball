@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PinballSimulation } from '../src/physics/simulation';
 import { BALL_RADIUS, STEP } from '../src/physics/table';
-import { courseBumpers, courseFlippers, courseGate, courseLaunch, courseRamps, courseTargets, courseTunnels, deckHeight, pathFrame } from '../src/physics/reference-course';
+import { courseBumpers, courseFlippers, courseGate, courseLaunch, courseRamps, courseSpinners, courseTargets, courseTunnels, deckHeight, pathFrame } from '../src/physics/reference-course';
 import { SoundDirector, flipperWarning } from '../src/ui/sound-director';
 async function sim() { const s = await PinballSimulation.create({ course: 'reference' }); s.start(); s.launch(.5); s.events.length = 0; return s; }
 function place(s: PinballSimulation, x: number, y: number, z: number, vx: number, vz: number) { s.ball.setTranslation({ x, y, z }, true); s.ball.setLinvel({ x: vx, y: 0, z: vz }, true); s.ball.setAngvel({ x: 0, y: 0, z: 0 }, true); s.events.length = 0; }
@@ -277,4 +277,44 @@ test('droid cues follow new routes and advise the correct flipper on both decks'
   finally {
     s.dispose();
   }
+});
+test('a crossed spinner settles completely so idle rendering can cache its shadow', async () => {
+  const s = await sim();
+  try {
+    const spinner = courseSpinners[0];
+    place(s, (spinner.a.x + spinner.b.x) / 2, .295, spinner.a.z - .1, 0, 4);
+    for (let n = 0; n < 12; n++) s.step();
+    assert.ok(s.events.some(e => e.type === 'ramp' && e.name === 'SPINNER'));
+    assert.ok(s.reference!.spinnerAngles[0] > 0);
+    for (let n = 0; n < 1800; n++) s.reference!.beforeStep([]);
+    const angle = s.reference!.spinnerAngles[0];
+    for (let n = 0; n < 240; n++) s.reference!.beforeStep([]);
+    assert.equal(s.reference!.spinnerAngles[0], angle);
+  } finally { s.dispose(); }
+});
+test('a lowered drop target stops blocking advice for an otherwise clear right return', async () => {
+  const s = await sim();
+  try {
+    const i = 2, t = courseTargets[i];
+    place(s, (t.ax + t.bx) / 2 + .05, .295, (t.az + t.bz) / 2 - .2, -5, 20);
+    assert.equal(flipperWarning(s), undefined);
+    s.reference!.targetDown[i] = true;
+    s.reference!.targetColliders[i].setEnabled(false);
+    assert.equal(flipperWarning(s)?.voice, 'right');
+    s.reference!.targetDown[i] = false;
+    s.reference!.targetColliders[i].setEnabled(true);
+    assert.equal(flipperWarning(s), undefined);
+  } finally { s.dispose(); }
+});
+test('ramp entry and bridge cues survive a frame that advances through both phases', async () => {
+  const s = await sim();
+  try {
+    const path = courseRamps[0], p = path.points[0], t = pathFrame(path, 0).tangent;
+    place(s, p.x - t.x * .6, .295, p.z - t.z * .6, t.x * 25, t.z * 25);
+    s.update(.1); s.update(.1);
+    assert.equal(s.route.phase, 'bridge');
+    const frame = new SoundDirector().update(s, s.events);
+    assert.equal(frame.cues.filter(c => c.kind === 'ascent').length, 1);
+    assert.equal(frame.cues.filter(c => c.kind === 'bridge').length, 1);
+  } finally { s.dispose(); }
 });

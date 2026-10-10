@@ -54,7 +54,7 @@ export function flipperWarning(s: SoundState): FlipperWarning | undefined {
     if(eta<.08 || eta>1.15)return;
     const xAt=(z:number)=>p.x+v.x*(Math.sqrt(v.z*v.z+2*COURSE_GRAVITY*(z-p.z))-v.z)/COURSE_GRAVITY;
     for(const b of courseBumpers)if(b.y===base&&b.z>p.z&&b.z<approach&&Math.abs(xAt(b.z)-b.x)<b.radius+BALL_RADIUS+.15)return;
-    for(const t of courseTargets)if(t.y===base){const z=(t.az+t.bz)/2;if(z>p.z&&z<approach&&Math.abs(xAt(z)-(t.ax+t.bx)/2)<.18+BALL_RADIUS+.15)return;}
+    for(const [i,t] of courseTargets.entries())if(t.y===base&&!s.reference.targetDown[i]){const z=(t.az+t.bz)/2;if(z>p.z&&z<approach&&Math.abs(xAt(z)-(t.ax+t.bx)/2)<.18+BALL_RADIUS+.15)return;}
     const x=p.x+v.x*eta,mid=(pair[0].x+pair[1].x)/2;
     const voice=x<pair[0].x-1.3||x>pair[1].x+1.3?'danger':x<mid-.35?'left':x>mid+.35?'right':'both';
     if(voice==='left'&&s.controls.left||voice==='right'&&s.controls.right||voice==='both'&&s.controls.left&&s.controls.right)return;
@@ -129,6 +129,14 @@ export class SoundDirector {
       if (e.type === 'launch') { say('launch', 'launch', 65); this.nextIdle = s.time + 6; }
       if (e.type === 'drain') say('drain', 'drain', 90);
       if (e.type === 'over') say('over', 'over', 95);
+      // Fixed-step phase events survive a render frame that crosses both
+      // ramp entry and bridge. Legacy routes retain the state fallback below.
+      if (e.type === 'route') {
+        this.route = e.phase;
+        if (e.phase === 'ascent') say('ascent', 'ramp', 50);
+        if (e.phase === 'bridge') say('bridge', 'bridge', 55);
+        if (e.phase === 'tunnel') say('tunnel', 'tunnel', 55);
+      }
       if (e.type === 'circuit') say('circuit', 'circuit', 65);
       if (e.type === 'ramp') {
         if (e.name === 'SPINNER') cues.push({ kind: 'target', strength: .4 });

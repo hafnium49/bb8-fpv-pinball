@@ -18,6 +18,7 @@ export class ReferenceTable {
   private targetFlashes = courseTargets.map(() => 0);
   private targetLamps: THREE.Mesh[] = [];
   private spinnerGroups: THREE.Group[] = [];
+  private spinnerSupports: THREE.Mesh[] = [];
   private gateGroup = new THREE.Group();
   private bumperLights: THREE.PointLight[] = [];
   private resources = new Set<{
@@ -220,8 +221,10 @@ export class ReferenceTable {
       this.scene.add(group);
       this.spinnerGroups.push(group);
       this.box(s.b.x - s.a.x, .22, .055, ivory, 0, 0, 0, group);
+      // Supports are stationary scene objects in world coordinates. Only the
+      // blade is a child of the translated, rotating spinner group.
       for (const xx of [s.a.x, s.b.x])
-        this.box(.045, .6, .045, chrome, xx, .3, z);
+        this.spinnerSupports.push(this.box(.045, .6, .045, chrome, xx, .3, z, this.scene));
     });
     const steelBall = this.mesh(new THREE.SphereGeometry(BALL_RADIUS, 32, 20), this.paint(0xe9eef3, 1, .12), this.ball);
     steelBall.name = 'BB-8 ball';
@@ -233,10 +236,13 @@ export class ReferenceTable {
   }
   setQuality(high: boolean) { this.bumperLights.forEach(l => l.visible = high); }
   update(sim: PinballSimulation, dt: number) {
-    this.ball.visible = sim.phase === 'intro';
-    this.ball.position.copy(sim.position);
-    this.ball.quaternion.copy(sim.ball.rotation());
-    let dirty = this.ball.visible;
+    const visible = sim.phase === 'intro', p = sim.position, q = sim.ball.rotation();
+    let dirty = visible !== this.ball.visible || visible &&
+      (this.ball.position.x !== p.x || this.ball.position.y !== p.y || this.ball.position.z !== p.z ||
+       this.ball.quaternion.x !== q.x || this.ball.quaternion.y !== q.y || this.ball.quaternion.z !== q.z || this.ball.quaternion.w !== q.w);
+    this.ball.visible = visible;
+    this.ball.position.copy(p);
+    this.ball.quaternion.copy(q);
     const gateAngle = sim.reference?.gateClosed ? 0 : Math.PI / 2;
     if (this.gateGroup.rotation.z !== gateAngle) {
       this.gateGroup.rotation.z = gateAngle;

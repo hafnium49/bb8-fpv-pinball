@@ -33,7 +33,7 @@ export class ArcadeEffects {
   private trailTime = 0;
   private popups: Popup[] = [];
   private rings: Ring[] = [];
-  private scoreValues = [100, 150, 200, 250, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 5000];
+  private scoreValues = [50, 100, 150, 200, 250, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 5000];
   private scoreMaps = this.scoreValues.map(scoreTexture);
   private color = new THREE.Color();
 

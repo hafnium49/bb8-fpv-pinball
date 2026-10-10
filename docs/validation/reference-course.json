@@ -1,24 +1,24 @@
 {
   "result": "pass",
-  "verifiedUtc": "2026-10-10T07:39:56.580829+00:00",
+  "verifiedUtc": "2026-10-10T08:00:21.801227+00:00",
   "reference": "https://pinball-fbd1a.firebaseapp.com/",
   "sourceSha256": {
     "src/assets/droid-beeps.wav": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77",
     "src/main.ts": "69af48ab1355d172980e7832466d51e6bbd989e3d057ee4201cfd7d8e2238faa",
     "src/physics/reference-course-data.json": "63fd67e8825988f71e829381e0f952e9a04cc92031977d6c2330890b50c1e7c3",
     "src/physics/reference-course.ts": "e3514fc5d6bb5f1f542ac2391992feed630e37a5d6c259b67b78c2259a5e716c",
-    "src/physics/reference-motion.ts": "62fa41b675c32cfb051f21ab15ec0678c293d40ad8c9d8d1f529b234b1c29ff5",
+    "src/physics/reference-motion.ts": "ecc04c6ac72a789be513017e9f2ee6964b24c2eed1dab1fb5716f25873988f5c",
     "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
     "src/physics/route-state.ts": "3d03cc5a75ea62f82845d2552f41cce2964fcfb10ddf3e8568fc94b84d5b1be8",
-    "src/physics/simulation.ts": "beb7ee4e3cc615bc5c3f147b5f5a0cf8e92cd220e9fd9dd59022c5cd583f0fb2",
+    "src/physics/simulation.ts": "64dc13abaf1718bc79aad4193fa3d104676ed67831bc7f3b316558fdb223cef9",
     "src/physics/table.ts": "cc4ee3626284dc706fb5e350f3b1f1bdbebd52db05379f418ef946ed75e16bbf",
     "src/render/arcade-post.ts": "f34c3b9a0ad11e5870cc0d81f64c1a7ac460da252b4a202e9ab0da55dd488d35",
     "src/render/artwork.ts": "295b0688aff4e91dddbd2e629de4aa90b914702724e3ac85cd754d02d7843a07",
     "src/render/cabinet-theme.ts": "b653f447dfe1ebdd92aed94cbbc3120382b5c045b35b2aa2f89389b0665f1137",
-    "src/render/effects.ts": "29a52beaccd08a7976ab7a12a5d9a01f9757a28ef816de8a47abd94fef3a6557",
+    "src/render/effects.ts": "c8e38247e87e72107064246339676310b07894d1ecf154dee4c7a90dab2f4eb3",
     "src/render/head-loss.ts": "31a39a4a22687c412270e4afebc11a1afdf1d590e32002f47febf220b670679f",
     "src/render/reference-artwork.ts": "1f307420cefb9d513e2b9522d15467082549a0eac0b9f66387dfda00a891b271",
-    "src/render/reference-table.ts": "77314849d2c8461bd34208db105207b2f6e8bca347b403f0d27a46cc99910669",
+    "src/render/reference-table.ts": "5a398bd3d3cdf048ee7bafcc66d1fab1d76046ebd4a1a6777276f9792f0e0b85",
     "src/render/render-budget.ts": "6578ca7b5c7fa49cd362b35383a319d8ab6d1829a5f3e1778d86f338a6322a64",
     "src/render/route-camera.ts": "816dc3d28a6cb4e639bf13b44c3abb9044b2b07127c916fbdbe6e6c694bf622c",
     "src/render/route-model.ts": "3a1cf3b66705207a4f9bab89842d32fc5b73520111c588ad505459af4fe326ac",
@@ -32,7 +32,7 @@
     "src/ui/local-scores.ts": "d947b673c10656a65174d0d556da426726436b2a054aefd6b2ea996c01df694e",
     "src/ui/music-pattern.ts": "1a8257b6ae57b23b148823c54c23096ff5ca66159bdc3d50fcffa695f8efdf61",
     "src/ui/play-input.ts": "115e242eed4daa7aa7dd35db0157e774a542d110e405b2a37483d99d1572c52b",
-    "src/ui/sound-director.ts": "4786cab706110c4cc7f35538f8ca093e9e2b2d6f99bab9a804d3b06b62fc12b1",
+    "src/ui/sound-director.ts": "6e3e6d319710f4b0841e5165059f1b666f2cdc89269a00dbc976189f8bf3e41f",
     "src/ui/voice-bank.ts": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac"
   },
   "course": {
@@ -51,7 +51,7 @@
     "deckHeight": 1.624,
     "capturedCoordinatesSha256": "63fd67e8825988f71e829381e0f952e9a04cc92031977d6c2330890b50c1e7c3"
   },
-  "unitTests": 77,
+  "unitTests": 80,
   "build": "TypeScript and Vite pass; existing bundle-size warning",
   "guideSweeps": {
     "result": "pass",
@@ -135,6 +135,22 @@
           "projectionMaxPx": 0.03940433617060535,
           "flippers": 4,
           "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
           "render": [
             {
               "quality": "High",
@@ -345,6 +361,22 @@
           "projectionMaxPx": 0.026001500738402683,
           "flippers": 4,
           "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
           "render": [],
           "resources": null
         },
@@ -356,6 +388,22 @@
           "projectionMaxPx": 0.01742368606181799,
           "flippers": 4,
           "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 107
+            },
+            "second": {
+              "revision": 1,
+              "calls": 107
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
           "render": [],
           "resources": null
         }
@@ -373,6 +421,22 @@
           "projectionMaxPx": 0.03940433617060535,
           "flippers": 4,
           "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
           "render": [
             {
               "quality": "High",
@@ -583,6 +647,22 @@
           "projectionMaxPx": 0.026001500738402683,
           "flippers": 4,
           "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 108
+            },
+            "second": {
+              "revision": 1,
+              "calls": 108
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
           "render": [],
           "resources": null
         },
@@ -594,6 +674,22 @@
           "projectionMaxPx": 0.01742368606181799,
           "flippers": 4,
           "bumpers": 9,
+          "introShadow": {
+            "first": {
+              "revision": 1,
+              "calls": 107
+            },
+            "second": {
+              "revision": 1,
+              "calls": 107
+            }
+          },
+          "ballHideShadow": {
+            "before": 1,
+            "after": 2,
+            "cached": 2,
+            "visible": false
+          },
           "render": [],
           "resources": null
         }
@@ -648,28 +744,28 @@
             "kind": "ascent",
             "voice": "ramp",
             "accepted": true,
-            "at": 0.38022675736961453
+            "at": 0.5224489795918368
           },
           {
             "kind": "bridge",
             "voice": "bridge",
             "accepted": true,
-            "at": 0.4121541950113379
+            "at": 0.531156462585034
           },
           {
             "kind": "circuit",
             "voice": "circuit",
             "accepted": true,
-            "at": 1.570249433106576
+            "at": 1.7211791383219954
           },
           {
             "kind": "warning",
             "voice": "danger",
             "accepted": true,
-            "at": 1.570249433106576
+            "at": 1.7211791383219954
           }
         ],
-        "peak": 0.44120991230010986,
+        "peak": 0.42761921882629395,
         "completions": 1,
         "onDeck": false
       },
@@ -679,34 +775,34 @@
           {
             "kind": "target",
             "accepted": false,
-            "at": 1.5905668934240362
+            "at": 1.7414965986394557
           },
           {
             "kind": "ascent",
             "voice": "ramp",
             "accepted": true,
-            "at": 1.6108843537414965
+            "at": 1.750204081632653
           },
           {
             "kind": "bridge",
             "voice": "bridge",
             "accepted": true,
-            "at": 1.692154195011338
+            "at": 1.8401814058956916
           },
           {
             "kind": "circuit",
             "voice": "circuit",
             "accepted": true,
-            "at": 2.7921995464852607
+            "at": 2.911201814058957
           },
           {
             "kind": "warning",
             "voice": "danger",
             "accepted": true,
-            "at": 2.7921995464852607
+            "at": 2.911201814058957
           }
         ],
-        "peak": 0.42203187942504883,
+        "peak": 0.42156317830085754,
         "completions": 1,
         "onDeck": false
       },
@@ -717,22 +813,22 @@
             "kind": "ascent",
             "voice": "ramp",
             "accepted": true,
-            "at": 2.8212244897959184
+            "at": 2.9518367346938774
           },
           {
             "kind": "bridge",
             "voice": "bridge",
             "accepted": true,
-            "at": 2.911201814058957
+            "at": 3.0505215419501135
           },
           {
             "kind": "circuit",
             "voice": "circuit",
             "accepted": true,
-            "at": 3.340770975056689
+            "at": 3.4713832199546486
           }
         ],
-        "peak": 0.42698779702186584,
+        "peak": 0.4857379198074341,
         "completions": 1,
         "onDeck": true
       }
@@ -752,7 +848,7 @@
       }
     ],
     "bed": {
-      "peak": 0.4236418902873993,
+      "peak": 0.424837589263916,
       "voiceReady": true,
       "voiceFailed": false,
       "effects": 0,
@@ -876,5 +972,14 @@
     "Controlled strong shots complete every ramp. Input-only traces complete wire and sky; the left-ramp trace is a weak entrance/rollback. Human timing remains to be evaluated.",
     "Software GPU counters do not establish physical PC frame rate.",
     "Generated waveforms are measured; physical-speaker listening balance remains unverified."
-  ]
+  ],
+  "reviewRegressions": {
+    "real50PointHitHasMappedPopup": true,
+    "spinnerSupportsAtMeasuredWorldPositions": 6,
+    "idleIntroShadowStable": true,
+    "hiddenBallInvalidatesOnce": true,
+    "spinnerDecaySettlesExactly": true,
+    "disabledDropTargetAllowsForecast": true,
+    "entryAndBridgeSoundsSurviveCoarseFrames": true
+  }
 }

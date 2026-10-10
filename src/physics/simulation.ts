@@ -14,6 +14,7 @@ export type GameEvent =
   | { type: 'target'; index: number; points: number }
   | { type: 'circuit'; points: number }
   | { type: 'ramp'; name: string; points: number }
+  | { type: 'route'; phase: 'ascent' | 'bridge' | 'tunnel' }
   | { type: 'flipper-hit'; index: number }
   | { type: 'wall'; speed: number }
   | { type: 'launch' | 'drain' | 'over' | 'flipper' };

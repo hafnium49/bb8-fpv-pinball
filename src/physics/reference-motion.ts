@@ -109,7 +109,7 @@ export class ReferenceMotion {
     this.ball.setBodyType(RAPIER.RigidBodyType.Dynamic, true);
     this.collider.setCollisionGroups(this.savedGroups);
   }
-  private capture(path: CoursePath, s: number, speed: number) {
+  private capture(path: CoursePath, s: number, speed: number, events: GameEvent[]) {
     this.active = path;
     this.progress = s;
     this.speed = speed;
@@ -117,6 +117,7 @@ export class ReferenceMotion {
     this.ball.setBodyType(RAPIER.RigidBodyType.KinematicPositionBased, true);
     this.collider.setCollisionGroups(0);
     this.route.phase = path.tunnel ? 'tunnel' : 'ascent';
+    events.push({ type: 'route', phase: this.route.phase });
     this.route.nextGate = 1;
   }
   private finish(path: CoursePath, events: GameEvent[]) {
@@ -167,7 +168,14 @@ export class ReferenceMotion {
         this.targetColliders[i].setEnabled(true);
       }
     } });
-    this.spinnerAngles.forEach((angle, i) => { this.spinnerAngles[i] = angle + this.spinnerSpeeds[i] * STEP; this.spinnerSpeeds[i] *= Math.exp(-.75 * STEP); });
+    this.spinnerAngles.forEach((angle, i) => {
+      const speed = this.spinnerSpeeds[i];
+      if (Math.abs(speed) < .05) this.spinnerSpeeds[i] = 0;
+      else {
+        this.spinnerAngles[i] = angle + speed * STEP;
+        this.spinnerSpeeds[i] = speed * Math.exp(-.75 * STEP);
+      }
+    });
     if (this.hold > 0) {
       this.hold -= STEP;
       if (this.hold <= 0) {
@@ -203,7 +211,9 @@ export class ReferenceMotion {
     this.route.projection.s = this.progress;
     this.route.projection.index = frame.index;
     this.route.projection.vertical = 0;
-    this.route.phase = path.tunnel ? 'tunnel' : this.progress < 2.4 ? 'ascent' : this.progress > path.length - 2.4 && !path.deck ? 'return' : 'bridge';
+    const phase = path.tunnel ? 'tunnel' : this.progress < 2.4 ? 'ascent' : this.progress > path.length - 2.4 && !path.deck ? 'return' : 'bridge';
+    if (phase === 'bridge' && this.route.phase !== phase) events.push({ type: 'route', phase });
+    this.route.phase = phase;
   }
   afterStep(previous: Point, events: GameEvent[]) {
     if (this.guided)
@@ -217,19 +227,19 @@ export class ReferenceMotion {
       const mouth = path.points[8], a = pathFrame(path, 0).tangent, dx = p.x - previous.x, dz = p.z - previous.z;
       const denom = dx * dx + dz * dz, u = denom > 0 ? Math.max(0, Math.min(1, ((mouth.x - previous.x) * dx + (mouth.z - previous.z) * dz) / denom)) : 0;
       if (Math.hypot(previous.x + dx * u - mouth.x, previous.z + dz * u - mouth.z) < .448 && v.x * a.x + v.z * a.z > 4.2) {
-        this.capture(path, path.lengths[8], Math.hypot(v.x, v.z) * .95);
+        this.capture(path, path.lengths[8], Math.hypot(v.x, v.z) * .95, events);
         return;
       }
     }
     for (const path of courseTunnels)
       if (Math.hypot(p.x - path.points[0].x, p.z - path.points[0].z) < .35) {
-        this.capture(path, 0, 12.04);
+        this.capture(path, 0, 12.04, events);
         return;
       }
     const trough = courseTunnels[2];
     for (let i = 1; i < trough.points.length; i++)
       if (Math.hypot(p.x - trough.points[i].x, p.z - trough.points[i].z) < .40) {
-        this.capture(trough, trough.lengths[i], 12.04);
+        this.capture(trough, trough.lengths[i], 12.04, events);
         return;
       }
     if (Math.hypot(p.x - courseSaucer.x, p.z - courseSaucer.z) < .43) {
