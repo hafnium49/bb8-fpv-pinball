@@ -26,6 +26,8 @@ FPV fills the playfield; there is no overhead/radar inset, including during a sp
 
 The cabinet/display and original soundtrack upgrade is implemented. See the [release and verification record](docs/cabinet-arcade-release.md) and the [original design](docs/cabinet-ui-audio-upgrade.md). The score, balls and status share one compact display; pause offers a separate Music volume slider while master SOUND controls the full mix.
 
+The [iPhone touch and cabinet follow-up](docs/iphone-touch-cabinet-release.md) prevents visible touch-focus changes from pausing play, keeps independent finger/key holds, and adds the reference-inspired wood surround, ivory/red flippers, amber dot display and metal control pads. Backgrounding the page still pauses and silences the game.
+
 The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels.
 
 **FX High** enables bloom and dynamic shadows and caps pixel density at 1.5. **FX Eco** skips those extra passes and caps pixel density at 1 while keeping the artwork, mechanical detail and collision effects. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable the random spin, decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
@@ -65,6 +67,8 @@ For a single offline HTML file, run `npm run standalone` and open `artifacts/ORB
 For browser QA, run `npx playwright install chromium`, then `npm run test:browser`. It starts its own dev server. Screenshots and the check report go into `artifacts/`. Set `CHROME_PATH` to use an existing Chromium executable or `GAME_URL` to test a running dev server.
 
 `npm run test:cabinet:browser` checks five viewport layouts, large scores, toolbar target sizes, modal focus/inert behavior, keyboard ownership and the music slider.
+
+`npm run test:touch:browser` checks native repeated flipper taps, visible blur, independent fingers, long holds, cancellation and background/explicit pause behavior in portrait and landscape. Set `TOUCH_ENGINE=webkit` after installing Playwright WebKit to check the Safari engine; `WEBKIT_PATH` can select an installed runtime. A physical iPhone playtest remains separate.
 
 `npm run test:audio:browser` checks real Web Audio waveforms, decoded droid beeps, directional warnings, actual collision and route cues, warning priority, continuous rolling/music, resource bounds, mute, reload preferences, interruption recovery and the three-ball audio lifecycle in desktop classic and mobile circuit views. It also injects clip-decoding and audio-start failures and verifies distinct procedural warning fallbacks. Safari audio-session behavior and the listening balance require a physical iPhone check.
 

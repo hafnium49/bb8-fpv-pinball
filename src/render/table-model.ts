@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { BALL_RADIUS, FLIPPER_LENGTH, bumpers, flippers, rails, targets } from '../physics/table';
 import type { PinballSimulation } from '../physics/simulation';
 import { cabinetPalette as palette, cabinetMaterials } from './cabinet-theme';
-import { backboardTexture, nebulaTexture, playfieldTexture, railTexture } from './artwork';
+import { backboardTexture, nebulaTexture, playfieldTexture, railTexture, woodTexture } from './artwork';
 
 const cyan = 0x53e4ff, amber = 0xffae52, violet = 0x9274ff;
 
@@ -34,24 +34,26 @@ export class ArcadeTable {
   }
 
   private buildCabinet() {
-    const dark = this.material(palette.panel, 0.35, 0.58), chrome = this.material(palette.steel, 0.90, 0.32);
+    const chrome = this.material(palette.steel, 0.90, 0.32);
+    const wood = this.track(new THREE.MeshPhysicalMaterial({ map: this.track(woodTexture()), metalness: 0, roughness: 0.52, clearcoat: 0.22, clearcoatRoughness: 0.45 }));
     const cyanGlow = this.material(cyan, 0.2, 0.32, 0.65), amberGlow = this.material(amber, 0.2, 0.32, 0.65);
-    this.mesh(this.box(12.85, 0.88, 22.85, 0.22), dark, 0, -0.51, 0);
+    this.mesh(this.box(12.85, 0.88, 22.85, 0.22), wood, 0, -0.51, 0);
     this.mesh(this.box(12.48, 0.13, 22.48, 0.055), chrome, 0, -0.09, 0);
     const map = this.track(playfieldTexture(this.circuitEnabled));
     const lacquer = this.track(new THREE.MeshPhysicalMaterial({ map, metalness: 0.04, roughness: 0.78, clearcoat: 0.35, clearcoatRoughness: 0.6, envMapIntensity: 0.2, emissiveMap: map, emissive: 0xffffff, emissiveIntensity: 0.08 }));
     const floor = this.mesh(new THREE.PlaneGeometry(12, 22), lacquer, 0, 0.012, 0, this.scene, false); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
     for (const side of [-1, 1]) {
       this.mesh(this.box(0.12, 0.08, 21.9, 0.03), side < 0 ? cyanGlow : amberGlow, side * 6.32, -0.53, 0, this.scene, false);
-      this.mesh(this.box(0.12, 0.3, 22.3), dark, side * 6.17, 0.12, 0);
+      this.mesh(this.box(0.12, 0.3, 22.3), wood, side * 6.17, 0.12, 0);
       for (const z of [-8.7, 8.7]) this.mesh(this.box(0.62, 1.0, 0.7, 0.1), chrome, side * 5.9, -0.76, z);
     }
     const railMap = this.track(railTexture());
     const railBody = this.track(new THREE.MeshStandardMaterial({ map: railMap, metalness: 0.3, roughness: 0.55, envMapIntensity: 0.25 }));
+    const woodenRail = this.track(new THREE.MeshPhysicalMaterial({ map: this.track(railTexture(true)), metalness: 0, roughness: 0.58, clearcoat: 0.18 }));
     for (const rail of rails) {
       const dx = rail.bx - rail.ax, dz = rail.bz - rail.az, length = Math.hypot(dx, dz), angle = -Math.atan2(dz, dx);
       const x = (rail.ax + rail.bx) / 2, z = (rail.az + rail.bz) / 2;
-      const body = this.mesh(this.box(length, 1.50, 0.26, 0.035), railBody, x, 0.55, z); body.rotation.y = angle;
+      const body = this.mesh(this.box(length, 1.50, 0.26, 0.035), rail.kind === 'outer' ? woodenRail : railBody, x, 0.55, z); body.rotation.y = angle;
       const trim = this.mesh(this.box(length, 0.08, 0.26, 0.025), chrome, x, 1.26, z); trim.rotation.y = angle;
       const led = this.mesh(this.box(length - 0.05, 0.015, 0.06, 0.005), rail.kind === 'launch' ? cyanGlow : amberGlow, x, 1.287, z, this.scene, false); led.rotation.y = angle;
     }
@@ -65,7 +67,7 @@ export class ArcadeTable {
     }
     screws.computeBoundingSphere(); this.scene.add(screws);
     // A real backboard, rather than a floating title in the sky.
-    this.mesh(this.box(12.6, 2.9, 0.48, 0.17), dark, 0, 2.2, -11.55);
+    this.mesh(this.box(12.6, 2.9, 0.48, 0.17), wood, 0, 2.2, -11.55);
     this.mesh(this.box(12.45, 0.05, 0.54, 0.02), cyanGlow, 0, 3.62, -11.52, this.scene, false);
     this.mesh(this.box(12.45, 0.05, 0.54, 0.02), amberGlow, 0, 0.78, -11.52, this.scene, false);
     const boardMap = this.track(backboardTexture());
@@ -77,6 +79,7 @@ export class ArcadeTable {
   private buildMechanisms() {
     const chrome = this.track(new THREE.MeshPhysicalMaterial({ color: palette.steel, ...cabinetMaterials.steel }));
     const dark = this.track(new THREE.MeshPhysicalMaterial({ color: palette.rubber, ...cabinetMaterials.rubber }));
+    const flipperRubber = this.track(new THREE.MeshPhysicalMaterial({ color: 0xb92e3b, ...cabinetMaterials.rubber }));
     const white = this.track(new THREE.MeshPhysicalMaterial({ color: 0xd5e0de, ...cabinetMaterials.cap }));
     for (const b of bumpers) {
       const paint = this.track(new THREE.MeshPhysicalMaterial({ color: b.color, ...cabinetMaterials.cap }));
@@ -107,12 +110,14 @@ export class ArcadeTable {
     for (const f of flippers) {
       const glow = this.material(f.side === 1 ? cyan : amber, 0.2, 0.32, 0.6);
       const group = new THREE.Group(); group.position.set(f.x, 0.28, f.z); group.rotation.y = f.rest; this.scene.add(group); this.flipperGroups.push(group);
-      this.mesh(this.box(FLIPPER_LENGTH, 0.50, 0.46, 0.10), dark, f.side * FLIPPER_LENGTH / 2, 0, 0, group);
-      this.mesh(this.box(FLIPPER_LENGTH - 0.26, 0.025, 0.36, 0.01), white, f.side * FLIPPER_LENGTH / 2, 0.232, 0, group);
-      this.mesh(this.box(FLIPPER_LENGTH - 0.62, 0.006, 0.08, 0.002), glow, f.side * FLIPPER_LENGTH / 2, 0.247, 0, group, false);
+      this.mesh(this.box(FLIPPER_LENGTH, 0.50, 0.46, 0.10), flipperRubber, f.side * FLIPPER_LENGTH / 2, 0, 0, group);
+      // Expose the ivory plate above the rubber top (y=0.25); the old plate
+      // was buried inside the body. Its footprint and the contact shell stay fixed.
+      this.mesh(this.box(FLIPPER_LENGTH - 0.26, 0.025, 0.36, 0.01), white, f.side * FLIPPER_LENGTH / 2, 0.253, 0, group);
+      this.mesh(this.box(FLIPPER_LENGTH - 0.62, 0.006, 0.08, 0.002), glow, f.side * FLIPPER_LENGTH / 2, 0.269, 0, group, false);
       this.mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.50, 24), dark, 0, 0, 0, group);
-      this.mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.018, 12), chrome, 0, 0.235, 0, group);
-      this.ring(0.18, 0.015, glow, 0, 0.234, 0, group);
+      this.mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.018, 12), chrome, 0, 0.260, 0, group);
+      this.ring(0.18, 0.015, glow, 0, 0.260, 0, group);
     }
     this.mesh(new THREE.SphereGeometry(BALL_RADIUS, 40, 28), this.material(0xf4f8ff, 1, 0.105), 0, 0, 0, this.ball);
     this.ring(BALL_RADIUS * 0.89, 0.028, this.material(amber, 0.6, 0.24, 0.35), 0, 0, 0, this.ball);
