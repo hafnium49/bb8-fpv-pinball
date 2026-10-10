@@ -4,6 +4,7 @@ import { BALL_RADIUS, FLIPPER_LENGTH, bumpers, flippers, rails, targets } from '
 import type { PinballSimulation } from '../physics/simulation';
 import { cabinetPalette as palette, cabinetMaterials } from './cabinet-theme';
 import { backboardTexture, nebulaTexture, playfieldTexture, railTexture, woodTexture } from './artwork';
+import { batchStaticMeshes } from './static-batch';
 
 const cyan = 0x53e4ff, amber = 0xffae52, violet = 0x9274ff;
 
@@ -18,8 +19,15 @@ export class ArcadeTable {
   private targetFlashes = [0, 0];
   private portals: THREE.Mesh[] = [];
   private resources = new Set<{ dispose(): void }>();
+  shadowRevision = 0;
+  readonly batching: { removed: number; batches: number };
 
-  constructor(readonly scene: THREE.Scene, private circuitEnabled = false) { this.buildCabinet(); this.buildMechanisms(); this.buildArena(); }
+  constructor(readonly scene: THREE.Scene, private circuitEnabled = false) {
+    this.buildCabinet(); this.buildMechanisms(); this.buildArena();
+    const batch = batchStaticMeshes(scene, new Set<THREE.Object3D>([this.ball, ...this.caps, ...this.flipperGroups, ...this.portals]));
+    batch.geometries.forEach(geometry => this.track(geometry));
+    this.batching = { removed: batch.removed, batches: batch.batches };
+  }
   private track<T extends { dispose(): void }>(resource: T) { this.resources.add(resource); return resource; }
   private material(color: number, metalness = 0.6, roughness = 0.24, emission = 0) {
     return this.track(new THREE.MeshPhysicalMaterial({ color, metalness, roughness, clearcoat: 0.15, clearcoatRoughness: 0.45, envMapIntensity: metalness > 0.9 ? 0.8 : 0.3, emissive: emission ? color : 0, emissiveIntensity: emission }));
@@ -146,16 +154,21 @@ export class ArcadeTable {
   }
 
   update(sim: PinballSimulation, dt: number) {
-    const p = sim.position; this.ball.position.set(p.x, p.y, p.z); this.ball.quaternion.copy(sim.ball.rotation() as THREE.Quaternion);
-    this.ball.visible = sim.phase === 'intro';
-    this.flipperGroups.forEach((group, i) => { group.rotation.y = sim.flipperAngles[i]; });
+    const p = sim.position, rotation = sim.ball.rotation(), visible = sim.phase === 'intro';
+    let changed = this.ball.visible !== visible || (visible && (this.ball.position.x !== p.x || this.ball.position.y !== p.y || this.ball.position.z !== p.z
+      || this.ball.quaternion.x !== rotation.x || this.ball.quaternion.y !== rotation.y || this.ball.quaternion.z !== rotation.z || this.ball.quaternion.w !== rotation.w));
+    this.ball.position.set(p.x, p.y, p.z); this.ball.quaternion.copy(rotation as THREE.Quaternion);
+    this.ball.visible = visible;
+    this.flipperGroups.forEach((group, i) => { if (group.rotation.y !== sim.flipperAngles[i]) changed = true; group.rotation.y = sim.flipperAngles[i]; });
     for (const e of sim.events) { if (e.type === 'bumper') this.flashes[e.index] = 1; if (e.type === 'target') this.targetFlashes[e.index] = 1; }
     for (const [i, cap] of this.caps.entries()) {
-      this.flashes[i] = Math.max(0, this.flashes[i] - dt * 3.2); cap.position.y = 0.89 - this.flashes[i] * 0.10;
+      this.flashes[i] = Math.max(0, this.flashes[i] - dt * 3.2);
+      const y = 0.89 - this.flashes[i] * 0.10; if (cap.position.y !== y) changed = true; cap.position.y = y;
       this.bumperLights[i].intensity = 2 + this.flashes[i] * 8;
       this.lenses[i].emissiveIntensity = 0.55 + this.flashes[i] * 1.1;
     }
     for (const [i, lamp] of this.targetLamps.entries()) { this.targetFlashes[i] = Math.max(0, this.targetFlashes[i] - dt * 3); (lamp.material as THREE.MeshPhysicalMaterial).emissiveIntensity = 0.6 + this.targetFlashes[i] * 1.2; }
+    if (changed) this.shadowRevision++;
   }
   setQuality(high: boolean) { for (const light of this.bumperLights) light.visible = high; }
   animate(dt: number) { this.portals.forEach((ring, i) => { ring.rotation.z += dt * (i % 2 ? -0.035 : 0.025); }); }

@@ -24,6 +24,9 @@ export class ArcadeEffects {
   private lifetime = new Float32Array(capacity);
   private baseColors = new Float32Array(capacity * 3);
   private geometry = new THREE.BufferGeometry();
+  private points: THREE.Points;
+  private activeParticles = 0;
+  private dirty = false;
   private particleTexture = glowTexture();
   private particleMaterial = new THREE.PointsMaterial({ size: 0.24, map: this.particleTexture, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
   private cursor = 0;
@@ -36,7 +39,7 @@ export class ArcadeEffects {
   constructor(scene: THREE.Scene) {
     this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3).setUsage(THREE.DynamicDrawUsage));
     this.geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 3).setUsage(THREE.DynamicDrawUsage));
-    const points = new THREE.Points(this.geometry, this.particleMaterial); points.frustumCulled = false; this.group.add(points);
+    this.points = new THREE.Points(this.geometry, this.particleMaterial); this.points.frustumCulled = false; this.points.visible = false; this.group.add(this.points);
     for (let n = 0; n < 6; n++) {
       const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.scoreMaps[0], transparent: true, depthWrite: false, depthTest: false, toneMapped: false }));
       sprite.visible = false; sprite.scale.set(2.2, 0.83, 1); sprite.renderOrder = 4; this.group.add(sprite); this.popups.push({ sprite, life: 0, origin: 0 });
@@ -51,6 +54,8 @@ export class ArcadeEffects {
 
   private particle(p: Point, color: number, lifetime: number, vx: number, vy: number, vz: number) {
     const i = this.cursor++ % capacity, k = i * 3;
+    if (this.life[i] <= 0) this.activeParticles++;
+    this.dirty = true; this.points.visible = true;
     this.positions[k] = p.x; this.positions[k + 1] = p.y; this.positions[k + 2] = p.z;
     this.velocities[k] = vx; this.velocities[k + 1] = vy; this.velocities[k + 2] = vz;
     this.color.setHex(color);
@@ -80,15 +85,20 @@ export class ArcadeEffects {
         this.particle(position, 0x77e9ff, 0.34, 0, 0.06, 0);
       }
     } else this.trailTime = 0;
-    for (let i = 0; i < capacity; i++) {
+    if (this.activeParticles > 0 && (dt > 0 || this.dirty)) for (let i = 0; i < capacity; i++) {
       const k = i * 3;
       if (this.life[i] <= 0) { this.positions[k + 1] = 1000; continue; }
-      this.life[i] = Math.max(0, this.life[i] - dt); const alpha = this.life[i] / this.lifetime[i];
+      this.life[i] = Math.max(0, this.life[i] - dt);
+      if (this.life[i] === 0) { this.activeParticles--; this.positions[k + 1] = 1000; continue; }
+      const alpha = this.life[i] / this.lifetime[i];
       this.positions[k] += this.velocities[k] * dt; this.positions[k + 1] += this.velocities[k + 1] * dt; this.positions[k + 2] += this.velocities[k + 2] * dt;
       this.velocities[k + 1] -= dt * 2.5;
       this.colors[k] = this.baseColors[k] * alpha; this.colors[k + 1] = this.baseColors[k + 1] * alpha; this.colors[k + 2] = this.baseColors[k + 2] * alpha;
     }
-    this.geometry.attributes.position.needsUpdate = true; this.geometry.attributes.color.needsUpdate = true;
+    if (this.activeParticles > 0 && (dt > 0 || this.dirty)) {
+      this.geometry.attributes.position.needsUpdate = true; this.geometry.attributes.color.needsUpdate = true;
+    }
+    this.points.visible = this.activeParticles > 0; this.dirty = false;
     for (const ring of this.rings) if (ring.life > 0) {
       ring.life = Math.max(0, ring.life - dt); const progress = 1 - ring.life / 0.85;
       ring.mesh.scale.setScalar(0.8 + progress * 2.4); ring.mesh.material.opacity = (1 - progress) * 0.7; ring.mesh.visible = ring.life > 0;
@@ -100,7 +110,7 @@ export class ArcadeEffects {
   }
 
   reset() {
-    this.life.fill(0); this.positions.fill(1000); this.trailTime = 0;
+    this.life.fill(0); this.positions.fill(1000); this.trailTime = 0; this.activeParticles = 0; this.points.visible = false; this.dirty = false;
     this.geometry.attributes.position.needsUpdate = true;
     for (const p of this.popups) { p.life = 0; p.sprite.visible = false; }
     for (const r of this.rings) { r.life = 0; r.mesh.visible = false; }

@@ -24,7 +24,7 @@ app.innerHTML = `
     </header>
     <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
-      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div id="intro-feedback"></div><div id="intro-best"><span id="best-panel" class="best">PERSONAL BEST <b id="best-score">00000</b></span></div><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><div id="audio-settings" class="audio-settings"><label for="music-volume">Music <output id="music-value" aria-live="off">60%</output></label><input id="music-volume" type="range" min="0" max="100" value="60" aria-label="Music volume"/><small>Music at 0% keeps droid and cabinet sounds.</small></div><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds bloom and shadows. <b>FX ECO</b> reduces graphics work.</p></div></div>
+      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div id="intro-feedback"></div><div id="intro-best"><span id="best-panel" class="best">PERSONAL BEST <b id="best-score">00000</b></span></div><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><div id="audio-settings" class="audio-settings"><label for="music-volume">Music <output id="music-value" aria-live="off">60%</output></label><input id="music-volume" type="range" min="0" max="100" value="60" aria-label="Music volume"/><small>Music at 0% keeps droid and cabinet sounds.</small></div><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds glow and shadows. <b>FX ECO</b> reduces graphics work. Resolution adapts automatically for smooth play; controls stay sharp.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
     <div id="play-controls" class="play-controls" hidden>
@@ -79,12 +79,25 @@ function setDialog(open: boolean) {
   }
 }
 function refreshDisplay() {
-  const d = cabinetDisplay({ phase: sim.phase, paused: sim.paused, score: sim.score, balls: sim.balls, charge: sim.charge, route: sim.route, circuit: circuitEnabled, coarse: coarseInput.matches });
-  const key = JSON.stringify(d);
+  const key = `${sim.phase}:${sim.paused}:${sim.score}:${sim.balls}:${sim.charge > 0}:${sim.route.active}:${sim.route.phase}:${coarseInput.matches}`;
   if (key === displayCache) return;
+  const d = cabinetDisplay({ phase: sim.phase, paused: sim.paused, score: sim.score, balls: sim.balls, charge: sim.charge, route: sim.route, circuit: circuitEnabled, coarse: coarseInput.matches });
   displayCache = key; $('hud').hidden = !d.visible;
   $('score').textContent = d.score; $('score').classList.toggle('long-score', d.score.length > 6);
   $('balls').textContent = d.balls; $('balls').setAttribute('aria-label', d.ballLabel); $('hint').textContent = d.status;
+}
+
+const leftButton = $('left'), rightButton = $('right'), launchButton = $<HTMLButtonElement>('launch');
+const chargeBar = $('charge'), launchLabel = $('launch-label');
+let uiLeft = false, uiRight = false, uiLaunch = false, uiCharge = -1, uiDisabled: boolean | undefined;
+function refreshControls() {
+  const { left, right, launch } = sim.controls;
+  const charge = Math.round(sim.charge * 1000), disabled = sim.phase !== 'ready' || sim.paused;
+  if (left !== uiLeft) { uiLeft = left; leftButton.classList.toggle('pressed', left); }
+  if (right !== uiRight) { uiRight = right; rightButton.classList.toggle('pressed', right); }
+  if (launch !== uiLaunch) { uiLaunch = launch; launchLabel.textContent = launch ? 'CHARGING' : 'LAUNCH'; }
+  if (charge !== uiCharge) { uiCharge = charge; chargeBar.style.width = `${charge / 10}%`; }
+  if (disabled !== uiDisabled) { uiDisabled = disabled; launchButton.disabled = disabled; }
 }
 
 
@@ -188,6 +201,7 @@ function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
 async function boot() {
   try {
     sim = await PinballSimulation.create({ circuit: circuitEnabled }); playInput = new PlayInput(sim.controls); view = new PinballView($('viewport'), circuitEnabled);
+    await view.warmup();
     const updateQuality = () => {
       $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
       $('quality').setAttribute('aria-pressed', String(view.highQuality));
@@ -196,7 +210,7 @@ async function boot() {
     updateQuality(); $<HTMLButtonElement>('quality').disabled = false;
     $('quality').addEventListener('click', () => {
       view.setQuality(!view.highQuality); updateQuality();
-      toast(view.highQuality ? 'HIGH · bloom + dynamic shadows' : 'ECO · lighter graphics');
+      toast(view.highQuality ? 'HIGH · glow + dynamic shadows' : 'ECO · lighter graphics');
     });
     $('start').textContent = 'ENTER THE TABLE ↗'; $<HTMLButtonElement>('start').disabled = false;
     $('start').addEventListener('click', begin);
@@ -266,17 +280,13 @@ async function boot() {
 }
 
 function frame(now: number) {
-  const dt = Math.min((now - last) / 1000, 0.1); last = now;
+  const frameMs = Math.max(0, now - last), dt = Math.min(frameMs / 1000, 0.1); last = now;
   sim.update(dt);
   const cameraFrame = headLoss.update(sim, sim.events, view.effects.reducedMotion);
   view.mode = cameraFrame.mode;
   if (cameraFrame.ended && $('droid-line').textContent === HEAD_LOSS_CAPTION) clearComms();
-  view.render(sim, dt);
   refreshDisplay();
-  $('charge').style.width = `${sim.charge * 100}%`;
-  $('left').classList.toggle('pressed', sim.controls.left); $('right').classList.toggle('pressed', sim.controls.right);
-  $<HTMLButtonElement>('launch').disabled = sim.phase !== 'ready' || sim.paused;
-  $('launch-label').textContent = sim.controls.launch ? 'CHARGING' : 'LAUNCH';
+  refreshControls();
   if (sim.phase !== previousPhase) {
     if (sim.phase === 'draining') toast('BALL LOST · next ball ready shortly');
     if (sim.phase === 'over') gameOver();
@@ -297,10 +307,12 @@ function frame(now: number) {
     if (cue.caption && (vocalized || cue.kind === 'warning' || cue.kind === 'head-loss')
       && (!headCaption || cue.kind === 'warning' || cue.kind === 'head-loss')) showComms(cue);
   }
-  sim.events.length = 0;
   if (now > commsUntil && !sim.paused) clearComms();
   if (now > toastUntil) { $('toast').classList.remove('visible'); $('display-status').classList.remove('has-toast'); }
   else $('display-status').classList.toggle('has-toast', $('modal').hidden);
+  // Submit expensive graphics after input feedback and sound scheduling.
+  view.render(sim, dt, frameMs);
+  sim.events.length = 0;
   requestAnimationFrame(frame);
 }
 

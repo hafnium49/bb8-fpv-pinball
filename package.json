@@ -9,6 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/browser-smoke.cjs",
+    "test:render:browser": "node scripts/render-browser.cjs",
+    "benchmark:desktop": "node scripts/performance-browser.cjs",
     "test:cabinet:browser": "node scripts/cabinet-browser.cjs",
     "test:touch:browser": "node scripts/touch-browser.cjs",
     "test:audio:browser": "node scripts/audio-browser.cjs",
