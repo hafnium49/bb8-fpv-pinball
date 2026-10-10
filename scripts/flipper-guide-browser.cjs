@@ -13,8 +13,8 @@ const out = 'artifacts/pivot';
     args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] });
   const errors = [], cases = [], screenshots = [];
   for (const [name, options, search] of [
-    ['desktop-classic', { viewport: { width: 1440, height: 900 } }, ''],
-    ['mobile-circuit', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 }, '?circuit=1'],
+    ['desktop-classic', { viewport: { width: 1440, height: 900 } }, '?table=orbit'],
+    ['mobile-circuit', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 }, '?table=orbit&circuit=1'],
   ]) {
     const context = await browser.newContext(options), page = await context.newPage();
     page.setDefaultTimeout(30000);

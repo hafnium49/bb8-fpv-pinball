@@ -15,4 +15,5 @@ jobs:
       - run: npm test
       - run: npm run test:circuit
       - run: npm run test:guides
+      - run: npm run test:course
       - run: npm run build

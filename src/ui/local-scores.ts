@@ -1,4 +1,4 @@
-export interface LocalScore { score: number; at: number; circuit: boolean }
+export interface LocalScore { score: number; at: number; circuit: boolean; course?: 'reference' }
 
 /** Storage is optional and untrusted; a malformed history must never stop play. */
 export function readScores(raw: string | null): LocalScore[] {
@@ -10,9 +10,9 @@ export function readScores(raw: string | null): LocalScore[] {
   } catch { return []; }
 }
 
-export function saveRun(history: LocalScore[], score: number, at: number, circuit: boolean) {
+export function saveRun(history: LocalScore[], score: number, at: number, circuit: boolean, course?: 'reference') {
   if (!Number.isSafeInteger(score) || score < 0 || !Number.isSafeInteger(at) || at < 0 || at > 8640000000000000) return history;
-  return [...history, { score, at, circuit }].slice(-50);
+  return [...history, { score, at, circuit, ...(course ? { course } : {}) }].slice(-50);
 }
 
 export function rankedScores(history: LocalScore[], legacyBest = 0) {

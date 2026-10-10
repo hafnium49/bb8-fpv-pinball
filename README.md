@@ -1,6 +1,6 @@
 # ORBIT — BB-8 inspired FPV pinball
 
-Pinball from inside the ball. The ball rolls and ricochets physically, while the default camera keeps its horizon level and smoothly follows the direction of travel. The inspiration is BB-8's independent head movement; the table and artwork are original procedural geometry.
+Pinball from inside the ball. The ball rolls and ricochets physically, while the default camera keeps its horizon level and smoothly follows the direction of travel. The default course uses the measured layout of [Hyperspace Pinball](https://pinball-fbd1a.firebaseapp.com/): three ramps, a raised mini playfield, nine bumpers, two flipper pairs and three subway routes. Artwork, materials, droid sounds and the FPV presentation are original.
 
 ## Play
 
@@ -20,7 +20,7 @@ Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browse
 | Graphics | — | FX High / FX Eco |
 | Sound | — | Sound On / Sound Off |
 
-FPV fills the playfield; there is no overhead/radar inset, including during a spin. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the lower, metallic nonverbal droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. FPV is the only player camera. Each launch has a 5% chance of a three-second **lost head** spin after leaving the launcher: **Oh no, BB-8 lost its head!** A startled electronic cry accompanies the caption; the camera follows the real ball rotation, then restores upright FPV. Pause, drain and restart cancel it, and reduced-motion settings disable it. A game has three balls; bumper hits score 100 and target hits score 250. The best score is stored locally when a game ends.
+FPV fills the playfield; there is no overhead/radar inset, including during a spin. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the lower, metallic nonverbal droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. FPV is the only player camera. Each launch has a 5% chance of a three-second **lost head** spin after leaving the launcher: **Oh no, BB-8 lost its head!** A startled electronic cry accompanies the caption; the camera follows the real ball rotation, then restores upright FPV. Pause, drain and restart cancel it, and reduced-motion settings disable it. A game has three balls; bumper values range from 50 to 250, ground/deck targets score 150/300, and left/wire/sky ramps score 1,000/1,500/2,500. The best score is stored locally when a game ends.
 
 ## Orbital arcade visuals
 
@@ -34,13 +34,13 @@ The illustrated playfield has orbital rings, a spiral field, reactor markings an
 
 The [desktop performance release](docs/desktop-performance-release.md) describes static GPU batches, shadow invalidation, the single glow/output pass, shader warm-up and the measured limits. Run `npm run test:render:browser` for desktop renderer regressions and `npm run benchmark:desktop` for matched held-scene GPU timings. The benchmark defaults to software rendering for repeatability. To measure an installed PC browser's actual GPU, set `CHROME_PATH`, `PERF_GPU=hardware` and `PERF_HEADLESS=0`, and check the renderer identity in the report. A software-renderer benchmark does not establish hardware PC FPS.
 
-## Elevated circuit
+## Reference course
 
-Choose **Try elevated circuit** on the opening screen, or open the dev-server URL with `?circuit=1`. Aim at the left ramp, rise above the reactors on an open wire bridge, cross the short illuminated tunnel, and return to the right flipper. A full ordered traversal awards **750 points**. Weak attempts roll back naturally; the ball remains a free physics body throughout.
+The reference course is the default, including old links with `?circuit=1`. Its left red loop returns to the right inlane, its wire loop returns to the left inlane, and its sky ramp reaches the mini playfield. A/D operate both flipper pairs. Three subway entrances, a kidney-shaped scoop, gravity well, paired portals, target banks and spinners use the reference coordinates. Weak ramp shots roll back without a completion award.
 
-FPV previews the path with bounded pitch and a level horizon; FPV sweeps against the real cabinet to clear guard wires and ceilings. Reduced motion limits pitch to 8° and 15°/s. The classic table remains the default while physical-device performance and human FPV comfort are evaluated.
+Rendering and collisions share one course definition. Free play and both flipper pairs use Rapier at 120 Hz with CCD; ramps and subways use constrained path riders, as in the reference. FPV follows these paths with bounded pitch and a level horizon. Reduced motion limits pitch to 8° and 15°/s. The opening overview uses the reference camera projection.
 
-[Design](docs/elevated-circuit-design.md) · [Implementation](docs/elevated-circuit-implementation.md) · [Validation](docs/elevated-circuit-validation.md)
+[Course correction, provenance and validation](docs/reference-course-release.md). The earlier original course remains available for regression comparison at `?table=orbit`, with its optional free-physics circuit at `?table=orbit&circuit=1`.
 
 ## Droid soundscape
 
@@ -106,7 +106,7 @@ The separate CI workflow tests and builds changes on pushes and pull requests. O
 
 ## Prototype scope
 
-One table, two flippers, three bumpers, two targets and three balls. The connected elevated circuit is optional. Multiball, tilt rules and online scores are future extensions. FPV timing should be tuned with human playtesting; nonverbal warning motifs and captions advise which flipper to use when it is behind the camera. This is a playable prototype, not a tournament pinball simulator.
+The default course has four flippers, nine bumpers, twelve bank targets, three ramps, three subways and three balls. Coordinates match the public reference; its casino/slot rules, online rankings and illustrated assets are not implemented. Multiball, tilt rules and online scores are future extensions. FPV timing should be tuned with human playtesting; nonverbal warning motifs and captions advise which flipper to use when it is behind the camera. This is a playable prototype, not a tournament pinball simulator.
 
 Licensed under MIT. `THIRD-PARTY-NOTICES.txt` includes the Three.js and Rapier licenses; the standalone HTML embeds those notices.
 

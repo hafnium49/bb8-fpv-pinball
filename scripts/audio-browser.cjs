@@ -12,8 +12,8 @@ const out = 'artifacts/audio';
     args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] };
   const errors = [], cases = [], screenshots = [];
   for (const [name, options, search] of [
-    ['desktop-classic', { viewport: { width: 1440, height: 900 } }, ''],
-    ['mobile-circuit', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 }, '?circuit=1'],
+    ['desktop-classic', { viewport: { width: 1440, height: 900 } }, '?table=orbit'],
+    ['mobile-circuit', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 }, '?table=orbit&circuit=1'],
   ]) {
     // Isolate devices in separate processes, including single-process Chromium.
     browser = await chromium.launch(launchOptions);
@@ -126,7 +126,7 @@ const out = 'artifacts/audio';
     await place({ x: -3.9, y: 0.305, z: 0 }, { x: -9, y: 0, z: 0 });
     await page.waitForFunction(() => window.orbitDebug.audio.history.some(c => c.kind === 'target'));
     console.log(`${name}: real wall, bumper and target reactions`);
-    if (search) {
+    if (search.includes('circuit=1')) {
       await page.evaluate(async () => {
         const { frames } = await import('/src/physics/route-geometry.ts');
         const { sim, audio, soundDirector } = window.orbitDebug, f = frames[0];
@@ -273,8 +273,8 @@ const out = 'artifacts/audio';
     await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0.6));
     await page.waitForTimeout(400);
     const normalMusicGain = await page.evaluate(() => window.orbitDebug.audio.mixer.music.gain.value);
-    await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'warning', voice: 'right', priority: 100 }));
-    await page.waitForTimeout(60);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'warning', voice: 'right', priority: 100 })), true);
+    await page.waitForFunction(normal => window.orbitDebug.audio.mixer.music.gain.value < normal * .45, normalMusicGain);
     const urgentMusicGain = await page.evaluate(() => window.orbitDebug.audio.mixer.music.gain.value);
     assert.ok(urgentMusicGain < normalMusicGain * 0.45, `Urgent warning did not duck the actual music bus: ${normalMusicGain} -> ${urgentMusicGain}`);
     assert.ok(await page.evaluate(() => window.audioProbe.peak) < 0.95, 'Full mix exceeded the headroom target');

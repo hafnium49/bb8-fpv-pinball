@@ -33,7 +33,8 @@ export class ArcadeEffects {
   private trailTime = 0;
   private popups: Popup[] = [];
   private rings: Ring[] = [];
-  private scoreMaps = [scoreTexture(100), scoreTexture(250), scoreTexture(750)];
+  private scoreValues = [100, 150, 200, 250, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 5000];
+  private scoreMaps = this.scoreValues.map(scoreTexture);
   private color = new THREE.Color();
 
   constructor(scene: THREE.Scene) {
@@ -63,17 +64,17 @@ export class ArcadeEffects {
     this.life[i] = this.lifetime[i] = lifetime;
   }
 
-  hit(x: number, z: number, color: number, points: number) {
+  hit(x: number, z: number, color: number, points: number, height = 0) {
     if (this.reducedMotion) return;
     for (let n = 0; n < 20; n++) {
       const a = n / 20 * Math.PI * 2, speed = 1.7 + (n % 4) * 0.55;
-      this.particle({ x, y: 0.9, z }, color, 0.5 + (n % 5) * 0.09, Math.cos(a) * speed, 1 + (n % 3) * 0.7, Math.sin(a) * speed);
+      this.particle({ x, y: height + 0.9, z }, color, 0.5 + (n % 5) * 0.09, Math.cos(a) * speed, 1 + (n % 3) * 0.7, Math.sin(a) * speed);
     }
     const ring = this.rings.find(r => r.life === 0) || this.rings[0];
-    ring.life = 0.85; ring.mesh.position.set(x, 0.04, z); ring.mesh.material.color.setHex(color); ring.mesh.visible = true;
+    ring.life = 0.85; ring.mesh.position.set(x, height + 0.04, z); ring.mesh.material.color.setHex(color); ring.mesh.visible = true;
     const popup = this.popups.find(p => p.life === 0) || this.popups[0];
-    popup.life = 1.1; popup.origin = 2.0; popup.sprite.position.set(x, popup.origin, z);
-    popup.sprite.material.map = this.scoreMaps[points === 750 ? 2 : points === 250 ? 1 : 0]; popup.sprite.material.color.setHex(color); popup.sprite.visible = true;
+    popup.life = 1.1; popup.origin = height + 2.0; popup.sprite.position.set(x, popup.origin, z);
+    popup.sprite.material.map = this.scoreMaps[this.scoreValues.indexOf(points)]; popup.sprite.material.color.setHex(color); popup.sprite.visible = true;
   }
 
   update(dt: number, position: Point, speed: number, playing: boolean) {

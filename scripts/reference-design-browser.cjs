@@ -24,7 +24,7 @@ let server, browser;
         if(original)WebAssembly[key]=async(...args)=>{window.startupBlocked=true;await gate;return original.apply(WebAssembly,args);};
       }
     });
-    await page.goto(server.resolvedUrls.local[0] + '?circuit=1', { waitUntil: 'domcontentloaded' });
+    await page.goto(server.resolvedUrls.local[0] + '?table=orbit&circuit=1', { waitUntil: 'domcontentloaded' });
     if(name!=='small-pc') {
       await page.waitForFunction(()=>window.startupBlocked===true);
       assert.equal(await page.locator('#start').isDisabled(),true);

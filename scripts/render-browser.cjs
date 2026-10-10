@@ -16,7 +16,7 @@ let server, browser;
   page.setDefaultTimeout(90000); const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-  await page.goto(server.resolvedUrls.local[0] + '?circuit=1', { waitUntil: 'networkidle' });
+  await page.goto(server.resolvedUrls.local[0] + '?table=orbit&circuit=1', { waitUntil: 'networkidle' });
   await page.locator('#start:not([disabled])').waitFor(); await page.locator('#start').click();
   const result = await page.evaluate(async () => {
     const { sim, view } = window.orbitDebug, render = view.render.bind(view);
