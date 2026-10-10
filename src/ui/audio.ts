@@ -1,4 +1,6 @@
 import type { SoundCue, SoundFrame } from './sound-director';
+import { audioMix, musicGain, musicLevel } from './audio-presets';
+import { musicPattern } from './music-pattern';
 import { voiceBank, type VoiceKey } from './voice-bank';
 
 type Bus = 'effects' | 'music' | 'voice';
@@ -32,6 +34,7 @@ export class GameAudio {
   private parameterTargets = new WeakMap<AudioParam, number>();
   private paused = false;
   private musicActive = false;
+  musicVolume: number = audioMix.musicDefault;
   private nextBeat = 0;
   private beat = 0;
   private nextClack = 0;
@@ -49,13 +52,17 @@ export class GameAudio {
       music: [...this.layers].filter(l => l.bus === 'music').length,
       speaking: !!this.speaking, priority: this.speaking?.priority ?? 0,
       loops: this.mixer?.continuous.length ?? 0, musicSteps: this.musicSteps,
-      warnings: this.warnings, lastVoice: this.lastVoice };
+      warnings: this.warnings, musicVolume: this.musicVolume, lastVoice: this.lastVoice };
   }
   private sessionType(type: 'playback' | 'auto') {
     try {
       const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
       if (session) session.type = type;
     } catch { /* Ordinary Web Audio still works without this optional API. */ }
+  }
+  setMusicVolume(value: number) {
+    this.musicVolume = musicLevel(value);
+    if (this.mixer) this.smooth(this.mixer.music.gain, musicGain(this.musicVolume, this.speaking?.priority), audioMix.duckRecovery);
   }
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
@@ -125,7 +132,7 @@ export class GameAudio {
     if (this.mixer) return this.mixer;
     const c = this.context!, nodes: AudioNode[] = [];
     const gain = (value: number) => { const n = c.createGain(); n.gain.value = value; nodes.push(n); return n; };
-    const effects = gain(0.75), music = gain(0.42), voice = gain(0.9);
+    const effects = gain(audioMix.effects), music = gain(musicGain(this.musicVolume)), voice = gain(0.9);
     const limiter = c.createDynamicsCompressor(); nodes.push(limiter);
     limiter.threshold.value = -6; limiter.knee.value = 8; limiter.ratio.value = 8;
     limiter.attack.value = 0.003; limiter.release.value = 0.16;
@@ -195,21 +202,24 @@ export class GameAudio {
     source.start(); source.stop(at + duration);
   }
   private mechanical(cue: SoundCue) {
-    if (cue.kind === 'chatter' || cue.kind === 'ready' || cue.kind === 'over' || cue.kind === 'head-loss') return;
+    if (cue.kind === 'chatter' || cue.kind === 'ready' || cue.kind === 'head-loss') return;
     const layer = this.layer('effects', 0, cue.pan), strength = cue.strength ?? 0.7;
     switch (cue.kind) {
       case 'warning': this.note(layer, 960, 0.06, 'sine', 0.05, 1250); break;
-      case 'flipper': this.note(layer, 130, 0.07, 'triangle', 0.075, 60); this.noiseHit(layer, 0.055, 0.08, 900); break;
+      case 'flipper': this.note(layer, 130, 0.055, 'triangle', 0.075, 60); this.noiseHit(layer, 0.035, 0.08, 1200); break;
       case 'launch': this.note(layer, 110, 0.35, 'sawtooth', 0.03, 750); this.noiseHit(layer, 0.28, 0.14, 2000); break;
-      case 'bumper': this.note(layer, 420, 0.18, 'sine', 0.12, 1050); this.noiseHit(layer, 0.1, 0.18); break;
-      case 'target': this.note(layer, 920, 0.2, 'triangle', 0.08, 1380); this.noiseHit(layer, 0.08, 0.12, 3400); break;
-      case 'wall': this.note(layer, 150 + strength * 260, 0.14, 'triangle', 0.04 + strength * 0.08, 75); this.noiseHit(layer, 0.07, 0.05 + strength * 0.15); break;
+      case 'bumper': this.note(layer, 510, 0.095, 'sine', 0.12, 160); this.noiseHit(layer, 0.045, 0.16, 1900); break;
+      case 'target': this.note(layer, 1280, 0.09, 'triangle', 0.08, 1380); this.noiseHit(layer, 0.035, 0.12, 3400); break;
+      case 'wall': this.note(layer, 160 + strength * 260, 0.085, 'triangle', 0.04 + strength * 0.08, 75); this.noiseHit(layer, 0.045, 0.05 + strength * 0.15); break;
       case 'save': this.note(layer, 240, 0.1, 'triangle', 0.08, 130); break;
       case 'ascent': this.note(layer, 200, 0.25, 'sine', 0.045, 880); break;
       case 'bridge': this.noiseHit(layer, 0.12, 0.12, 2600); break;
       case 'tunnel': this.note(layer, 220, 0.25, 'sine', 0.06, 70); break;
       case 'circuit':
         for (const [i, f] of [523.25, 659.25, 783.99, 1046.5].entries()) this.note(layer, f, 0.24, 'triangle', 0.065, f, this.context!.currentTime + i * 0.09);
+        break;
+      case 'over':
+        for (const [i, f] of [330, 261.63, 220].entries()) this.note(layer, f, 0.22, 'triangle', 0.04, f, this.context!.currentTime + i * 0.14);
         break;
       case 'drain': this.note(layer, 350, 0.5, 'sine', 0.08, 55); this.noiseHit(layer, 0.25, 0.08, 600); break;
     }
@@ -231,7 +241,7 @@ export class GameAudio {
     } else {
       this.chirp(layer, cue);
     }
-    this.smooth(this.mix().music.gain, 0.10, 0.015); this.smooth(this.mix().effects.gain, priority >= 90 ? 0.3 : 0.55, 0.015);
+    this.smooth(this.mix().music.gain, musicGain(this.musicVolume, priority), audioMix.duckAttack); this.smooth(this.mix().effects.gain, priority >= 90 ? audioMix.urgentEffects : audioMix.ordinaryEffects, audioMix.duckAttack);
     return true;
   }
   private chirp(layer: Layer, cue: SoundCue) {
@@ -279,7 +289,7 @@ export class GameAudio {
     if (!this.ready) return;
     if (!frame.music && !frame.rolling && !frame.charge && !this.mixer) return;
     const c = this.context!, t = c.currentTime, mix = this.mix();
-    this.smooth(mix.music.gain, this.speaking ? 0.1 : 0.42);
+    this.smooth(mix.music.gain, musicGain(this.musicVolume, this.speaking?.priority), this.speaking ? audioMix.duckAttack : audioMix.duckRecovery);
     this.smooth(mix.effects.gain, this.speaking ? this.speaking.priority >= 90 ? 0.3 : 0.55 : 0.75);
     this.smooth(mix.room.gain, frame.surface === 'tunnel' ? 0.22 : 0.03);
     this.smooth(mix.roll.gain, frame.rolling * (frame.surface === 'bridge' ? 0.1 : 0.07));
@@ -292,9 +302,9 @@ export class GameAudio {
       const layer = this.layer('effects'); this.noiseHit(layer, 0.055, 0.045, 2700);
       this.note(layer, 1100 + (this.variant++ % 3) * 220, 0.075, 'sine', 0.025, 780);
     }
-    if (!frame.music) {
+    if (!frame.music || this.musicVolume === 0) {
       if (this.musicActive) for (const layer of [...this.layers]) if (layer.bus === 'music') this.clean(layer);
-      if (this.musicActive && !frame.rolling && !frame.charge) {
+      if (!frame.music && !frame.rolling && !frame.charge) {
         for (const source of mix.continuous) { try { source.stop(); } catch { /* Already ended. */ } source.disconnect(); }
         mix.continuous.length = 0;
       }
@@ -302,18 +312,15 @@ export class GameAudio {
     }
     if (!this.musicActive || t - this.nextBeat > 0.3) this.nextBeat = t + 0.015;
     this.musicActive = true;
-    // Original 8-bar A-minor arcade groove. Bounded lookahead prevents a burst
+    // Original 16-bar A-minor arcade groove. Bounded lookahead prevents a burst
     // of overdue notes after a slow render frame or resumed tab.
     let scheduled = 0;
     while (this.nextBeat < t + 0.12 && scheduled++ < 2) {
-      const step = this.beat++ % 64, at = this.nextBeat, bar = Math.floor(step / 8);
-      const bass = [55, 55, 65.406, 73.416, 55, 55, 87.307, 82.407][bar];
-      const layer = this.layer('music');
-      if (step % 2 === 0) this.note(layer, bass, 0.23, 'triangle', 0.13, bass, at);
-      const melody = [440, 0, 659.255, 523.251, 0, 587.33, 0, 659.255];
-      const f = melody[step % 8] * (bar >= 4 ? 0.5 : 1);
-      if (f) this.note(layer, f, 0.2, 'sine', 0.045, f, at);
-      this.note(layer, step % 2 ? 160 : 75, 0.06, 'sine', step % 2 ? 0.022 : 0.08, 35, at);
+      const at = this.nextBeat, notes = musicPattern(this.beat++, frame.musicMode ?? 'playing');
+      if (notes.length) {
+        const layer = this.layer('music');
+        for (const note of notes) this.note(layer, note.frequency, note.duration, note.kind, note.gain, note.end, at);
+      }
       this.nextBeat += 60 / 108 / 2; this.musicSteps++;
     }
   }

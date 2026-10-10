@@ -248,7 +248,32 @@ const out = 'artifacts/audio';
     await page.evaluate(() => { for (let i = 0; i < 100; i++) window.orbitDebug.audio.play({ kind: 'wall', strength: 1 }); });
     const bounded = await page.evaluate(() => window.orbitDebug.audio.diagnostics);
     assert.ok(bounded.effects <= 12 && bounded.music <= 10); assert.equal(bounded.loops, 2);
-    console.log(`${name}: voice priority, sustained mix and bounded effects`);
+    // Music mute is independent of effects/voice, and real mixer gain falls
+    // promptly when an urgent droid cue interrupts the backing arrangement.
+    await page.evaluate(() => {
+      const { sim, audio, soundDirector } = window.orbitDebug;
+      // Hold a quiet ground fixture during bus calibration. Otherwise a real
+      // approaching-flipper warning can already be ducking the comparison.
+      window.restoreMixSimUpdate = sim.update; sim.update = () => {};
+      sim.ball.setTranslation({ x: -4, y: 0.305, z: -9 }, true);
+      sim.ball.setLinvel({ x: 0, y: 0, z: 0 }, true); sim.events.length = 0; soundDirector.reset();
+      audio.setMusicVolume(0); window.audioProbe.peak = 0;
+    });
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.music === 0);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.loops), 2);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'warning', voice: 'left', priority: 100 })), true);
+    await page.waitForFunction(() => window.audioProbe.peak > 0.001);
+    await page.waitForFunction(() => !window.orbitDebug.audio.diagnostics.speaking);
+    await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0.6));
+    await page.waitForTimeout(400);
+    const normalMusicGain = await page.evaluate(() => window.orbitDebug.audio.mixer.music.gain.value);
+    await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'warning', voice: 'right', priority: 100 }));
+    await page.waitForTimeout(60);
+    const urgentMusicGain = await page.evaluate(() => window.orbitDebug.audio.mixer.music.gain.value);
+    assert.ok(urgentMusicGain < normalMusicGain * 0.45, `Urgent warning did not duck the actual music bus: ${normalMusicGain} -> ${urgentMusicGain}`);
+    assert.ok(await page.evaluate(() => window.audioProbe.peak) < 0.95, 'Full mix exceeded the headroom target');
+    await page.evaluate(() => { window.orbitDebug.sim.update = window.restoreMixSimUpdate; });
+    console.log(`${name}: voice priority, sustained mix, independent music mute and bounded effects`);
     await page.evaluate(async () => { await window.audioProbe.contexts[0].suspend(); });
     await activate(page.locator('#pause')); await activate(page.locator('#resume'));
     await page.waitForFunction(() => window.audioProbe.contexts[0].state === 'running');
@@ -269,6 +294,10 @@ const out = 'artifacts/audio';
     await page.screenshot({ path: `${out}/${name}-sound-on.png`, timeout: 90000 }); screenshots.push(`${name}-sound-on.png`);
     console.log(`Captured ${name} sound-on`);
     await page.evaluate(() => { window.orbitDebug.sim.paused = false; window.orbitDebug.view.render = () => {}; });
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.loops === 2);
+    await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0));
+    await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.music === 0);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.loops), 2, 'Music mute preserves rolling/motor until lifecycle shutdown');
     for (let ball = 0; ball < 3; ball++) {
       await page.evaluate(() => {
         const s = window.orbitDebug.sim; if (s.phase === 'ready') s.launch(0.5);
@@ -282,6 +311,7 @@ const out = 'artifacts/audio';
     await activate(page.locator('#restart'));
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 3);
     await page.waitForFunction(() => window.orbitDebug.audio.diagnostics.loops === 2);
+    await page.evaluate(() => window.orbitDebug.audio.setMusicVolume(0.6));
     console.log(`${name}: pause/blur and three-ball audio lifecycle`);
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND ON');
     assert.equal(await page.evaluate(() => window.audioProbe.contexts.length), 0, 'Remembering preference must not autoplay');
@@ -325,7 +355,7 @@ const out = 'artifacts/audio';
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, warningPans, fallbackMotifs, bounded,
       headLoss: { spinUp, spinDuration, cue: 'nonverbal ouch cry', caption: 'Oh no, BB-8 lost its head!', captionTracksSimulationTime: true, automaticFpvReturn: true, pauseCancels: true, reducedMotionCancelsAndSuppressesDraw: true, reducedMotionClearsExistingEffects: true, warningsTakePrecedence: true, cameraControlsAndShortcutsRemoved: true, noRadarDuringSpin: true },
-      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
+      checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom', 'gesture resumes suspended context without recreating it', 'blur stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     await browser.close(); browser = undefined; activePage = undefined;
   }

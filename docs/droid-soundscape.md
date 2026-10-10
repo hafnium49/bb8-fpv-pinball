@@ -1,6 +1,6 @@
 # Expressive ORBIT audio
 
-The ball communicates entirely through expressive electronic beeps, whistles, trills and squeals, inspired by the nonverbal personalities of BB-8 and R2-D2. All sound is original synthesis. English text is a readable interpretation of the beeps; there is no spoken English track. A continuous cabinet soundscape accompanies both tables.
+The ball communicates entirely through expressive electronic beeps, whistles, trills and squeals, inspired by the nonverbal personalities of BB-8 and R2-D2. All sound is original synthesis. English text is a readable interpretation of the beeps; there is no spoken English track. A continuous cabinet soundscape accompanies both tables. The [cabinet/audio release](cabinet-arcade-release.md) adds a separate music slider, fuller arrangement and stronger urgent ducking.
 
 | Gameplay | Sound |
 | --- | --- |
@@ -31,7 +31,7 @@ The ground-return forecast uses downslope gravity and horizontal velocity to est
 
 The voice has one active slot. Urgent warnings replace flavour whistles, lower the music/effects and reject low-priority chatter. Route transitions may replace earlier route phrases; a short, fast traversal prioritizes the return warning. Impacts retain mechanical feedback while the voice is busy. Quick electronic reactions are rate-limited and longer phrases have a separate cooldown. Ordinary quiet play gets occasional inquisitive chirps.
 
-The Web Audio graph mixes droid vocals, effects and an original 108 BPM, eight-bar A-minor groove through a limiter and a master mute. It uses two continuous sources, at most twelve effect layers and ten music layers. Music scheduling has a two-step limit and discards overdue scheduling after a stall. Audio parameter targets avoid redundant frame updates. Source completion disconnects nodes; pause/blur/mute/restart cancel sources and pending notes. Audio-context interruptions discard active sounds rather than resuming a stale warning.
+The Web Audio graph mixes droid vocals, effects and an original 108 BPM, sixteen-bar A-minor groove through a limiter and a master mute. It uses two continuous sources, at most twelve effect layers and ten music layers. Music scheduling has a two-step limit and discards overdue scheduling after a stall. Audio parameter targets avoid redundant frame updates. Source completion disconnects nodes; pause/blur/mute/restart cancel sources and pending notes. Audio-context interruptions discard active sounds rather than resuming a stale warning.
 
 Sound starts in a player gesture, preserves the existing local on/off preference and optional iPhone playback session, and shares startup-failure handling across all entry paths. The beep sprite loads and decodes once per context. A failed or unfinished decode falls back to an immediate electronic vocal; completed loading never replays an old warning. Captions keep critical advice available when muted. The caption region remains in the accessibility tree between cues, using polite announcements for ordinary reactions and assertive, atomic announcements for urgent instructions. Priority is set before warning text changes. Assistive technology may read captions using the user's chosen screen reader; that is separate from the nonverbal game soundtrack.
 
