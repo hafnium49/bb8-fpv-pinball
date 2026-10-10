@@ -12,6 +12,7 @@
     "test:render:browser": "node scripts/render-browser.cjs",
     "benchmark:desktop": "node scripts/performance-browser.cjs",
     "test:cabinet:browser": "node scripts/cabinet-browser.cjs",
+    "test:design:browser": "node scripts/reference-design-browser.cjs",
     "test:touch:browser": "node scripts/touch-browser.cjs",
     "test:audio:browser": "node scripts/audio-browser.cjs",
     "test:circuit": "node --import tsx scripts/circuit-check.ts",

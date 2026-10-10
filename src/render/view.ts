@@ -42,7 +42,7 @@ export class PinballView {
 
   constructor(readonly container: HTMLElement, circuitEnabled = false) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-    this.renderer.setClearColor(0x080e24);
+    this.renderer.setClearColor(0x06070a);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.98;
@@ -107,7 +107,6 @@ export class PinballView {
     const p = sim.position, v = sim.velocity, visualDt = sim.paused ? 0 : dt;
     this.table.update(sim, visualDt);
     this.circuit?.update(sim);
-    if (!this.effects.reducedMotion) this.table.animate(visualDt);
     for (const event of sim.events) {
       if (event.type === 'bumper') { const b = bumpers[event.index]; this.effects.hit(b.x, b.z, b.color, 100); }
       if (event.type === 'target') { const t = targets[event.index]; this.effects.hit(t.x, t.z, t.color, 250); }
@@ -119,7 +118,9 @@ export class PinballView {
     this.forward.set(Math.sin(this.heading), 0, -Math.cos(this.heading));
     this.camera.up.set(0, 1, 0);
     if (sim.phase === 'intro') {
-      this.camera.fov = 48; this.camera.position.set(13, 19, 20); this.camera.lookAt(-3, 0, -1);
+      this.camera.fov = 48;
+      this.camera.position.set(0, this.camera.aspect < 1.2 ? 25 : 22, this.camera.aspect < 1.2 ? 16 : 19);
+      this.camera.lookAt(0, 0, -.7);
     } else if (this.mode === 'spin') {
       this.camera.fov = 82; this.camera.position.set(p.x, p.y + 0.08, p.z);
       this.camera.quaternion.copy(this.table.ball.quaternion);

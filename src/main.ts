@@ -1,5 +1,6 @@
 import './style.css';
 import { cabinetDisplay } from './ui/cabinet-display';
+import { rankedScores, readScores, saveRun } from './ui/local-scores';
 import { PlayInput, pauseOnWindowBlur } from './ui/play-input';
 import { PinballSimulation } from './physics/simulation';
 import { PinballView } from './render/view';
@@ -11,20 +12,31 @@ import voiceUrl from './assets/droid-beeps.wav?inline';
 const circuitEnabled = new URLSearchParams(location.search).get('circuit') === '1';
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
-  <main id="game" tabindex="-1" aria-label="ORBIT FPV pinball game">
+  <main id="game" class="intro-state" tabindex="-1" aria-label="ORBIT FPV pinball game">
     <div id="viewport"></div>
+    <aside id="ranking-panel" class="cabinet-panel ranking-panel" aria-label="Local pinball rankings">
+      <h2 class="cabinet-heading">RANKING</h2>
+      <section class="steel-frame ranking-frame"><h3>LOCAL TOP 10 <small>this browser</small></h3><ol id="rankings" class="score-list"></ol></section>
+      <section class="steel-frame recent-frame"><h3>RECENT GAMES</h3><ol id="recent-runs" class="score-list"></ol><p class="panel-footnote">Finish a game to record your score.</p></section>
+    </aside>
     <header class="topbar">
-      <a class="wordmark" href="./" aria-label="ORBIT home"><span class="orbit-mark">◎</span><strong>ORBIT</strong><span class="brand-note">ORBITAL ARCADE</span></a>
+      <a class="wordmark" href="./" aria-label="ORBIT home"><span class="orbit-mark">◎</span><strong>ORBIT <span class="pinball-title">PINBALL</span></strong><span class="brand-note">ORBITAL ARCADE</span></a>
       <div id="hud" class="hud" hidden>
         <div class="score-block"><span class="eyebrow">SCORE</span><output id="score" aria-live="off">00000</output></div>
         <div class="ball-block"><span class="eyebrow">BALLS</span><span id="balls" aria-label="Three balls remaining">● ● ●</span></div>
         <div id="display-status" class="display-status"><span id="hint">HOLD SPACE TO LAUNCH</span><div id="toast" role="status" aria-live="polite"></div></div>
       </div>
+      <div class="reference-console">
+        <section class="steel-frame reactor-bank" aria-label="Jet bumper reactor lights"><div class="reactor-window warm"><span>★</span></div><div class="reactor-window cool"><span>★</span></div><div class="reactor-window warm"><span>★</span></div><p>JET REACTORS · 100 POINTS</p></section>
+        <section class="steel-frame machine-data" aria-label="Cabinet game statistics"><dl><dt>HIGH SCORE</dt><dd id="panel-best">0</dd><dt>BALL</dt><dd id="panel-ball">1 / 3</dd><dt>TABLE</dt><dd>${circuitEnabled ? 'CIRCUIT' : 'CLASSIC'}</dd><dt>CIRCUITS</dt><dd id="panel-circuits">0</dd></dl></section>
+        <section class="steel-frame cabinet-guide"><h3>CONTROLS</h3><dl><dt><kbd>A</kbd> <kbd>←</kbd></dt><dd>Left flipper</dd><dt><kbd>D</kbd> <kbd>→</kbd></dt><dd>Right flipper</dd><dt><kbd>SPACE</kbd></dt><dd>Hold to launch</dd><dt><kbd>ESC</kbd></dt><dd>Pause</dd></dl><h3>SCORING</h3><dl><dt>Jet bumpers</dt><dd>100</dd><dt>Boost targets</dt><dd>250</dd>${circuitEnabled ? '<dt>Full circuit</dt><dd>750</dd>' : ''}</dl><p>Stable first-person play.<br/>Three balls. One more orbit.</p></section>
+      </div>
+      <div id="desktop-start-slot" class="desktop-start-slot"></div>
       <div class="top-actions"><button id="quality" class="icon-button" aria-label="Change graphics quality" aria-pressed="false" disabled>FX HIGH</button><button id="sound" class="icon-button" aria-label="Enable sound" aria-pressed="false">SOUND OFF</button><button id="pause" class="icon-button" aria-label="Pause game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button><button id="fullscreen" class="icon-button" aria-label="Enter fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></svg></button></div>
     </header>
     <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
-      <div class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div id="intro-feedback"></div><div id="intro-best"><span id="best-panel" class="best">PERSONAL BEST <b id="best-score">00000</b></span></div><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><div id="audio-settings" class="audio-settings"><label for="music-volume">Music <output id="music-value" aria-live="off">60%</output></label><input id="music-volume" type="range" min="0" max="100" value="60" aria-label="Music volume"/><small>Music at 0% keeps droid and cabinet sounds.</small></div><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds glow and shadows. <b>FX ECO</b> reduces graphics work. Resolution adapts automatically for smooth play; controls stay sharp.</p></div></div>
+      <div id="intro-content" class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div id="intro-feedback"></div><div id="intro-best"><span id="best-panel" class="best">PERSONAL BEST <b id="best-score">00000</b></span></div><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" href="${circuitEnabled ? '?' : '?circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><div id="audio-settings" class="audio-settings"><label for="music-volume">Music <output id="music-value" aria-live="off">60%</output></label><input id="music-volume" type="range" min="0" max="100" value="60" aria-label="Music volume"/><small>Music at 0% keeps droid and cabinet sounds.</small></div><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds glow and shadows. <b>FX ECO</b> reduces graphics work. Resolution adapts automatically for smooth play; controls stay sharp.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
     <div id="play-controls" class="play-controls" hidden>
@@ -37,6 +49,8 @@ app.innerHTML = `
   </main>`;
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+const reactorWindows = Array.from(document.querySelectorAll<HTMLElement>('.reactor-window'));
+const reactorUntil = [0, 0, 0], reactorLit = [false, false, false];
 const audio = new GameAudio(voiceUrl), soundDirector = new SoundDirector();
 const headLoss = new HeadLossCamera();
 try { audio.setEnabled(localStorage.getItem('orbit-pinball-sound') === 'on'); } catch { /* Sound still works without storage. */ }
@@ -44,9 +58,31 @@ let sim: PinballSimulation, view: PinballView;
 let best = 0;
 try { best = Number(localStorage.getItem('orbit-pinball-best') || 0) || 0; } catch { /* Private browsing still plays. */ }
 $('best-score').textContent = String(best).padStart(5, '0');
+let scores = readScores(null);
+try { scores = readScores(localStorage.getItem('orbit-pinball-runs')); } catch {}
+function renderRankings() {
+  const top = rankedScores(scores, best), recent = [...scores].reverse().slice(0, 8);
+  for (const [id, entries, count] of [['rankings', top, 10], ['recent-runs', recent, 8]] as const) {
+    const nodes = Array.from({ length: count }, (_, i) => {
+      const row = document.createElement('li'), label = document.createElement('span'), value = document.createElement('b'), entry = entries[i];
+      label.textContent = entry ? entry.at ? (entry.circuit ? 'YOU · CIRCUIT' : 'YOU · CLASSIC') : 'PERSONAL BEST' : '—';
+      value.textContent = entry ? entry.score.toLocaleString('en-US') : '—';
+      row.append(label, value); return row;
+    });
+    $(id).replaceChildren(...nodes);
+  }
+  $('panel-best').textContent = best.toLocaleString('en-US');
+}
+renderRankings();
 let toastUntil = 0, previousPhase = 'intro', last = performance.now();
 let commsUntil = 0;
 const coarseInput = matchMedia('(pointer: coarse)');
+const desktopCabinet = matchMedia('(min-width: 1024px) and (min-height: 600px)');
+function arrangeIntro() {
+  const parent = desktopCabinet.matches ? $('desktop-start-slot') : $('intro');
+  if ($('intro-content').parentElement !== parent) parent.append($('intro-content'));
+}
+arrangeIntro();
 let displayCache = '';
 let focusBeforeDialog: HTMLElement | null = null;
 let playInput: PlayInput;
@@ -79,12 +115,14 @@ function setDialog(open: boolean) {
   }
 }
 function refreshDisplay() {
-  const key = `${sim.phase}:${sim.paused}:${sim.score}:${sim.balls}:${sim.charge > 0}:${sim.route.active}:${sim.route.phase}:${coarseInput.matches}`;
+  const key = `${sim.phase}:${sim.paused}:${sim.score}:${sim.balls}:${sim.charge > 0}:${sim.route.active}:${sim.route.phase}:${sim.route.completions}:${coarseInput.matches}:${desktopCabinet.matches}`;
   if (key === displayCache) return;
   const d = cabinetDisplay({ phase: sim.phase, paused: sim.paused, score: sim.score, balls: sim.balls, charge: sim.charge, route: sim.route, circuit: circuitEnabled, coarse: coarseInput.matches });
-  displayCache = key; $('hud').hidden = !d.visible;
+  displayCache = key; $('hud').hidden = !d.visible && !desktopCabinet.matches;
   $('score').textContent = d.score; $('score').classList.toggle('long-score', d.score.length > 6);
   $('balls').textContent = d.balls; $('balls').setAttribute('aria-label', d.ballLabel); $('hint').textContent = d.status;
+  $('panel-ball').textContent = `${Math.min(3, Math.max(1, 4 - sim.balls))} / 3`;
+  $('panel-circuits').textContent = String(sim.route.completions);
 }
 
 const leftButton = $('left'), rightButton = $('right'), launchButton = $<HTMLButtonElement>('launch');
@@ -164,7 +202,7 @@ function begin() {
   sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); void activateSound();
   displayCache = ''; previousPhase = 'ready'; playInput.clear();
   setDialog(false); $('toast').classList.remove('visible'); toastUntil = 0;
-  $('intro').hidden = true; $('game').focus(); refreshDisplay();
+  $('intro').hidden = true; $('desktop-start-slot').hidden = true; $('game').classList.remove('intro-state'); $('game').focus(); refreshDisplay();
   for (const id of ['hud', 'play-controls']) $(id).hidden = false;
   toast('Hold SPACE, then release to launch');
 }
@@ -180,6 +218,9 @@ function resume() { sim.paused = false; sim.releaseControls(); soundDirector.res
 function gameOver() {
   if (sim.score > best) { best = sim.score; try { localStorage.setItem('orbit-pinball-best', String(best)); } catch {} }
   $('best-score').textContent = String(best).padStart(5, '0');
+  scores = saveRun(scores, sim.score, Date.now(), circuitEnabled);
+  try { localStorage.setItem('orbit-pinball-runs', JSON.stringify(scores)); } catch {}
+  renderRankings();
   $('modal-kicker').textContent = 'ORBIT COMPLETE'; $('modal-title').textContent = String(sim.score).padStart(5, '0');
   $('modal-copy').textContent = 'Three balls. One more orbit?'; $('resume').hidden = true;
   $('restart').textContent = 'PLAY AGAIN ↗'; playInput.clear(); setDialog(true); refreshDisplay();
@@ -202,6 +243,8 @@ async function boot() {
   try {
     sim = await PinballSimulation.create({ circuit: circuitEnabled }); playInput = new PlayInput(sim.controls); view = new PinballView($('viewport'), circuitEnabled);
     await view.warmup();
+    // A resize can occur while physics and shaders initialize, before listeners exist.
+    arrangeIntro(); view.resize();
     const updateQuality = () => {
       $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
       $('quality').setAttribute('aria-pressed', String(view.highQuality));
@@ -265,7 +308,7 @@ async function boot() {
     });
     window.addEventListener('pagehide', showPause);
     document.addEventListener('visibilitychange', () => { if (document.hidden) showPause(); else if (!$('modal').hidden) ($('resume').hidden ? $('restart') : $('resume')).focus(); });
-    window.addEventListener('resize', () => view.resize());
+    window.addEventListener('resize', () => { arrangeIntro(); view.resize(); });
     view.renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); showPause(); toast('Graphics paused · waiting for recovery', 20); });
     view.renderer.domElement.addEventListener('webglcontextrestored', () => { toast('Graphics restored · resume when ready'); });
 
@@ -293,10 +336,14 @@ function frame(now: number) {
     previousPhase = sim.phase;
   }
   for (const e of sim.events) {
-    if (e.type === 'bumper') toast('+100 · BUMPER', 0.8);
+    if (e.type === 'bumper') { toast('+100 · BUMPER', 0.8); reactorUntil[e.index] = now + 350; }
     if (e.type === 'target') toast('+250 · TARGET', 0.8);
     if (e.type === 'circuit') toast('CIRCUIT +750 · RIGHT FLIPPER NEXT', 1.5);
   }
+  reactorWindows.forEach((window, i) => {
+    const lit = now < reactorUntil[i];
+    if (lit !== reactorLit[i]) { reactorLit[i] = lit; window.classList.toggle('hit', lit); }
+  });
   const soundFrame = soundDirector.update(sim, sim.events);
   if (cameraFrame.started) soundFrame.cues.unshift({ kind: 'head-loss', voice: 'ouch', strength: 1, priority: 85, caption: HEAD_LOSS_CAPTION });
   audio.update(soundFrame);

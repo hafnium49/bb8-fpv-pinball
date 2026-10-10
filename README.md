@@ -24,13 +24,13 @@ FPV fills the playfield; there is no overhead/radar inset, including during a sp
 
 ## Orbital arcade visuals
 
-The cabinet/display and original soundtrack upgrade is implemented. See the [release and verification record](docs/cabinet-arcade-release.md) and the [original design](docs/cabinet-ui-audio-upgrade.md). The score, balls and status share one compact display; pause offers a separate Music volume slider while master SOUND controls the full mix.
+The [reference cabinet recreation](docs/reference-cabinet-release.md) brings the Hyperspace Pinball reference's three-column PC layout, curved wood/chrome enclosure, purple illustrated playfield, cream apron cards and star-topped jet bumpers to ORBIT. The left panel shows this browser's top ten scores and eight recent completed games. The right console contains an amber dot display, three bumper lamps, actual game statistics, controls and scoring. The full cabinet appears before play; entering the table restores stabilized FPV. Smaller screens retain compact controls. Pause offers a separate Music volume slider while master SOUND controls the full mix.
 
 The [iPhone touch and cabinet follow-up](docs/iphone-touch-cabinet-release.md) prevents visible touch-focus changes from pausing play, keeps independent finger/key holds, and adds the reference-inspired wood surround, ivory/red flippers, amber dot display and metal control pads. Backgrounding the page still pauses and silences the game.
 
-The illustrated playfield has a ringed planet, circuit paths, reactor markings and launch cues. Rounded cabinet parts, chrome bumper assemblies, inset flipper lights and an illuminated backboard sit inside a neon orbital arena. Reflections, contact shadows and restrained bloom give the table depth; real scoring collisions trigger pooled sparks, expanding light rings and floating score labels.
+The illustrated playfield has orbital rings, a spiral field, reactor markings and launch cues. Sculpted yellow/cyan bumper caps carry large printed stars over black rubber bodies and chrome skirts. Red ramp panels, ivory/red flippers, a metal apron and a curved walnut surround sit against a dark background. Reflections, contact shadows and restrained glow give the table depth; real scoring collisions depress the bumper caps, light their console windows and trigger pooled sparks, expanding light rings and floating score labels.
 
-**FX High** enables restrained glow and cached dynamic shadows. **FX Eco** skips those extra passes while keeping the artwork, mechanical detail and collision effects. Resolution adjusts automatically toward smooth 60 Hz play; the HTML display and controls stay sharp. High retains native 1080p on a 1× display, caps density at 1.5 and rendering at three million pixels; Eco caps density at 1 and two million pixels. Sustained overload lowers render scale, and sustained headroom restores it. Touch devices and narrow screens start in Eco; the top-bar button switches modes at any time. Reduced-motion preferences disable the random spin, decorative portal rotation, particles and score animations. All artwork is generated locally, with no asset or font downloads.
+**FX High** enables restrained glow and cached dynamic shadows. **FX Eco** skips those extra passes while keeping the artwork, mechanical detail and collision effects. Resolution adjusts automatically toward smooth 60 Hz play; the HTML display and controls stay sharp. High retains native 1080p on a 1× display, caps density at 1.5 and rendering at three million pixels; Eco caps density at 1 and two million pixels. Sustained overload lowers render scale, and sustained headroom restores it. Touch devices and narrow screens start in Eco; the console button switches modes at any time. Reduced-motion preferences disable the random spin, particles and score animations. All artwork is generated locally, with no asset or font downloads.
 
 The [desktop performance release](docs/desktop-performance-release.md) describes static GPU batches, shadow invalidation, the single glow/output pass, shader warm-up and the measured limits. Run `npm run test:render:browser` for desktop renderer regressions and `npm run benchmark:desktop` for matched held-scene GPU timings. The benchmark defaults to software rendering for repeatability. To measure an installed PC browser's actual GPU, set `CHROME_PATH`, `PERF_GPU=hardware` and `PERF_HEADLESS=0`, and check the renderer identity in the report. A software-renderer benchmark does not establish hardware PC FPS.
 
@@ -70,6 +70,8 @@ For browser QA, run `npx playwright install chromium`, then `npm run test:browse
 
 `npm run test:cabinet:browser` checks five viewport layouts, large scores, toolbar target sizes, modal focus/inert behavior, keyboard ownership and the music slider.
 
+`npm run test:design:browser` checks the three-column cabinet at 1440×900 and 1024×600, compact landscape at 844×390, real bumper-to-console feedback, score-history persistence, resize/start behavior, cap dimensions and matched render counters. It captures the cabinet and FPV views.
+
 `npm run test:touch:browser` checks native repeated flipper taps, visible blur, independent fingers, long holds, cancellation and background/explicit pause behavior in portrait and landscape. Set `TOUCH_ENGINE=webkit` after installing Playwright WebKit to check the Safari engine; `WEBKIT_PATH` can select an installed runtime. A physical iPhone playtest remains separate.
 
 `npm run test:audio:browser` checks real Web Audio waveforms, decoded droid beeps, directional warnings, actual collision and route cues, warning priority, continuous rolling/music, resource bounds, mute, reload preferences, interruption recovery and the three-ball audio lifecycle in desktop classic and mobile circuit views. It also injects clip-decoding and audio-start failures and verifies distinct procedural warning fallbacks. Safari audio-session behavior and the listening balance require a physical iPhone check.
@@ -84,7 +86,7 @@ For browser QA, run `npx playwright install chromium`, then `npm run test:browse
 
 - `src/physics/`: Rapier rigid bodies, shared table dimensions, a 120 Hz fixed step and game rules.
 - `src/render/`: Three.js view and independent cameras, canvas artwork, detailed table geometry, lighting, postprocessing and bounded visual effects.
-- `src/ui/`: a pure sound director, a bounded Web Audio mixer and droid beep cue index.
+- `src/ui/`: a pure sound director, a bounded Web Audio mixer, droid beep cue index and validated local score history.
 - `src/assets/`: the bundled nonverbal droid sprite; rebuild it with `python3 scripts/generate-droid-beeps.py` (standard library only).
 - `src/main.ts`: DOM controls, state presentation, input and browser lifecycle.
 

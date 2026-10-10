@@ -19,8 +19,8 @@ export class ElevatedCircuit {
   constructor(scene: THREE.Scene) {
     this.group.name = 'Elevated circuit';
     const chrome = this.keep(new THREE.MeshStandardMaterial({ color: 0xc9deea, metalness: 0.94, roughness: 0.28, envMapIntensity: 0.85 }));
-    const deck = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x28434b, ...cabinetMaterials.deck, side: THREE.DoubleSide }));
-    const glass = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x76d6e8, metalness: 0.12, roughness: 0.23, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide }));
+    const deck = this.keep(new THREE.MeshPhysicalMaterial({ color: 0xad3a51, ...cabinetMaterials.deck, side: THREE.DoubleSide }));
+    const glass = this.keep(new THREE.MeshPhysicalMaterial({ color: 0xff7586, metalness: 0.08, roughness: 0.2, transparent: true, opacity: 0.25, depthWrite: false, side: THREE.DoubleSide }));
     const canopy = this.keep(new THREE.MeshPhysicalMaterial({ color: cabinetPalette.panel, ...cabinetMaterials.paint, side: THREE.DoubleSide }));
     this.mesh(mergeData([ascentFloor, descentFloor, apronData]), deck);
     this.mesh(wireData, chrome);
@@ -36,7 +36,7 @@ export class ElevatedCircuit {
     for (const [from, to] of [[0, ascentEnd], [descentStart, frames.length - 1]]) for (const side of [-1, 1]) {
       edges.push(tubeData(frames.slice(from, to + 1).map(f => localPoint(f, side * (f.width + 0.022), -BALL_RADIUS - 0.018)), 0.018, 6));
     }
-    const trim = this.keep(new THREE.MeshStandardMaterial({ color: 0x65e5f5, emissive: 0x33cddd, emissiveIntensity: 0.65, metalness: 0.2, roughness: 0.4 }));
+    const trim = this.keep(new THREE.MeshStandardMaterial({ color: 0xffd3a2, emissive: 0xff713e, emissiveIntensity: 0.4, metalness: 0.35, roughness: 0.35 }));
     this.mesh(mergeData(edges), trim, false);
 
     // Tunnel ribs share the opaque roof/walls' exterior; one batch, not one
