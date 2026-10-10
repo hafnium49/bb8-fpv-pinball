@@ -68,7 +68,7 @@ def main():
     data = bytearray()
     index = {}
     metrics = {}
-    preview = []
+    preview_clips = {}
     for name in [*WARNINGS, *RECIPES]:
         variants = []
         count = 1 if name in WARNINGS else 3
@@ -87,8 +87,7 @@ def main():
             data.extend(pcm(samples))
             data.extend(b"\0\0" * round(RATE * .10))
             if variant == 0 and name in ("idle", "whoa", "ouch", "bridge", "tunnel", "danger", "head-loss"):
-                preview.extend(samples)
-                preview.extend([0.0] * round(RATE * .35))
+                preview_clips[name] = samples
         index[name] = {**variants[0], "caption": CAPTIONS[name], "variants": variants}
     asset = ROOT / "src/assets/droid-beeps.wav"
     with wave.open(str(asset), "wb") as w:
@@ -100,6 +99,10 @@ def main():
         "export type VoiceKey = keyof typeof voiceBank;\n")
     preview_path = ROOT / "public/audio/droid-voice-preview.wav"
     preview_path.parent.mkdir(parents=True, exist_ok=True)
+    preview = []
+    for name in ("idle", "whoa", "ouch", "bridge", "tunnel", "danger", "head-loss"):
+        preview.extend(preview_clips[name])
+        preview.extend([0.0] * round(RATE * .35))
     with wave.open(str(preview_path), "wb") as w:
         w.setparams((1, 2, RATE, 0, "NONE", "not compressed"))
         w.writeframes(pcm(preview))

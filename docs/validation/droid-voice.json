@@ -748,10 +748,11 @@
   "sourceHashes": {
     "src/assets/droid-beeps.wav": "91e157ce6962186722e60f9f8707b8c1ecfb6288c6d804da692f9da0245f02cd",
     "scripts/droid_synth.py": "9a6c701d2afff602444a3124dc41141e1780aa8ed088dc0f675369b7512ebb58",
-    "scripts/generate-droid-beeps.py": "75e7d533029535754cea202c53e11579ebf96938cb168ea99957b4b63e58a71e",
+    "scripts/generate-droid-beeps.py": "99e033b7413a1e4e7012e00d88b0be1baca220879e91bf47f1ae83642cb9c604",
     "src/ui/audio.ts": "e5df9410e49066bbc28d54b4d0f57e6b7b627269f09cb9c260d4d4424e08746b",
     "src/ui/sound-director.ts": "9039f8a42f7683f989796c2ed938bb93440acb58f8bbe888f68d11b7665f968e",
-    "src/ui/voice-selector.ts": "51d26a33da7353e1e6738b06470d31b1f7cc2ea180512e8dd8c7d6a8e45eb732"
+    "src/ui/voice-selector.ts": "51d26a33da7353e1e6738b06470d31b1f7cc2ea180512e8dd8c7d6a8e45eb732",
+    "public/audio/droid-voice-preview.wav": "8a99cb4944b85190ff8364a32975c8f6d44ba02026c0b1ed72c4908241c9821c"
   },
   "screenshotsInspected": [
     "artifacts/audio/desktop-classic-sound-on.png",
@@ -761,5 +762,21 @@
     "Signal analysis and real browser waveforms do not certify subjective BB-8 likeness or physical speaker quality.",
     "WebKit launch was attempted but unavailable because required host libraries were missing.",
     "Physical iPhone/Safari audio session, Silent Mode and Bluetooth routing were not validated in this release."
-  ]
+  ],
+  "preview": {
+    "result": "pass",
+    "checkedAt": "2026-10-10T18:57:57.843839+00:00",
+    "order": [
+      "idle",
+      "whoa",
+      "ouch",
+      "bridge",
+      "tunnel",
+      "danger",
+      "head-loss"
+    ],
+    "allSevenSegmentsMatchSpriteVariantZero": true,
+    "inGamePcmUnchanged": true,
+    "productionBuild": "pass"
+  }
 }
