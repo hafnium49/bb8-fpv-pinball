@@ -44,13 +44,15 @@ Rendering and collisions share one course definition. Free play and both flipper
 
 ## Droid soundscape
 
-The ball expresses itself entirely through lower electronic beeps, burbles, trills and metallic cries, inspired by BB-8 and R2-D2. Curious chatter, impact cries, launch excitement, bridge joy, tunnel echoes and relieved save beeps each have their own contour and rhythm. Contact-speed rolling and metal bridge rattles sit under an original 16-bar, 108 BPM arcade groove with bass, soft chords, percussion and a sparse motif. The game contains no spoken English audio.
+The ball expresses itself through warm electronic beeps, burbles and short metallic syllables. A 46-clip voice bank, generated using an adaptation of MCP-Muse's MIT-licensed droid synthesizer, adds three variants per ordinary reaction. Curious chatter, impact chirps, low grumbles, launch excitement, bridge joy, tunnel echoes and confused lost-head chatter each have their own rhythm. Contact-speed rolling and metal bridge rattles sit under an original 16-bar, 108 BPM arcade groove with bass, soft chords, percussion and a sparse motif. The game contains no spoken English audio or recorded movie/toy clips.
 
 A short forecast plays distinct warning motifs ahead of a return: two low falling beeps for **Left flipper!**, three high rising beeps for **Right flipper!**, alternating low/high beeps for **Both flippers!**, and a rapid panic pattern for **Watch the drain!**. Left/right warnings also pan toward that side; their rhythm and pitch remain distinct on a mono phone speaker. English captions interpret the warning and highlight the requested flipper, including when sound is muted.
 
 Urgent warnings interrupt chatter and lower the music/effects. Reactions have cooldowns, the voice has one active slot, and effects have a bounded budget. Pause, blur, mute and restart cancel active sounds; game over stops music and rolling while the final wistful burble finishes. Original synthesized droid clips are bundled with the game and the offline HTML. All audio plays through Web Audio after a player gesture.
 
 [Audio design, asset recipe and verification](docs/droid-soundscape.md)
+
+[Voice source, license, spike results and audio preview](docs/droid-voice-upgrade.md)
 
 [FPV and the random lost-head reaction](docs/fpv-head-loss.md)
 

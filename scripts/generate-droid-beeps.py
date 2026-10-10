@@ -1,121 +1,113 @@
-"""Build ORBIT's original nonverbal droid voice with Python's standard library.
-
-The voice is made only from oscillators, frequency modulation and envelopes.
-Captions describe the meaning; they are never fed to a speech synthesizer.
-Run from any directory. Only the resulting WAV and index ship with the game.
+"""Build ORBIT's oscillator-only droid voice bank; no recordings or models.
+MCP-Muse adaptation: see droid_synth.py and vendor/mcp-muse-LICENSE.
+Run with Python 3's standard library. Only PCM and offsets ship at runtime.
 """
+import hashlib
 import json
 import math
 import struct
 import wave
 from pathlib import Path
+from droid_synth import RATE, phrase, ring_tone, finish
 
 ROOT = Path(__file__).resolve().parents[1]
-SAMPLE_RATE = 22050
-TAU = math.tau
-PITCH_SCALE = .60
-
-# (onset, duration, pitch contour in Hz, metallic color, flutter depth).
-# Different rhythms and contours carry emotion; warning motifs are stable
-# and distinguishable even through a mono phone speaker.
-PHRASES = {
-    "left": [(0, .13, [690, 640, 560], .4, 0), (.18, .13, [580, 540, 480], .4, 0)],
-    "right": [(0, .09, [1050, 1210], .4, 0), (.13, .09, [1210, 1370], .4, 0), (.26, .12, [1370, 1580], .4, 0)],
-    "both": [(0, .08, [620, 680], .4, 0), (.11, .08, [1320, 1420], .4, 0), (.22, .08, [620, 680], .4, 0), (.33, .10, [1320, 1520], .4, 0)],
-    "danger": [(0, .12, [1500, 1900, 700], 1.7, .3), (.16, .12, [1600, 2100, 650], 1.7, .3), (.32, .14, [1800, 2400, 500], 2.0, .4)],
-    "ready": [(0, .12, [480, 720], .5, 0), (.17, .16, [680, 960, 740], .65, 0), (.39, .18, [580, 850, 1120], .45, .08)],
-    "launch": [(0, .10, [420, 640], .8, 0), (.13, .35, [640, 1300, 1800, 1250], .7, .2)],
-    "whoa": [(0, .11, [700, 1650], 1.3, .2), (.13, .30, [1800, 2100, 1400, 550], 1.5, .3)],
-    "ouch": [(0, .46, [520, 1900, 2400, 1800, 900, 420], 2.3, .4), (.50, .10, [450, 330], 1.1, .2)],
-    "ramp": [(0, .12, [360, 660], .7, 0), (.17, .14, [640, 1100], .7, .1), (.36, .27, [920, 1460, 1780], .6, .18)],
-    "bridge": [(0, .12, [800, 1300, 900], .5, .1), (.17, .12, [1100, 1680, 1200], .6, .18), (.34, .32, [900, 1400, 1100, 1700, 1250], .75, .25)],
-    "tunnel": [(0, .10, [530, 740], .45, 0), (.15, .12, [650, 490], .6, 0), (.33, .27, [540, 800, 1260], .5, .1)],
-    "save": [(0, .10, [650, 920], .5, 0), (.14, .10, [920, 1230], .5, 0), (.29, .19, [1150, 1600, 1300], .65, .18)],
-    "circuit": [(0, .11, [600, 850], .5, 0), (.15, .11, [850, 1130], .5, 0), (.30, .11, [1130, 1500], .5, 0), (.47, .30, [1050, 1800, 1450, 2050], .7, .2)],
-    "drain": [(0, .13, [1700, 2300, 1600], 1.4, .25), (.18, .40, [1400, 950, 550, 220], 1.0, .35)],
-    "over": [(0, .16, [820, 630], .5, 0), (.23, .18, [620, 420], .6, .1), (.47, .23, [400, 650, 920], .5, .1)],
+# Stable warning rhythm is deliberately independent of expressive variants.
+WARNINGS = {
+    "left": [(0, .13, 440), (.18, .13, 370)],
+    "right": [(0, .09, 630), (.13, .09, 715), (.26, .12, 800)],
+    "both": [(0, .08, 440), (.11, .08, 680), (.22, .08, 440), (.33, .10, 680)],
+    "danger": [(0, .12, 760), (.16, .12, 820), (.32, .14, 700)],
+}
+# emotion, total seconds, carrier Hz, syllable count; all three variants
+# keep the same timing so random flavour cannot delay critical instructions.
+RECIPES = {
+    "ready": ("Affirmative", .60, 300, 3),
+    "launch": ("Excited", .57, 420, 3),
+    "whoa": ("Surprised", .46, 430, 2),
+    "ouch": ("Negative", .56, 340, 2),
+    "ramp": ("Curious", .66, 360, 3),
+    "bridge": ("Happy", .69, 390, 4),
+    "tunnel": ("Curious", .85, 280, 3),
+    "save": ("Affirmative", .51, 330, 3),
+    "circuit": ("Excited", .80, 440, 4),
+    "drain": ("Worried", .61, 350, 3),
+    "over": ("Sad", .73, 270, 2),
+    "tap": ("Surprised", .23, 380, 1),
+    "idle": ("Thoughtful", .68, 260, 3),
+    "head-loss": ("Worried", .78, 390, 4),
 }
 CAPTIONS = {
     "left": "Left flipper!", "right": "Right flipper!",
     "both": "Both flippers!", "danger": "Watch the drain!",
     "ready": "[ready electronic beeps]", "launch": "[excited electronic chatter]",
-    "whoa": "[startled metallic yelp]", "ouch": "[pained electronic cry]",
-    "ramp": "[rising excited burbles]", "bridge": "[joyful electronic trill]",
+    "whoa": "[startled electronic chirps]", "ouch": "[low electronic grumble]",
+    "ramp": "[curious rising chatter]", "bridge": "[joyful electronic chatter]",
     "tunnel": "[curious robot echoes]", "save": "[relieved electronic beeps]",
-    "circuit": "[triumphant beeps]", "drain": "[panicked electronic groan]",
-    "over": "[wistful questioning burble]",
+    "circuit": "[triumphant beeps]", "drain": "[urgent worried chatter]",
+    "over": "[sad descending burbles]", "tap": "[short electronic reaction]",
+    "idle": "[curious electronic chatter]", "head-loss": "[confused electronic chatter]",
 }
 
 
-def render(name):
-    pulses = PHRASES[name]
-    tail = .25 if name == "tunnel" else .03
-    duration = max(start + length for start, length, *_ in pulses) + tail
-    samples = [0.0] * round(duration * SAMPLE_RATE)
-    for start, length, pitches, color, flutter in pulses:
-        onset, count = round(start * SAMPLE_RATE), round(length * SAMPLE_RATE)
-        phase = 0.0
-        for i in range(count):
-            t = i / SAMPLE_RATE
-            position = i / max(1, count - 1) * (len(pitches) - 1)
-            segment = min(len(pitches) - 2, int(position))
-            fraction = position - segment
-            glide = fraction * fraction * (3 - 2 * fraction)
-            frequency = pitches[segment] + (pitches[segment + 1] - pitches[segment]) * glide
-            # Lower the carrier without slowing down time-critical motifs.
-            # Small pitch steps and a sub-octave body replace bird-like glides.
-            frequency = max(90, round(frequency * PITCH_SCALE / 24) * 24)
-            frequency *= 1 + .012 * math.sin(TAU * 8.5 * t)
-            phase += TAU * frequency / SAMPLE_RATE
-            metallic = (.7 + color * .8) * math.sin(phase * 2.013 + .32 * math.sin(TAU * 27 * t))
-            signal = (.64 * math.sin(phase + metallic)
-                      + .30 * math.sin(phase * .5 + .20 * math.sin(TAU * 13 * t))
-                      + .24 * math.tanh(2.4 * math.sin(phase)))
-            attack = min(1, t / .007)
-            release = min(1, (length - t) / .018)
-            envelope = math.sin(attack * math.pi / 2) ** 2 * math.sin(release * math.pi / 2) ** 2
-            envelope *= (1 - .3 * t / length) * (1 - flutter / 2 + flutter / 2 * math.sin(TAU * 23 * t))
-            samples[onset + i] += signal * envelope
-    if name == "tunnel":
-        dry = samples[:]
-        for delay, level in [(round(.11 * SAMPLE_RATE), .28), (round(.22 * SAMPLE_RATE), .12)]:
-            for i in range(len(samples) - delay):
-                samples[i + delay] += dry[i] * level
-    # Keep metallic harmonics, but soften the thin high-frequency edge.
-    alpha = 1 - math.exp(-TAU * 2600 / SAMPLE_RATE)
-    filtered = 0.0
-    for i, sample in enumerate(samples):
-        filtered += alpha * (sample - filtered)
-        samples[i] = filtered
-    # Leave ample mixer headroom and avoid clicks at clip boundaries.
-    peak = max(abs(sample) for sample in samples)
-    return b"".join(struct.pack("<h", round(sample / peak * .64 * 32767)) for sample in samples)
+def render_warning(name):
+    pulses = WARNINGS[name]
+    samples = [0.0] * round((max(start + length for start, length, _ in pulses) + .03) * RATE)
+    for start, length, base in pulses:
+        packet = ring_tone(length, base / .72, 0, (0,), body=.72)
+        onset = round(start * RATE)
+        for i, value in enumerate(packet):
+            samples[onset + i] += value
+    return finish(samples, .58)
+
+
+def pcm(samples):
+    return b"".join(struct.pack("<h", round(v * 32767)) for v in samples)
 
 
 def main():
-    samples = bytearray()
+    data = bytearray()
     index = {}
-    for name in PHRASES:
-        data = render(name)
-        index[name] = {
-            "offset": round(len(samples) / 2 / SAMPLE_RATE, 6),
-            "duration": round(len(data) / 2 / SAMPLE_RATE, 6),
-            "caption": CAPTIONS[name],
-        }
-        samples.extend(data)
-        samples.extend(b"\0\0" * round(SAMPLE_RATE * .12))
-    (ROOT / "src/assets").mkdir(exist_ok=True)
-    with wave.open(str(ROOT / "src/assets/droid-beeps.wav"), "wb") as sprite:
-        sprite.setnchannels(1)
-        sprite.setsampwidth(2)
-        sprite.setframerate(SAMPLE_RATE)
-        sprite.writeframes(samples)
+    metrics = {}
+    preview = []
+    for name in [*WARNINGS, *RECIPES]:
+        variants = []
+        count = 1 if name in WARNINGS else 3
+        for variant in range(count):
+            if name in WARNINGS:
+                samples = render_warning(name)
+            else:
+                emotion, length, base, syllables = RECIPES[name]
+                samples = finish(phrase(emotion, length, base * (1, .96, 1.035)[variant],
+                    syllables, variant, echo=.22 if name == "tunnel" else 0))
+            clip = {"offset": round(len(data) / 2 / RATE, 6), "duration": round(len(samples) / RATE, 6)}
+            variants.append(clip)
+            key = f"{name}:{variant}"
+            metrics[key] = {"duration": clip["duration"], "rms": round(math.sqrt(sum(v*v for v in samples) / len(samples)), 5),
+                            "peak": round(max(abs(v) for v in samples), 5), "sha256": hashlib.sha256(pcm(samples)).hexdigest()}
+            data.extend(pcm(samples))
+            data.extend(b"\0\0" * round(RATE * .10))
+            if variant == 0 and name in ("idle", "whoa", "ouch", "bridge", "tunnel", "danger", "head-loss"):
+                preview.extend(samples)
+                preview.extend([0.0] * round(RATE * .35))
+        index[name] = {**variants[0], "caption": CAPTIONS[name], "variants": variants}
+    asset = ROOT / "src/assets/droid-beeps.wav"
+    with wave.open(str(asset), "wb") as w:
+        w.setparams((1, 2, RATE, 0, "NONE", "not compressed"))
+        w.writeframes(data)
     (ROOT / "src/ui/voice-bank.ts").write_text(
-        "// Generated by scripts/generate-droid-beeps.py. Nonverbal clips; offsets in seconds.\n"
+        "// Generated by scripts/generate-droid-beeps.py. Oscillator-only droid clips.\n"
         "export const voiceBank = " + json.dumps(index, indent=2) + " as const;\n"
-        "export type VoiceKey = keyof typeof voiceBank;\n"
-    )
-    print(json.dumps({"bytes": len(samples) + 44, "clips": index}, indent=2))
+        "export type VoiceKey = keyof typeof voiceBank;\n")
+    preview_path = ROOT / "public/audio/droid-voice-preview.wav"
+    preview_path.parent.mkdir(parents=True, exist_ok=True)
+    with wave.open(str(preview_path), "wb") as w:
+        w.setparams((1, 2, RATE, 0, "NONE", "not compressed"))
+        w.writeframes(pcm(preview))
+    report = {"source": "Original oscillator audio using adapted MIT-licensed MCP-Muse code",
+              "variants": sum(len(v["variants"]) for v in index.values()), "bytes": asset.stat().st_size,
+              "sampleRate": RATE, "spriteSha256": hashlib.sha256(asset.read_bytes()).hexdigest(), "clips": metrics}
+    (ROOT / "docs/validation/droid-voice-assets.json").write_text(json.dumps(report, indent=2) + "\n")
+    print(json.dumps({k: v for k, v in report.items() if k != "clips"}, indent=2))
 
 
 if __name__ == "__main__":

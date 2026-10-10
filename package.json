@@ -15,6 +15,7 @@
     "test:design:browser": "node scripts/reference-design-browser.cjs",
     "test:touch:browser": "node scripts/touch-browser.cjs",
     "test:audio:browser": "node scripts/audio-browser.cjs",
+    "test:voice:browser": "node scripts/droid-voice-browser.cjs",
     "test:circuit": "node --import tsx scripts/circuit-check.ts",
     "test:guides": "node --import tsx scripts/flipper-guide-check.ts",
     "test:guides:browser": "node scripts/flipper-guide-browser.cjs",

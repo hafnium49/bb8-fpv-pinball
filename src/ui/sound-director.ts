@@ -148,11 +148,11 @@ export class SoundDirector {
         const pan = Math.max(-0.7, Math.min(0.7, s.position.x / 6));
         // Mechanical contact sounds are independent of the voice budget.
         cues.push({ kind, strength, pan });
-        if (s.time >= this.nextReaction) {
-          this.nextReaction = s.time + 0.18; this.nextIdle = s.time + 5;
+        if (strength >= .16 && s.time >= this.nextReaction) {
+          this.nextReaction = s.time + 0.42; this.nextIdle = s.time + 5;
           if (strength > 0.65 && s.time >= this.nextPhrase) {
             say('chatter', ++this.hitCount % 2 ? 'whoa' : 'ouch', 45, strength, pan);
-          } else cues.push({ kind: 'chatter', strength, pan, priority: 20 });
+          } else cues.push({ kind: 'chatter', voice: 'tap', strength, pan, priority: 20 });
         }
       }
     }
@@ -168,7 +168,7 @@ export class SoundDirector {
       this.nextIdle = s.time + 5;
     }
     if (s.phase === 'playing' && s.time >= this.nextIdle && s.time >= this.nextPhrase && !warning) {
-      cues.push({ kind: 'chatter', strength: 0.2, priority: 15, caption: '[curious electronic chatter]' });
+      say('chatter', 'idle', 15, .2);
       this.nextIdle = s.time + 7;
     }
     return frame;

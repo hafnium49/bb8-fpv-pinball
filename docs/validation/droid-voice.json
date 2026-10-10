@@ -1,0 +1,765 @@
+{
+  "result": "pass",
+  "checkedAt": "2026-10-10T18:30:24.689283+00:00",
+  "unitTests": {
+    "passed": 84,
+    "failed": 0
+  },
+  "productionBuild": "pass",
+  "regeneration": "byte-identical",
+  "offlineHtml": "exact tested PCM and MIT notice embedded",
+  "voicePlayback": {
+    "result": "pass",
+    "cases": [
+      {
+        "browser": "chromium",
+        "variants": [
+          {
+            "key": "left",
+            "variant": 0,
+            "peak": 0.3851572871208191,
+            "offset": 0,
+            "duration": 0.34
+          },
+          {
+            "key": "right",
+            "variant": 0,
+            "peak": 0.3871777057647705,
+            "offset": 0.44,
+            "duration": 0.409977
+          },
+          {
+            "key": "both",
+            "variant": 0,
+            "peak": 0.4415750205516815,
+            "offset": 0.949977,
+            "duration": 0.46
+          },
+          {
+            "key": "danger",
+            "variant": 0,
+            "peak": 0.441900372505188,
+            "offset": 1.509977,
+            "duration": 0.489977
+          },
+          {
+            "key": "ready",
+            "variant": 0,
+            "peak": 0.35581111907958984,
+            "offset": 2.099955,
+            "duration": 0.6
+          },
+          {
+            "key": "ready",
+            "variant": 1,
+            "peak": 0.35582494735717773,
+            "offset": 2.799955,
+            "duration": 0.6
+          },
+          {
+            "key": "ready",
+            "variant": 2,
+            "peak": 0.35583364963531494,
+            "offset": 3.499955,
+            "duration": 0.6
+          },
+          {
+            "key": "launch",
+            "variant": 0,
+            "peak": 0.355834037065506,
+            "offset": 4.199955,
+            "duration": 0.569977
+          },
+          {
+            "key": "launch",
+            "variant": 1,
+            "peak": 0.3558874726295471,
+            "offset": 4.869932,
+            "duration": 0.569977
+          },
+          {
+            "key": "launch",
+            "variant": 2,
+            "peak": 0.3558172285556793,
+            "offset": 5.539909,
+            "duration": 0.569977
+          },
+          {
+            "key": "whoa",
+            "variant": 0,
+            "peak": 0.3558156192302704,
+            "offset": 6.209887,
+            "duration": 0.46
+          },
+          {
+            "key": "whoa",
+            "variant": 1,
+            "peak": 0.35582873225212097,
+            "offset": 6.769887,
+            "duration": 0.46
+          },
+          {
+            "key": "whoa",
+            "variant": 2,
+            "peak": 0.355851948261261,
+            "offset": 7.329887,
+            "duration": 0.46
+          },
+          {
+            "key": "ouch",
+            "variant": 0,
+            "peak": 0.3559447228908539,
+            "offset": 7.889887,
+            "duration": 0.56
+          },
+          {
+            "key": "ouch",
+            "variant": 1,
+            "peak": 0.3558882772922516,
+            "offset": 8.549887,
+            "duration": 0.56
+          },
+          {
+            "key": "ouch",
+            "variant": 2,
+            "peak": 0.3558498024940491,
+            "offset": 9.209887,
+            "duration": 0.56
+          },
+          {
+            "key": "ramp",
+            "variant": 0,
+            "peak": 0.355829656124115,
+            "offset": 9.869887,
+            "duration": 0.66
+          },
+          {
+            "key": "ramp",
+            "variant": 1,
+            "peak": 0.355825811624527,
+            "offset": 10.629887,
+            "duration": 0.66
+          },
+          {
+            "key": "ramp",
+            "variant": 2,
+            "peak": 0.3560085594654083,
+            "offset": 11.389887,
+            "duration": 0.66
+          },
+          {
+            "key": "bridge",
+            "variant": 0,
+            "peak": 0.3560810387134552,
+            "offset": 12.149887,
+            "duration": 0.689977
+          },
+          {
+            "key": "bridge",
+            "variant": 1,
+            "peak": 0.35590559244155884,
+            "offset": 12.939864,
+            "duration": 0.689977
+          },
+          {
+            "key": "bridge",
+            "variant": 2,
+            "peak": 0.3558339774608612,
+            "offset": 13.729841,
+            "duration": 0.689977
+          },
+          {
+            "key": "tunnel",
+            "variant": 0,
+            "peak": 0.35598111152648926,
+            "offset": 14.519819,
+            "duration": 0.849977
+          },
+          {
+            "key": "tunnel",
+            "variant": 1,
+            "peak": 0.3558505177497864,
+            "offset": 15.469796,
+            "duration": 0.849977
+          },
+          {
+            "key": "tunnel",
+            "variant": 2,
+            "peak": 0.35596925020217896,
+            "offset": 16.419773,
+            "duration": 0.849977
+          },
+          {
+            "key": "save",
+            "variant": 0,
+            "peak": 0.3558178246021271,
+            "offset": 17.369751,
+            "duration": 0.510023
+          },
+          {
+            "key": "save",
+            "variant": 1,
+            "peak": 0.3558241128921509,
+            "offset": 17.979773,
+            "duration": 0.510023
+          },
+          {
+            "key": "save",
+            "variant": 2,
+            "peak": 0.3562738001346588,
+            "offset": 18.589796,
+            "duration": 0.510023
+          },
+          {
+            "key": "circuit",
+            "variant": 0,
+            "peak": 0.35587581992149353,
+            "offset": 19.199819,
+            "duration": 0.8
+          },
+          {
+            "key": "circuit",
+            "variant": 1,
+            "peak": 0.35580798983573914,
+            "offset": 20.099819,
+            "duration": 0.8
+          },
+          {
+            "key": "circuit",
+            "variant": 2,
+            "peak": 0.3558163046836853,
+            "offset": 20.999819,
+            "duration": 0.8
+          },
+          {
+            "key": "drain",
+            "variant": 0,
+            "peak": 0.35583052039146423,
+            "offset": 21.899819,
+            "duration": 0.609977
+          },
+          {
+            "key": "drain",
+            "variant": 1,
+            "peak": 0.35590723156929016,
+            "offset": 22.609796,
+            "duration": 0.609977
+          },
+          {
+            "key": "drain",
+            "variant": 2,
+            "peak": 0.3561219871044159,
+            "offset": 23.319773,
+            "duration": 0.609977
+          },
+          {
+            "key": "over",
+            "variant": 0,
+            "peak": 0.3558269143104553,
+            "offset": 24.029751,
+            "duration": 0.729977
+          },
+          {
+            "key": "over",
+            "variant": 1,
+            "peak": 0.35583195090293884,
+            "offset": 24.859728,
+            "duration": 0.729977
+          },
+          {
+            "key": "over",
+            "variant": 2,
+            "peak": 0.3558189272880554,
+            "offset": 25.689705,
+            "duration": 0.729977
+          },
+          {
+            "key": "tap",
+            "variant": 0,
+            "peak": 0.35581761598587036,
+            "offset": 26.519683,
+            "duration": 0.230023
+          },
+          {
+            "key": "tap",
+            "variant": 1,
+            "peak": 0.3558231294155121,
+            "offset": 26.849705,
+            "duration": 0.230023
+          },
+          {
+            "key": "tap",
+            "variant": 2,
+            "peak": 0.35591015219688416,
+            "offset": 27.179728,
+            "duration": 0.230023
+          },
+          {
+            "key": "idle",
+            "variant": 0,
+            "peak": 0.3558260202407837,
+            "offset": 27.509751,
+            "duration": 0.68
+          },
+          {
+            "key": "idle",
+            "variant": 1,
+            "peak": 0.35597047209739685,
+            "offset": 28.289751,
+            "duration": 0.68
+          },
+          {
+            "key": "idle",
+            "variant": 2,
+            "peak": 0.35595473647117615,
+            "offset": 29.069751,
+            "duration": 0.68
+          },
+          {
+            "key": "head-loss",
+            "variant": 0,
+            "peak": 0.35592949390411377,
+            "offset": 29.849751,
+            "duration": 0.78
+          },
+          {
+            "key": "head-loss",
+            "variant": 1,
+            "peak": 0.35582441091537476,
+            "offset": 30.729751,
+            "duration": 0.78
+          },
+          {
+            "key": "head-loss",
+            "variant": 2,
+            "peak": 0.35589930415153503,
+            "offset": 31.609751,
+            "duration": 0.78
+          }
+        ],
+        "urgentPriority": 100,
+        "pauseSilent": true,
+        "muteRejects": true,
+        "oneAudioContext": true,
+        "errors": []
+      }
+    ],
+    "limitations": [
+      "Waveforms verify browser playback, not subjective timbre or physical speaker quality."
+    ]
+  },
+  "legacyAudio": {
+    "result": "pass",
+    "cases": [
+      {
+        "name": "desktop-classic",
+        "result": "pass",
+        "confirmationPeak": 0.007276812568306923,
+        "voiceReady": true,
+        "wallPeak": 0.08086856454610825,
+        "bedPeak": 0.06781451404094696,
+        "warningStarted": 9.740770975056689,
+        "warningPans": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "pan": 0
+          }
+        ],
+        "fallbackMotifs": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "frequencies": [
+              440,
+              370
+            ],
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "frequencies": [
+              630,
+              715,
+              800
+            ],
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "frequencies": [
+              440,
+              680,
+              440,
+              680
+            ],
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "frequencies": [
+              760,
+              820,
+              700
+            ],
+            "pan": 0
+          }
+        ],
+        "bounded": {
+          "voiceReady": true,
+          "voiceFailed": false,
+          "effects": 12,
+          "music": 2,
+          "speaking": false,
+          "priority": 0,
+          "loops": 2,
+          "musicSteps": 44,
+          "warnings": 7,
+          "musicVolume": 0.6,
+          "lastVoice": "left",
+          "voiceVariant": 0,
+          "voiceSource": "sprite"
+        },
+        "headLoss": {
+          "spinUp": -1.3435885648505064e-07,
+          "spinDuration": 3.0083333333333253,
+          "cue": "nonverbal confused chatter",
+          "caption": "Oh no, BB-8 lost its head!",
+          "captionTracksSimulationTime": true,
+          "automaticFpvReturn": true,
+          "pauseCancels": true,
+          "reducedMotionCancelsAndSuppressesDraw": true,
+          "reducedMotionClearsExistingEffects": true,
+          "warningsTakePrecedence": true,
+          "cameraControlsAndShortcutsRemoved": true,
+          "noRadarDuringSpin": true
+        },
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom",
+          "gesture resumes suspended context without recreating it",
+          "desktop blur/mobile pagehide stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      },
+      {
+        "name": "mobile-circuit",
+        "result": "pass",
+        "confirmationPeak": 0.010188447311520576,
+        "voiceReady": true,
+        "wallPeak": 0.01868334412574768,
+        "bedPeak": 0.0677468478679657,
+        "warningStarted": 11.572244897959184,
+        "warningPans": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "pan": 0
+          }
+        ],
+        "fallbackMotifs": [
+          {
+            "voice": "left",
+            "accepted": true,
+            "frequencies": [
+              440,
+              370
+            ],
+            "pan": -0.6499999761581421
+          },
+          {
+            "voice": "right",
+            "accepted": true,
+            "frequencies": [
+              630,
+              715,
+              800
+            ],
+            "pan": 0.6499999761581421
+          },
+          {
+            "voice": "both",
+            "accepted": true,
+            "frequencies": [
+              440,
+              680,
+              440,
+              680
+            ],
+            "pan": 0
+          },
+          {
+            "voice": "danger",
+            "accepted": true,
+            "frequencies": [
+              760,
+              820,
+              700
+            ],
+            "pan": 0
+          }
+        ],
+        "bounded": {
+          "voiceReady": true,
+          "voiceFailed": false,
+          "effects": 12,
+          "music": 2,
+          "speaking": false,
+          "priority": 0,
+          "loops": 2,
+          "musicSteps": 52,
+          "warnings": 8,
+          "musicVolume": 0.6,
+          "lastVoice": "left",
+          "voiceVariant": 0,
+          "voiceSource": "sprite"
+        },
+        "headLoss": {
+          "spinUp": -1.3435885648505064e-07,
+          "spinDuration": 3.0083333333333253,
+          "cue": "nonverbal confused chatter",
+          "caption": "Oh no, BB-8 lost its head!",
+          "captionTracksSimulationTime": true,
+          "automaticFpvReturn": true,
+          "pauseCancels": true,
+          "reducedMotionCancelsAndSuppressesDraw": true,
+          "reducedMotionClearsExistingEffects": true,
+          "warningsTakePrecedence": true,
+          "cameraControlsAndShortcutsRemoved": true,
+          "noRadarDuringSpin": true
+        },
+        "checks": [
+          "first visit muted with no AudioContext",
+          "explicit click/tap requests playback and emits nonzero audio",
+          "flipper and launch event tones with keyboard/simultaneous touch",
+          "original nonverbal beep sprite decodes in the real audio context",
+          "sampled left/right warnings pan to their sides; both/drain stay centered",
+          "real Rapier wall/bumper/target sound events",
+          "live ramp/bridge/tunnel/circuit cues and early right-return warning",
+          "forecasted left alert interrupts flavour whistles and blocks lower-priority chatter",
+          "persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice",
+          "nonzero rolling/music output with no active voice; bounded 100-impact burst",
+          "music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom",
+          "gesture resumes suspended context without recreating it",
+          "desktop blur/mobile pagehide stops all layers and outputs zero; resume rebuilds the mix",
+          "three drains stop music/loops and restart resets lives/audio",
+          "sound-on preference restored without autoplay",
+          "injected saved-on startup failure clears UI/preference/session and allows retry",
+          "injected sprite-decoding failure retains audible procedural warning fallback",
+          "all four fallback warning motifs differ; left/right pan correctly",
+          "mute stops output and releases session",
+          "sound-off preference survives reload"
+        ]
+      }
+    ],
+    "screenshots": [
+      "desktop-classic-head-loss.png",
+      "desktop-classic-sound-on.png",
+      "mobile-circuit-head-loss.png",
+      "mobile-circuit-sound-on.png"
+    ],
+    "browserErrors": [],
+    "limitations": [
+      "Chromium waveform measurements verify generated audio, not speaker audibility.",
+      "Safari audioSession is stubbed in this test; physical iPhone Silent Mode, Bluetooth routing and media volume remain unverified.",
+      "Live-region priorities were checked in the DOM; screen-reader announcement timing was not measured."
+    ]
+  },
+  "defaultCourseAudio": {
+    "result": "pass",
+    "confirmationPeak": 0.013036484830081463,
+    "ramps": [
+      {
+        "name": "LEFT RAMP",
+        "history": [
+          {
+            "kind": "ascent",
+            "voice": "ramp",
+            "accepted": true,
+            "at": 0.4527891156462585
+          },
+          {
+            "kind": "bridge",
+            "voice": "bridge",
+            "accepted": true,
+            "at": 0.5427664399092971
+          },
+          {
+            "kind": "circuit",
+            "voice": "circuit",
+            "accepted": true,
+            "at": 1.692154195011338
+          },
+          {
+            "kind": "warning",
+            "voice": "danger",
+            "accepted": true,
+            "at": 1.692154195011338
+          }
+        ],
+        "peak": 0.36962568759918213,
+        "completions": 1,
+        "onDeck": false
+      },
+      {
+        "name": "WIRE RAMP",
+        "history": [
+          {
+            "kind": "target",
+            "accepted": false,
+            "at": 1.7124716553287982
+          },
+          {
+            "kind": "ascent",
+            "voice": "ramp",
+            "accepted": true,
+            "at": 1.7211791383219954
+          },
+          {
+            "kind": "bridge",
+            "voice": "bridge",
+            "accepted": true,
+            "at": 1.811156462585034
+          },
+          {
+            "kind": "circuit",
+            "voice": "circuit",
+            "accepted": true,
+            "at": 2.911201814058957
+          },
+          {
+            "kind": "warning",
+            "voice": "danger",
+            "accepted": true,
+            "at": 2.911201814058957
+          }
+        ],
+        "peak": 0.3697223663330078,
+        "completions": 1,
+        "onDeck": false
+      },
+      {
+        "name": "SKY RAMP",
+        "history": [
+          {
+            "kind": "ascent",
+            "voice": "ramp",
+            "accepted": true,
+            "at": 2.9402267573696146
+          },
+          {
+            "kind": "bridge",
+            "voice": "bridge",
+            "accepted": true,
+            "at": 3.0418140589569163
+          },
+          {
+            "kind": "circuit",
+            "voice": "circuit",
+            "accepted": true,
+            "at": 3.4626757369614514
+          }
+        ],
+        "peak": 0.3638167381286621,
+        "completions": 1,
+        "onDeck": true
+      }
+    ],
+    "warnings": [
+      {
+        "deck": false,
+        "onDeck": false,
+        "priority": 100,
+        "caption": "Left flipper!"
+      },
+      {
+        "deck": true,
+        "onDeck": true,
+        "priority": 100,
+        "caption": "Left flipper!"
+      }
+    ],
+    "bed": {
+      "peak": 0.38514721393585205,
+      "voiceReady": true,
+      "voiceFailed": false,
+      "effects": 0,
+      "music": 2,
+      "speaking": true,
+      "priority": 100,
+      "loops": 2,
+      "musicSteps": 18,
+      "warnings": 5,
+      "musicVolume": 0.6,
+      "lastVoice": "left",
+      "voiceVariant": 0,
+      "voiceSource": "sprite"
+    },
+    "errors": []
+  },
+  "sourceHashes": {
+    "src/assets/droid-beeps.wav": "91e157ce6962186722e60f9f8707b8c1ecfb6288c6d804da692f9da0245f02cd",
+    "scripts/droid_synth.py": "9a6c701d2afff602444a3124dc41141e1780aa8ed088dc0f675369b7512ebb58",
+    "scripts/generate-droid-beeps.py": "75e7d533029535754cea202c53e11579ebf96938cb168ea99957b4b63e58a71e",
+    "src/ui/audio.ts": "e5df9410e49066bbc28d54b4d0f57e6b7b627269f09cb9c260d4d4424e08746b",
+    "src/ui/sound-director.ts": "9039f8a42f7683f989796c2ed938bb93440acb58f8bbe888f68d11b7665f968e",
+    "src/ui/voice-selector.ts": "51d26a33da7353e1e6738b06470d31b1f7cc2ea180512e8dd8c7d6a8e45eb732"
+  },
+  "screenshotsInspected": [
+    "artifacts/audio/desktop-classic-sound-on.png",
+    "artifacts/audio/mobile-circuit-sound-on.png"
+  ],
+  "limitations": [
+    "Signal analysis and real browser waveforms do not certify subjective BB-8 likeness or physical speaker quality.",
+    "WebKit launch was attempted but unavailable because required host libraries were missing.",
+    "Physical iPhone/Safari audio session, Silent Mode and Bluetooth routing were not validated in this release."
+  ]
+}

@@ -154,7 +154,7 @@ const out = 'artifacts/audio';
     assert.equal(await page.locator('#map-wrap, #minimap, .map-wrap').count(), 0);
     assert.equal(await page.locator('canvas').count(), 1);
     assert.equal(await page.locator('#droid-comms').getAttribute('aria-live'), 'polite');
-    assert.ok(await page.evaluate(() => window.orbitDebug.audio.history.some(c => c.kind === 'head-loss' && c.voice === 'ouch' && c.accepted)));
+    assert.ok(await page.evaluate(() => window.orbitDebug.audio.history.some(c => c.kind === 'head-loss' && c.voice === 'head-loss' && c.accepted)));
     // A stalled simulation must retain the caption even after three wall seconds.
     await page.waitForTimeout(3200);
     assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'spin');
@@ -225,7 +225,7 @@ const out = 'artifacts/audio';
     await page.waitForFunction(() => window.orbitDebug.view.mode === 'spin');
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.diagnostics.priority), 100);
     assert.equal(await page.locator('#droid-line').textContent(), 'Left flipper!');
-    assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'head-loss', voice: 'ouch', strength: 1, priority: 85 })), false);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.play({ kind: 'head-loss', voice: 'head-loss', strength: 1, priority: 85 })), false);
     await page.evaluate(() => { window.orbitDebug.headLoss.reset(); window.orbitDebug.headLoss.draw = () => 1; });
     console.log(`${name}: lost-head rotation, caption, beep, automatic return, pause and live reduced-motion checks pass`);
     // Interrupt a flavour whistle with an urgent, forecasted left warning.
@@ -360,7 +360,7 @@ const out = 'artifacts/audio';
     assert.equal(await page.evaluate(() => window.audioProbe.sessionTypes.at(-1)), 'auto');
     await boot(); assert.equal(await page.locator('#sound').textContent(), 'SOUND OFF');
     cases.push({ name, result: 'pass', confirmationPeak, voiceReady, wallPeak, bedPeak, warningStarted, warningPans, fallbackMotifs, bounded,
-      headLoss: { spinUp, spinDuration, cue: 'nonverbal ouch cry', caption: 'Oh no, BB-8 lost its head!', captionTracksSimulationTime: true, automaticFpvReturn: true, pauseCancels: true, reducedMotionCancelsAndSuppressesDraw: true, reducedMotionClearsExistingEffects: true, warningsTakePrecedence: true, cameraControlsAndShortcutsRemoved: true, noRadarDuringSpin: true },
+      headLoss: { spinUp, spinDuration, cue: 'nonverbal confused chatter', caption: 'Oh no, BB-8 lost its head!', captionTracksSimulationTime: true, automaticFpvReturn: true, pauseCancels: true, reducedMotionCancelsAndSuppressesDraw: true, reducedMotionClearsExistingEffects: true, warningsTakePrecedence: true, cameraControlsAndShortcutsRemoved: true, noRadarDuringSpin: true },
       checks: ['first visit muted with no AudioContext', 'explicit click/tap requests playback and emits nonzero audio', 'flipper and launch event tones with keyboard/simultaneous touch', 'original nonverbal beep sprite decodes in the real audio context', 'sampled left/right warnings pan to their sides; both/drain stay centered', 'real Rapier wall/bumper/target sound events', ...(search ? ['live ramp/bridge/tunnel/circuit cues and early right-return warning'] : []), 'forecasted left alert interrupts flavour whistles and blocks lower-priority chatter', 'persistent caption region is polite for ordinary reactions and assertive/atomic for urgent advice', 'nonzero rolling/music output with no active voice; bounded 100-impact burst', 'music at zero preserves effects/voice and continuous sources; actual urgent music duck and mix headroom', 'gesture resumes suspended context without recreating it', 'desktop blur/mobile pagehide stops all layers and outputs zero; resume rebuilds the mix', 'three drains stop music/loops and restart resets lives/audio', 'sound-on preference restored without autoplay', 'injected saved-on startup failure clears UI/preference/session and allows retry', 'injected sprite-decoding failure retains audible procedural warning fallback', 'all four fallback warning motifs differ; left/right pan correctly', 'mute stops output and releases session', 'sound-off preference survives reload'] });
     console.log(`${name}: audio checks pass`);
     await browser.close(); browser = undefined; activePage = undefined;

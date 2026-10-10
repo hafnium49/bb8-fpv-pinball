@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/alextrzyna/mcp-muse",
+  "commit": "8a23fd9e429a799324f0f98f93dd20647326bd6a",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2025 Alex Trzyna",
+  "files": [
+    {
+      "path": "src/expressive/r2d2.rs",
+      "gitBlobSha": "d311106d45a2ec1ba1aabcbcd32264f3c9a67daa"
+    },
+    {
+      "path": "src/expressive/synth.rs",
+      "gitBlobSha": "21850769a182acaa941fc38e4c06da0effe731b2"
+    }
+  ],
+  "use": "Python adaptation of emotion contours, phase-accumulating ring modulation and saturation. All shipped audio rendered locally from oscillators; no upstream audio samples or SoundFont used."
+}

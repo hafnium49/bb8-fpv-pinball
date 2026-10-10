@@ -1,7 +1,8 @@
 import type { SoundCue, SoundFrame } from './sound-director';
 import { audioMix, musicGain, musicLevel } from './audio-presets';
 import { musicPattern } from './music-pattern';
-import { voiceBank, type VoiceKey } from './voice-bank';
+import type { VoiceKey } from './voice-bank';
+import { VoiceSelector } from './voice-selector';
 
 type Bus = 'effects' | 'music' | 'voice';
 interface Layer {
@@ -43,6 +44,9 @@ export class GameAudio {
   private musicSteps = 0;
   private warnings = 0;
   private lastVoice?: VoiceKey;
+  private lastVoiceVariant?: number;
+  private voiceSource?: 'sprite' | 'fallback';
+  private voiceSelector = new VoiceSelector();
   readonly history: { kind: string; voice?: VoiceKey; accepted: boolean; at: number }[] = [];
 
   constructor(private voiceUrl?: string) {}
@@ -52,7 +56,8 @@ export class GameAudio {
       music: [...this.layers].filter(l => l.bus === 'music').length,
       speaking: !!this.speaking, priority: this.speaking?.priority ?? 0,
       loops: this.mixer?.continuous.length ?? 0, musicSteps: this.musicSteps,
-      warnings: this.warnings, musicVolume: this.musicVolume, lastVoice: this.lastVoice };
+      warnings: this.warnings, musicVolume: this.musicVolume, lastVoice: this.lastVoice,
+      voiceVariant: this.lastVoiceVariant, voiceSource: this.voiceSource };
   }
   private sessionType(type: 'playback' | 'auto') {
     try {
@@ -233,47 +238,40 @@ export class GameAudio {
     // positioning is an additional hint, never the only way to tell sides.
     const pan = cue.kind === 'warning' ? cue.voice === 'left' ? -0.65 : cue.voice === 'right' ? 0.65 : 0 : cue.pan;
     const layer = this.layer('voice', priority, pan); this.speaking = layer;
-    if (cue.voice && this.voiceBuffer) {
-      const c = this.context!, source = c.createBufferSource(), clip = voiceBank[cue.voice];
+    const voice = cue.voice ?? (cue.kind === 'chatter' ? 'tap' : undefined);
+    if (voice && this.voiceBuffer) {
+      const c = this.context!, source = c.createBufferSource(), clip = this.voiceSelector.select(voice);
       source.buffer = this.voiceBuffer; source.connect(layer.input); this.attach(layer, source);
       layer.input.gain.value = cue.kind === 'warning' ? 1 : 0.85;
-      source.start(c.currentTime, clip.offset, clip.duration); this.lastVoice = cue.voice;
+      source.start(c.currentTime, clip.offset, clip.duration); this.lastVoice = voice;
+      this.lastVoiceVariant = clip.variant; this.voiceSource = 'sprite';
     } else {
-      this.chirp(layer, cue);
+      this.chirp(layer, cue); this.lastVoiceVariant = undefined; this.voiceSource = 'fallback';
     }
     this.smooth(this.mix().music.gain, musicGain(this.musicVolume, priority), audioMix.duckAttack); this.smooth(this.mix().effects.gain, priority >= 90 ? audioMix.urgentEffects : audioMix.ordinaryEffects, audioMix.duckAttack);
     return true;
   }
   private chirp(layer: Layer, cue: SoundCue) {
-    // Original FM/formant vocals: questioning burbles, excited trills and a
-    // pitch-breaking cry for hard impacts or danger.
-    const c = this.context!, at = c.currentTime, strength = cue.strength ?? 0.35;
+    // A quiet immediate beep fallback while PCM is loading or unavailable.
+    // No formant filter, amplitude flutter or sweeping animal-like cry.
+    const at = this.context!.currentTime;
     if (cue.kind === 'warning') {
       // Immediate nonverbal fallback while the sprite is unavailable. Keep
       // left low/falling, right high/rising and both alternating, as in the WAV.
-      const pitches = cue.voice === 'left' ? [690, 580] : cue.voice === 'right' ? [1050, 1210, 1370]
-        : cue.voice === 'both' ? [620, 1320, 620, 1320] : [1500, 1600, 1800];
-      const interval = cue.voice === 'left' ? 0.17 : cue.voice === 'danger' ? 0.15 : 0.11;
+      const pitches = cue.voice === 'left' ? [440, 370] : cue.voice === 'right' ? [630, 715, 800]
+        : cue.voice === 'both' ? [440, 680, 440, 680] : [760, 820, 700];
+      const interval = cue.voice === 'left' ? 0.18 : cue.voice === 'right' ? 0.13 : cue.voice === 'danger' ? 0.16 : 0.11;
       for (const [i, pitch] of pitches.entries()) {
-        this.note(layer, pitch * 0.6, 0.10, 'triangle', 0.16,
-          pitch * 0.6 * (cue.voice === 'left' || cue.voice === 'danger' ? 0.7 : 1.12), at + i * interval);
+        this.note(layer, pitch, 0.10, 'sine', 0.16, pitch, at + i * interval);
       }
       return;
     }
-    const scream = (cue.kind === 'chatter' && strength > 0.55) || cue.kind === 'drain' || cue.kind === 'head-loss';
-    const duration = scream ? 0.48 : 0.32;
-    const carrier = c.createOscillator(), modulator = c.createOscillator(), modulation = c.createGain();
-    const formant = c.createBiquadFilter(), volume = c.createGain();
-    carrier.type = 'sawtooth'; modulator.type = 'sine'; formant.type = 'bandpass'; formant.Q.value = 1.6;
-    const variant = this.variant++ % 4, base = (scream ? 500 : 380 + variant * 70) * 0.6;
-    carrier.frequency.setValueAtTime(base, at);
-    for (let i = 1; i <= 5; i++) carrier.frequency.exponentialRampToValueAtTime(base * (scream ? [1, 2.8, 2.2, 3.1, 0.6][i - 1] : [1.7, 1.15, 2.0, 1.4, 0.8][i - 1]), at + duration * i / 5);
-    modulator.frequency.value = scream ? 27 : 42 + variant * 11; modulation.gain.value = scream ? 130 : 60;
-    modulator.connect(modulation); modulation.connect(carrier.frequency);
-    formant.frequency.setValueAtTime(900, at); formant.frequency.linearRampToValueAtTime(scream ? 1620 : 540, at + duration);
-    volume.gain.setValueAtTime(0.0001, at); volume.gain.linearRampToValueAtTime(scream ? 0.2 : 0.12, at + 0.018); volume.gain.exponentialRampToValueAtTime(0.0001, at + duration);
-    carrier.connect(formant); formant.connect(volume); volume.connect(layer.input); layer.nodes.push(modulation, formant, volume);
-    this.attach(layer, carrier); this.attach(layer, modulator); carrier.start(); modulator.start(); carrier.stop(at + duration); modulator.stop(at + duration);
+    const base = cue.kind === 'head-loss' || cue.kind === 'drain' ? 350 : cue.voice === 'idle' ? 260 : 320;
+    const count = cue.voice === 'tap' || !cue.voice && cue.kind === 'chatter' ? 1 : 3;
+    for (let i = 0; i < count; i++) {
+      const pitch = base * [1, .82, 1.12][i];
+      this.note(layer, pitch, .12, 'sine', .13, pitch, at + i * .17);
+    }
   }
   play(cue: SoundCue) {
     if (!this.ready) return false;
