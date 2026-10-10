@@ -1,11 +1,11 @@
 {
   "result": "pass",
-  "verifiedUtc": "2026-10-10T05:20:51.924113+00:00",
+  "verifiedUtc": "2026-10-10T05:31:34.562504+00:00",
   "baselineCommit": "aeff457bdac894062003c94777babefeee6f4106",
   "baselineTree": "822b466647c2cb2b381c2268231bde8bd387774a",
   "sourceSha256": {
     "src/assets/droid-beeps.wav": "847a839f096d1bd70188bbb24f72141386e8e76880c3f795c217b517a9354c77",
-    "src/main.ts": "bc7ec2093c49e079e18966c7449fc98e96934221409454793bb65e079f458ab3",
+    "src/main.ts": "8aa1bdd0cf2a1836ab4cc114af5b17f178c49df35a810e7a4f813ce435758ee9",
     "src/physics/route-geometry.ts": "68e302cea6362e92deb4697571bd5ba86cf616545268843d45f5f7682ab43bd2",
     "src/physics/route-state.ts": "3d03cc5a75ea62f82845d2552f41cce2964fcfb10ddf3e8568fc94b84d5b1be8",
     "src/physics/simulation.ts": "ec5bbc87af6cf201b40497a013ce386e7a743e0bf1611084ad52e3c018dff3a9",
@@ -30,6 +30,43 @@
     "src/ui/play-input.ts": "115e242eed4daa7aa7dd35db0157e774a542d110e405b2a37483d99d1572c52b",
     "src/ui/sound-director.ts": "16cd791e8a034b9b606f3e2698a9e13ac40f0edb39716edc377963976d0f827c",
     "src/ui/voice-bank.ts": "f040ded5569c8cdba8aec65572bc1b8c24ae839af7a7ae4d9a04f44c81cc5fac"
+  },
+  "reviewFixVerification": {
+    "change": "Reconcile the current layout after asynchronous startup; keep routine screenshots in ignored artifacts.",
+    "rerun": [
+      "npm test (59 tests)",
+      "npm run build",
+      "npm run test:design:browser",
+      "node scripts/standalone.mjs"
+    ],
+    "startupResizes": [
+      {
+        "from": {
+          "width": 844,
+          "height": 390
+        },
+        "to": {
+          "width": 1440,
+          "height": 900
+        },
+        "result": "pass"
+      },
+      {
+        "from": {
+          "width": 1440,
+          "height": 900
+        },
+        "to": {
+          "width": 844,
+          "height": 390
+        },
+        "result": "pass"
+      }
+    ],
+    "documentationImageGitBlob": "cb00202431f9420f6ec6b562cdce5d0cae00afe2",
+    "fullSuiteVisualHead": "5fc780c806ec00a05ff2613fddd26b50d501132e",
+    "mainSha256ForEarlierFullSuites": "bc7ec2093c49e079e18966c7449fc98e96934221409454793bb65e079f458ab3",
+    "note": "Gameplay, cabinet, audio, renderer and physics suites passed the visual revision. Only startup layout reconciliation changed in the runtime afterward; the final unit/build/design startup regressions were rerun."
   },
   "commands": [
     {
@@ -89,6 +126,17 @@
         "viewport": {
           "width": 1440,
           "height": 900
+        },
+        "startupResize": {
+          "from": {
+            "width": 844,
+            "height": 390
+          },
+          "to": {
+            "width": 1440,
+            "height": 900
+          },
+          "result": "pass"
         },
         "intro": {
           "ranking": {
@@ -354,6 +402,7 @@
           "width": 1024,
           "height": 600
         },
+        "startupResize": null,
         "intro": {
           "ranking": {
             "x": 10,
@@ -443,6 +492,17 @@
         "viewport": {
           "width": 844,
           "height": 390
+        },
+        "startupResize": {
+          "from": {
+            "width": 1440,
+            "height": 900
+          },
+          "to": {
+            "width": 844,
+            "height": 390
+          },
+          "result": "pass"
         },
         "intro": {
           "ranking": {
@@ -1197,11 +1257,11 @@
     "files": [
       {
         "path": "dist/index.html",
-        "sha256": "095b11ed77cd84da7c57d06816aa6582fb8eea9ef59a66e0330667d5dbc1a188"
+        "sha256": "e917244c4be07c8063ab9bb3152d2c4a49018d7c5ed9d5cc9810b0ad7387ed67"
       },
       {
-        "path": "dist/assets/index-BEd7KaA4.js",
-        "sha256": "819b383120153f9c3e7778302cc5591137cbc258daeb1258602fdbf4ebbbc81d"
+        "path": "dist/assets/index-BtBn4Egr.js",
+        "sha256": "7f9b99af63e7baa6c799595428de203d4ec01ff8964fe894c7daca7e5b799ebc"
       },
       {
         "path": "dist/assets/index-D9wCDk-I.css",

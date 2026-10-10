@@ -11,16 +11,31 @@ let server, browser;
   for (const [name, viewport] of [['desktop', { width: 1440, height: 900 }], ['small-pc', { width: 1024, height: 600 }], ['landscape', { width: 844, height: 390 }]]) {
     browser = await chromium.launch({ executablePath: process.env.CHROME_PATH, headless: true,
       args: ['--no-sandbox', '--no-zygote', '--single-process', '--in-process-gpu', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-    const page = await browser.newPage({ viewport, hasTouch: name === 'landscape' }); page.setDefaultTimeout(90000);
+    const startupViewport=name==='desktop'?{width:844,height:390}:name==='landscape'?{width:1440,height:900}:viewport;
+    const page = await browser.newPage({ viewport:startupViewport, hasTouch: name === 'landscape' }); page.setDefaultTimeout(90000);
     page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-    await page.goto(server.resolvedUrls.local[0] + '?circuit=1', { waitUntil: 'networkidle' });
+    if(name!=='small-pc') await page.addInitScript(()=>{
+      // Hold the real WASM startup once, so a breakpoint crossing cannot race this test.
+      if(sessionStorage.getItem('orbit-startup-probe'))return;
+      sessionStorage.setItem('orbit-startup-probe','held');
+      const gate=new Promise(resolve=>{window.releaseStartup=resolve;});
+      for(const key of ['instantiate','instantiateStreaming']) {
+        const original=WebAssembly[key];
+        if(original)WebAssembly[key]=async(...args)=>{window.startupBlocked=true;await gate;return original.apply(WebAssembly,args);};
+      }
+    });
+    await page.goto(server.resolvedUrls.local[0] + '?circuit=1', { waitUntil: 'domcontentloaded' });
+    if(name!=='small-pc') {
+      await page.waitForFunction(()=>window.startupBlocked===true);
+      assert.equal(await page.locator('#start').isDisabled(),true);
+      assert.equal(await page.locator('#intro-content').evaluate(e=>e.parentElement.id),name==='desktop'?'intro':'desktop-start-slot');
+      await page.setViewportSize(viewport);
+      await page.evaluate(()=>window.releaseStartup());
+    }
     await page.locator('#start:not([disabled])').waitFor();
     await page.evaluate(() => { const {sim,view,headLoss}=window.orbitDebug; headLoss.draw=()=>1; sim.paused=true; view.budget.enabled=false; window.designRender=view.render.bind(view); view.render=()=>{}; window.designRender(sim,0); });
     await page.screenshot({ path: `artifacts/reference-design/${name}-intro.png` });
-    if(name==='desktop') {
-      mkdirSync('docs/assets/reference-design',{recursive:true});
-      await page.screenshot({path:'docs/assets/reference-design/cabinet-pc.jpg',type:'jpeg',quality:90});
-    }
+    if(name==='desktop') await page.screenshot({path:'artifacts/reference-design/cabinet-pc.jpg',type:'jpeg',quality:90});
     const intro = await page.evaluate(() => {
       const r=id=>{const e=document.getElementById(id), b=e.getBoundingClientRect(); return {x:b.x,y:b.y,w:b.width,h:b.height,visible:getComputedStyle(e).display!=='none'};};
       return { ranking:r('ranking-panel'), viewport:r('viewport'), hud:r('hud'), start:r('start'), mode:window.orbitDebug.view.mode,
@@ -72,7 +87,7 @@ let server, browser;
       });
       await page.screenshot({path:'artifacts/reference-design/desktop-reactors.png'});
     }
-    cases.push({name,viewport,intro,controls,caps,counters});console.log(`${name}: design checks pass`);
+    cases.push({name,viewport,startupResize:name==='small-pc'?null:{from:startupViewport,to:viewport,result:'pass'},intro,controls,caps,counters});console.log(`${name}: design checks pass`);
     await browser.close();browser=undefined;
   }
   assert.deepEqual(errors,[]);writeFileSync('artifacts/reference-design/report.json',JSON.stringify({result:'pass',cases,errors,limits:['ANGLE SwiftShader counters do not establish physical PC frame rates.','Local rankings are generated from completed games, without an online leaderboard.']},null,2)+'\n');

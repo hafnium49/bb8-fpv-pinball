@@ -243,6 +243,8 @@ async function boot() {
   try {
     sim = await PinballSimulation.create({ circuit: circuitEnabled }); playInput = new PlayInput(sim.controls); view = new PinballView($('viewport'), circuitEnabled);
     await view.warmup();
+    // A resize can occur while physics and shaders initialize, before listeners exist.
+    arrangeIntro(); view.resize();
     const updateQuality = () => {
       $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
       $('quality').setAttribute('aria-pressed', String(view.highQuality));

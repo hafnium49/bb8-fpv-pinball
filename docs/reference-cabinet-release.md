@@ -18,6 +18,8 @@ The overview is an opening presentation. Playing uses stabilized FPV, with the e
 
 The desktop console activates at a viewport of at least 1024×600. Controls remain at least 44 pixels across and stay inside the central play area. Smaller viewports use the compact interface; resizing before play moves the same Start button between layouts. Pause still makes the entire background inert and keeps keyboard focus inside the dialog.
 
+The startup layout is reconciled before Start is enabled, including when a breakpoint changes while physics or shaders initialize. The design browser check gates real WASM startup to verify both directions. Routine screenshots are written only under ignored `artifacts/reference-design/`; the documentation image is an explicit release snapshot.
+
 ## Rendering and contacts
 
 The new cap radius is 0.79 and its resting top is 0.985, inside the existing bumper radius of 0.82 and height of 1.04. Scoring hits depress the cap by 0.10 and illuminate its matching console window for 350 ms. Lighting sits near the skirt so it does not bleach the printed star. The decorative rear arch sits outside the playable contact faces. Ramp paths, rails, flippers, 120 Hz physics and ball CCD retain their existing dimensions and rules.
