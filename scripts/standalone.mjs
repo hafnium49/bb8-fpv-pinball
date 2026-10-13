@@ -9,6 +9,7 @@ const script = fs.readFileSync(path.join('dist', scriptPath), 'utf8').replace(/<
 const style = fs.readFileSync(path.join('dist', stylePath), 'utf8');
 const result = html.replace(/<script[^>]*src="[^"]+"[^>]*><\/script>/, () => `<script type="module">${script}</script>`)
   .replace(/<link[^>]*href="[^"]+\.css"[^>]*>/, () => `<style>${style}</style>`)
+  .replace(/(?:\.\/|\/)favicon\.svg/, 'data:image/svg+xml;base64,' + fs.readFileSync('public/favicon.svg').toString('base64'))
   .replace('<html', () => `<!-- Third-party licenses\n${fs.readFileSync('THIRD-PARTY-NOTICES.txt', 'utf8')}\n-->\n<html`);
 fs.mkdirSync('artifacts', { recursive: true });
 fs.writeFileSync('artifacts/ORBIT-FPV-Pinball.html', result);

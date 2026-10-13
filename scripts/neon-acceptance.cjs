@@ -1,0 +1,28 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+const {mkdirSync,writeFileSync}=require('node:fs');
+let server,browser;
+(async()=>{
+const {createServer}=await import('vite');server=await createServer({server:{host:'127.0.0.1',port:5204,strictPort:true,hmr:false,watch:{ignored:()=>true}}});await server.listen();mkdirSync('artifacts/neon',{recursive:true});
+const report={cases:[],errors:[],limits:['SwiftShader is not a physical PC GPU benchmark.','Recovery build; previous-host test results are not results for this build.']};
+for(const variant of ['reference','orbit']){
+browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||'/usr/bin/chromium',args:['--no-sandbox','--no-zygote','--single-process','--in-process-gpu','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const page=await browser.newPage({viewport:{width:1280,height:800}});page.setDefaultTimeout(120000);page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text())});
+await page.goto(server.resolvedUrls.local[0]+(variant==='orbit'?'?table=orbit&circuit=1':''),{waitUntil:'networkidle'});await page.locator('#start:not([disabled])').waitFor();await page.locator('#start').click();
+await page.evaluate(()=>{const {sim,view}=window.orbitDebug;sim.paused=true;window.neonRender=view.render.bind(view);view.render=()=>{};view.budget.enabled=false;sim.events.length=0;view.routeCamera.update=()=>{};});
+const poses=await page.evaluate(async variant=>{
+ const {sim,view}=window.orbitDebug;const out=[{name:'launch',p:{...sim.position},heading:0,pitch:0},{name:'ground',p:{x:-3.5,y:.295,z:-1},heading:0,pitch:0},{name:'street',p:{x:4.8,y:.295,z:5},heading:Math.PI/2,pitch:0}];
+ if(variant==='reference'){const {courseRamps,courseTunnels,pathFrame}=await import('/src/physics/reference-course.ts');for(const [i,path]of [...courseRamps,...courseTunnels].entries())for(const fraction of [.2,.5,.8]){const f=pathFrame(path,path.length*fraction);out.push({name:`path-${i}-${fraction}`,p:f.c,heading:Math.atan2(f.tangent.x,-f.tangent.z),pitch:Math.max(-Math.PI/10,Math.min(Math.PI/10,Math.atan2(f.tangent.y,Math.hypot(f.tangent.x,f.tangent.z)))),guided:true});}}
+ else{const {frames,tunnelStart,tunnelEnd}=await import('/src/physics/route-geometry.ts');for(const [name,i] of [['bridge',Math.floor(frames.length*.45)],['tunnel',Math.floor((tunnelStart+tunnelEnd)/2)]]){const f=frames[i];out.push({name,p:f.c,heading:Math.atan2(f.tangent.x,-f.tangent.z),pitch:Math.asin(f.tangent.y)});}}
+ return out;
+},variant);
+let counts=[];
+for(const pose of poses){const result=await page.evaluate(pose=>{const {sim,view}=window.orbitDebug;sim.phase='playing';if(sim.reference)Object.defineProperty(sim.reference,'guided',{configurable:true,get:()=>!!pose.guided});sim.ball.setTranslation(pose.p,true);sim.ball.setLinvel({x:0,y:0,z:0},true);view.heading=pose.heading;view.routeCamera.pitch=pose.pitch;view.clearance.reset();window.neonRender(sim,0);return {name:pose.name,calls:view.renderer.info.render.calls,triangles:view.renderer.info.render.triangles,camera:view.camera.position.toArray(),stats:view.nightMarket.stats};},pose);assert.ok(result.camera.every(Number.isFinite));if(pose.guided)assert.ok(Math.abs(result.camera[1]-pose.p.y-.2)<1e-6,'guided eye height');counts.push(result);await page.screenshot({path:`artifacts/neon/${variant}-${pose.name}.png`});}
+const motion=await page.evaluate(()=>{const {sim,view}=window.orbitDebug;sim.paused=false;window.neonRender(sim,.05);const a=[...view.nightMarket.lightLevels.value];window.neonRender(sim,.05);const b=[...view.nightMarket.lightLevels.value];sim.paused=true;window.neonRender(sim,1);const paused=[...view.nightMarket.lightLevels.value];view.nightMarket.update(1,true);const reduced=[...view.nightMarket.lightLevels.value];return {a,b,paused,reduced};});assert.notDeepEqual(motion.a,motion.b);assert.deepEqual(motion.paused,motion.b);assert.ok(motion.reduced.every(n=>n===1.6));
+const cycles=await page.evaluate(async()=>{const {sim,view}=window.orbitDebug;sim.paused=true;sim.events.length=0;view.effects.reset();const result=[];for(let i=0;i<6;i++){view.setQuality(false);window.neonRender(sim,0);view.setQuality(true);window.neonRender(sim,0);result.push({...view.renderer.info.memory});}return result;});assert.ok(cycles.every(r=>r.textures===cycles[0].textures&&r.geometries===cycles[0].geometries));
+const recovery=[];
+for(const high of [false,true]){await page.evaluate(high=>{const{sim,view}=window.orbitDebug;view.setQuality(high);window.neonRender(sim,0);window.oldEnvironment=view.environment.texture.uuid;window.restored=false;view.renderer.domElement.addEventListener('webglcontextrestored',()=>window.restored=true,{once:true});view.renderer.forceContextLoss();setTimeout(()=>view.renderer.forceContextRestore(),100);},high);await page.waitForFunction(()=>window.restored);const r=await page.evaluate(()=>{const{sim,view}=window.orbitDebug;window.neonRender(sim,0);return{high:view.highQuality,changed:window.oldEnvironment!==view.environment.texture.uuid,calls:view.renderer.info.render.calls,stats:view.nightMarket.stats};});assert.ok(r.changed&&r.calls>0);recovery.push(r);}
+report.cases.push({variant,counts,motion,cycles,recovery});writeFileSync('artifacts/neon/acceptance.json',JSON.stringify(report,null,2));await browser.close();browser=undefined;
+}
+assert.deepEqual(report.errors,[]);report.result='pass';writeFileSync('artifacts/neon/acceptance.json',JSON.stringify(report,null,2));console.log('Neon acceptance passed');
+})().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{await browser?.close();await server?.close()});

@@ -6,7 +6,11 @@ import { courseBumpers, courseFlippers, courseGate, courseHoles, coursePosts, co
 import { mergeData, tubeData, type MeshData } from '../physics/route-geometry';
 import { bumperBadgeTexture, woodTexture } from './artwork';
 import { referencePlayfield, referenceDeckArtwork } from './reference-artwork';
+import { nightRouteTexture, mechanismInlayTexture } from './night-market-paving';
+import { illuminateBackFace } from './material-optimizations';
 import { batchStaticMeshes } from './static-batch';
+export const SUBWAY_UNDERTRAY_Y = -.912;
+
 /** Course rendering shares every coordinate with the reference simulation. */
 export class ReferenceTable {
   readonly ball = new THREE.Group();
@@ -58,14 +62,28 @@ export class ReferenceTable {
     g.computeVertexNormals();
     return this.mesh(g, m, p, shadow);
   }
+  private routeSurface(path: typeof courseRamps[number], kind: 'floor' | 'walls', material: THREE.Material, parent: THREE.Object3D) {
+    const mesh = this.data(pathSurface(path, kind), material, parent);
+    const uv: number[] = [];
+    for (let i = 0; i < path.points.length; i++) {
+      const v = path.lengths[i] / 2;
+      // Four vertices per route section: left bottom/top, right bottom/top.
+      uv.push(0, v, kind === 'walls' ? 1 : 0, v, kind === 'walls' ? 0 : 1, v, 1, v);
+    }
+    mesh.geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    return mesh;
+  }
   private ring(r: number, tube: number, m: THREE.Material, x: number, y: number, z: number, p: THREE.Object3D = this.scene) { const o = this.mesh(new THREE.TorusGeometry(r, tube, 6, 40), m, p, false); o.rotation.x = -Math.PI / 2; o.position.set(x, y, z); return o; }
   private build() {
     const chrome = this.paint(0xc5d1d6, .9, .28), black = this.paint(0x16191e, .1, .6), red = this.paint(0xbb3542, .15, .55), ivory = this.paint(0xf4f1dd, .1, .46);
+    const mechanismMap = this.keep(mechanismInlayTexture());
+    ivory.map = mechanismMap; ivory.roughness = .28;
     const wood = this.keep(new THREE.MeshStandardMaterial({ map: this.keep(woodTexture()), roughness: .5, metalness: 0 }));
-    const floor = this.keep(new THREE.MeshStandardMaterial({ map: this.keep(referencePlayfield()), roughness: .68, metalness: .02, side: THREE.DoubleSide }));
+    const floorArt = this.keep(referencePlayfield());
+    const floor = this.keep(new THREE.MeshPhysicalMaterial({ map: floorArt, emissiveMap: floorArt, emissive: 0xffffff, emissiveIntensity: .22, roughness: .27, metalness: .28, clearcoat: 1, clearcoatRoughness: .13, side: THREE.DoubleSide }));
     const base = this.data({ ...fieldData, vertices: new Float32Array(fieldData.vertices.map((n, i) => i % 3 === 1 ? n + .008 : n)) }, floor, this.scene, false, 'field');
     base.name = 'Reference playfield';
-    this.data({ ...fieldData, vertices: new Float32Array(fieldData.vertices.map((n, i) => i % 3 === 1 ? n - .9 : n)) }, black);
+    this.data({ ...fieldData, vertices: new Float32Array(fieldData.vertices.map((n, i) => i % 3 === 1 ? n + SUBWAY_UNDERTRAY_Y : n)) }, black).name = 'Subway undertray';
     // Rounded cabinet perimeter is the actual rail, not a decorative arch
     // behind the original rectangular table.
     for (const side of [-1, 1])
@@ -95,18 +113,21 @@ export class ReferenceTable {
     this.gateGroup.rotation.y = -Math.atan2(courseGate.bz - courseGate.az, courseGate.bx - courseGate.ax);
     this.box(gateLength, .04, .055, chrome, gateLength / 2, 0, 0, this.gateGroup);
     this.scene.add(this.gateGroup);
-    const deckMat = this.keep(new THREE.MeshStandardMaterial({ map: this.keep(referenceDeckArtwork()), roughness: .5, metalness: .15, side: THREE.DoubleSide }));
+    const deckArt = this.keep(referenceDeckArtwork());
+    const deckMat = this.keep(new THREE.MeshPhysicalMaterial({ map: deckArt, emissiveMap: deckArt, emissive: 0xffffff, emissiveIntensity: .18, roughness: .24, metalness: .32, clearcoat: 1, clearcoatRoughness: .12, side: THREE.DoubleSide }));
     this.data(deckData, deckMat, this.scene, true, 'deck').name = 'Playable upper deck';
     // The mini playfield's support legs are outside its ground shot entrances.
     for (const [x, z] of [[.47, -9.55], [5.5, -7.0], [.47, -5.37], [5.5, -5.37]])
       this.box(.075, deckHeight, .075, chrome, x, deckHeight / 2, z);
-    const rampRed = this.paint(0xb83f58, .25, .36), glass = this.keep(new THREE.MeshStandardMaterial({ color: 0xf06d87, roughness: .2, metalness: .05, transparent: true, opacity: .32, depthWrite: false, side: THREE.DoubleSide }));
+    const routeMap = this.keep(nightRouteTexture());
+    const rampRed = this.keep(new THREE.MeshPhysicalMaterial({ map: routeMap, emissiveMap: routeMap, emissive: 0xffffff, emissiveIntensity: .10, metalness: .4, roughness: .23, clearcoat: 1, clearcoatRoughness: .12, side: THREE.DoubleSide })), glass = this.keep(new THREE.MeshStandardMaterial({ color: 0xf06d87, roughness: .2, metalness: .05, transparent: true, opacity: .32, depthWrite: false, side: THREE.DoubleSide }));
+    illuminateBackFace(rampRed,5.5);
     courseRamps.forEach((path, i) => {
       const group = new THREE.Group();
       group.name = path.name;
       this.scene.add(group);
       if (i === 0) {
-        this.data(pathSurface(path, 'floor'), rampRed, group);
+        this.routeSurface(path, 'floor', rampRed, group);
         this.data(pathSurface(path, 'walls'), glass, group, false);
       }
       const offsets: readonly (readonly [
@@ -115,7 +136,7 @@ export class ReferenceTable {
       ])[] = i === 0 ? [[-path.width, .14], [path.width, .14]] : [[-.2, -.235], [.2, -.235], [-path.width, .12], [path.width, .12]];
       this.data(pathWires(path, offsets), chrome, group);
       if (i > 0) {
-        this.data(pathSurface({ ...path, points: path.points.slice(0, 48), lengths: path.lengths.slice(0, 48), length: path.lengths[47] }, 'floor'), rampRed, group);
+        this.routeSurface({ ...path, points: path.points.slice(0, 48), lengths: path.lengths.slice(0, 48), length: path.lengths[47] }, 'floor', rampRed, group);
       }
       const supports: MeshData[] = [];
       for (let n = 50; n < path.points.length - 40; n += 75) {
@@ -126,13 +147,13 @@ export class ReferenceTable {
         this.data(mergeData(supports), chrome, group);
     });
     // Actual below-board subway routes. Warm strips give FPV a readable tunnel.
-    const tunnelPaint = this.paint(0x2b3148, .35, .55), tunnelLight = this.paint(0x57cfe6, .2, .4, .8);
+    const tunnelPaint = this.keep(new THREE.MeshPhysicalMaterial({ map: routeMap, emissiveMap: routeMap, emissive: 0x88c9ef, emissiveIntensity: .35, metalness: .35, roughness: .24, clearcoat: 1, clearcoatRoughness: .12, side: THREE.DoubleSide })), tunnelLight = this.paint(0x57cfe6, .2, .4, .8);
     courseTunnels.forEach(path => {
       const group = new THREE.Group();
       group.name = `${path.name} subway`;
       this.scene.add(group);
-      this.data(pathSurface(path, 'floor'), tunnelPaint, group);
-      this.data(pathSurface(path, 'walls'), tunnelPaint, group);
+      this.routeSurface(path, 'floor', tunnelPaint, group);
+      this.routeSurface(path, 'walls', tunnelPaint, group);
       this.data(pathWires(path, [[-.38, .16], [.38, .16]], .018), tunnelLight, group, false);
     });
     for (const [i, hole] of courseHoles.entries())
@@ -144,7 +165,7 @@ export class ReferenceTable {
     // The characteristic curved scoop joins the black-hole and slot mouths.
     const kidney = courseTunnels[2].points;
     this.data(pathWires({ ...courseTunnels[2], points: kidney.map(p => ({ ...p, y: BALL_RADIUS + .015 })) }, [[-.37, -.22], [.37, -.22]], .035), chrome);
-    const badge = this.keep(new THREE.MeshStandardMaterial({ map: this.keep(bumperBadgeTexture()), roughness: .68, metalness: 0 }));
+    const badge = this.keep(new THREE.MeshStandardMaterial({ map: this.keep(bumperBadgeTexture([100, 250, 50, 200])), roughness: .68, metalness: 0 }));
     courseBumpers.forEach((b, i) => {
       const scale = b.radius / .82, cap = new THREE.Group();
       cap.position.set(b.x, b.y + b.height - .19 * scale, b.z);
@@ -153,6 +174,7 @@ export class ReferenceTable {
       this.scene.add(cap);
       cap.name = `Reference bumper ${i + 1}`;
       const paint = this.paint(b.color, .2, .4), glow = this.paint(b.color, .1, .4, .25);
+      paint.map = mechanismMap;
       this.lenses.push(glow);
       const base = this.mesh(new THREE.CylinderGeometry(b.radius, b.radius * .92, .17 * scale, 24), chrome);
       base.position.set(b.x, b.y + .08 * scale, b.z);
@@ -164,7 +186,7 @@ export class ReferenceTable {
       this.ring(b.radius * .96, .018, glow, b.x, b.y + b.height * .64, b.z);
       const g = new THREE.CircleGeometry(b.radius * .73, 32), uv = g.attributes.uv;
       for (let j = 0; j < uv.count; j++)
-        uv.setX(j, uv.getX(j) * .5 + (i === 2 ? .5 : 0));
+        uv.setX(j, uv.getX(j) * .25 + [100, 250, 50, 200].indexOf(b.points) * .25);
       const face = this.mesh(g, badge, cap, false);
       face.rotation.x = -Math.PI / 2;
       face.position.y = .194 * scale;
@@ -178,6 +200,7 @@ export class ReferenceTable {
     });
     courseTargets.forEach((t, i) => {
       const dx = t.bx - t.ax, dz = t.bz - t.az, l = Math.hypot(dx, dz), angle = -Math.atan2(dz, dx), material = this.paint(t.kind.includes('drop') ? 0xca283b : t.y ? 0xe5bf3e : 0x72c77a, .2, .35, .15);
+      material.map = mechanismMap; material.emissiveMap = mechanismMap;
       const target = this.box(l, t.height, t.thickness * 2 + .045, material, (t.ax + t.bx) / 2, t.y + t.height / 2, (t.az + t.bz) / 2);
       target.rotation.y = angle;
       this.targetLamps.push(target);

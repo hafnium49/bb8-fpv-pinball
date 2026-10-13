@@ -9,7 +9,7 @@ npm ci
 npm run dev
 ```
 
-Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browser with WebGL. The game runs entirely in the browser; no account, backend or API key is required.
+Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browser with WebGL 2. The game runs entirely in the browser; no account, backend or API key is required.
 
 | Action | Keyboard | Touch / mouse |
 | --- | --- | --- |
@@ -20,7 +20,11 @@ Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browse
 | Graphics | — | FX High / FX Eco |
 | Sound | — | Sound On / Sound Off |
 
-FPV fills the playfield; there is no overhead/radar inset, including during a spin. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the lower, metallic nonverbal droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. FPV is the only player camera. Each launch has a 5% chance of a three-second **lost head** spin after leaving the launcher: **Oh no, BB-8 lost its head!** A startled electronic cry accompanies the caption; the camera follows the real ball rotation, then restores upright FPV. Pause, drain and restart cancel it, and reduced-motion settings disable it. A game has three balls; bumper values range from 50 to 250, ground/deck targets score 150/300, and left/wire/sky ramps score 1,000/1,500/2,500. The best score is stored locally when a game ends.
+FPV fills the playfield; there is no overhead/radar inset, including during a spin. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the lower, metallic nonverbal droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. Stabilized FPV is the normal player camera. Each launch has a 5% chance of a three-second **lost head** spin after leaving the launcher: **Oh no, BB-8 lost its head!** A startled electronic cry accompanies the caption; the camera follows the real ball rotation, then restores upright FPV. Pause, drain and restart cancel it, and reduced-motion settings disable it. A game has three balls; bumper values range from 50 to 250, ground/deck targets score 150/300, and left/wire/sky ramps score 1,000/1,500/2,500. The best score is stored locally when a game ends.
+
+## Tropical neon cabinet
+
+The [recovery-build release notes](docs/NEON-RECOVERY-2026-10-14.md) describe the current dense tropical night-street treatment: 52 original storefronts, patterned close-up inner rails, hanging lanterns, illuminated bridge undersides and fully decorated tunnel interiors. Neon animation stops with pause and becomes steady under reduced-motion. The course and existing audio are unchanged. This release supersedes the older material descriptions below.
 
 ## Orbital arcade visuals
 
@@ -30,9 +34,9 @@ The [iPhone touch and cabinet follow-up](docs/iphone-touch-cabinet-release.md) p
 
 The illustrated playfield has orbital rings, a spiral field, reactor markings and launch cues. Sculpted yellow/cyan bumper caps carry large printed stars over black rubber bodies and chrome skirts. Red ramp panels, ivory/red flippers, a metal apron and a curved walnut surround sit against a dark background. Reflections, contact shadows and restrained glow give the table depth; real scoring collisions depress the bumper caps, light their console windows and trigger pooled sparks, expanding light rings and floating score labels.
 
-**FX High** enables restrained glow and cached dynamic shadows. **FX Eco** skips those extra passes while keeping the artwork, mechanical detail and collision effects. Resolution adjusts automatically toward smooth 60 Hz play; the HTML display and controls stay sharp. High retains native 1080p on a 1× display, caps density at 1.5 and rendering at three million pixels; Eco caps density at 1 and two million pixels. Sustained overload lowers render scale, and sustained headroom restores it. Touch devices and narrow screens start in Eco; the console button switches modes at any time. Reduced-motion preferences disable the random spin, particles and score animations. All artwork is generated locally, with no asset or font downloads.
+**FX High** enables colored baked reflections, cached dynamic shadows and quarter-resolution separable HDR bloom when floating-point targets are supported. **FX Eco** skips reflection/bloom/shadow passes while keeping the artwork, mechanical detail and collision effects. Resolution adjusts automatically toward smooth 60 Hz play; the HTML display and controls stay sharp. High retains native 1080p on a 1× display, caps density at 1.5 and rendering at three million pixels; Eco caps density at 1 and two million pixels. Sustained overload lowers render scale, and sustained headroom restores it. Touch devices and narrow screens start in Eco; the console button switches modes at any time. Reduced-motion preferences disable the random spin, particles and score animations. All artwork is generated locally, with no asset or font downloads.
 
-The [desktop performance release](docs/desktop-performance-release.md) describes static GPU batches, shadow invalidation, the single glow/output pass, shader warm-up and the measured limits. Run `npm run test:render:browser` for desktop renderer regressions and `npm run benchmark:desktop` for matched held-scene GPU timings. The benchmark defaults to software rendering for repeatability. To measure an installed PC browser's actual GPU, set `CHROME_PATH`, `PERF_GPU=hardware` and `PERF_HEADLESS=0`, and check the renderer identity in the report. A software-renderer benchmark does not establish hardware PC FPS.
+The [desktop performance release](docs/desktop-performance-release.md) describes static GPU batches, shadow invalidation, the historical single glow/output pass (superseded by the neon pipeline below), shader warm-up and the measured limits. Run `npm run test:render:browser` for desktop renderer regressions and `npm run benchmark:desktop` for matched held-scene GPU timings. The benchmark defaults to software rendering for repeatability. To measure an installed PC browser's actual GPU, set `CHROME_PATH`, `PERF_GPU=hardware` and `PERF_HEADLESS=0`, and check the renderer identity in the report. A software-renderer benchmark does not establish hardware PC FPS.
 
 ## Reference course
 
@@ -66,7 +70,7 @@ npm run build
 npm run preview
 ```
 
-For a single offline HTML file, run `npm run standalone` and open `artifacts/ORBIT-FPV-Pinball.html` in a WebGL-capable browser. It embeds the renderer, physics runtime and stylesheet; no server or CDN is needed.
+For a self-contained HTML file, run `npm run standalone`. The output `artifacts/ORBIT-FPV-Pinball.html` embeds the renderer, physics, audio, stylesheet and favicon. This recovery build was verified over loopback HTTP followed by offline play; direct file opening remains unverified. A WebGL 2 browser is required.
 
 For browser QA, run `npx playwright install chromium`, then `npm run test:browser`. It starts its own dev server. Screenshots and the check report go into `artifacts/`. Set `CHROME_PATH` to use an existing Chromium executable or `GAME_URL` to test a running dev server.
 
@@ -92,7 +96,7 @@ For browser QA, run `npx playwright install chromium`, then `npm run test:browse
 - `src/assets/`: the bundled nonverbal droid sprite; rebuild it with `python3 scripts/generate-droid-beeps.py` (standard library only).
 - `src/main.ts`: DOM controls, state presentation, input and browser lifecycle.
 
-The render graph is separate from the simulation. Flippers are moving kinematic bodies, the ball uses continuous collision detection, and physics is independent of display frame rate. FPV camera orientation never inherits the ball quaternion. UI checks do not replace collision/physics tests.
+The render graph is separate from the simulation. Flippers are moving kinematic bodies, the ball uses continuous collision detection, and physics is independent of display frame rate. Normal stabilized FPV never inherits the ball quaternion; the explicitly bounded lost-head reaction temporarily does. UI checks do not replace collision/physics tests.
 
 ## GitHub Pages
 

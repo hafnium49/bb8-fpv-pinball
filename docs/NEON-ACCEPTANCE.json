@@ -1,0 +1,764 @@
+{
+  "cases": [
+    {
+      "variant": "reference",
+      "counts": [
+        {
+          "name": "launch",
+          "calls": 213,
+          "triangles": 257806,
+          "camera": [
+            5.599999904632568,
+            0.5949999868869782,
+            9.520000457763672
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "ground",
+          "calls": 70,
+          "triangles": 119543,
+          "camera": [
+            -3.5,
+            0.5949999868869782,
+            -1
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "street",
+          "calls": 26,
+          "triangles": 74686,
+          "camera": [
+            4.800000190734863,
+            0.5949999868869782,
+            5
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-0-0.2",
+          "calls": 43,
+          "triangles": 101882,
+          "camera": [
+            -4.71874475479126,
+            1.4319999933242797,
+            -3.660869836807251
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-0-0.5",
+          "calls": 66,
+          "triangles": 118750,
+          "camera": [
+            1.288070797920227,
+            1.4319999933242797,
+            -7.066514492034912
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-0-0.8",
+          "calls": 62,
+          "triangles": 112131,
+          "camera": [
+            4.427919864654541,
+            1.4319999933242797,
+            -0.3783879578113556
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-1-0.2",
+          "calls": 71,
+          "triangles": 114064,
+          "camera": [
+            2.467561721801758,
+            1.7679999589920044,
+            -3.2017056941986084
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-1-0.5",
+          "calls": 39,
+          "triangles": 86564,
+          "camera": [
+            -2.5595738887786865,
+            1.7679999589920044,
+            -6.008493423461914
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-1-0.8",
+          "calls": 60,
+          "triangles": 112997,
+          "camera": [
+            -5.465146541595459,
+            1.7679999589920044,
+            0.06762144714593887
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-2-0.2",
+          "calls": 105,
+          "triangles": 144748,
+          "camera": [
+            -0.5612318515777588,
+            2.0343482017517087,
+            -0.470364511013031
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-2-0.5",
+          "calls": 56,
+          "triangles": 116179,
+          "camera": [
+            -0.6077417135238647,
+            2.1040000438690183,
+            -3.779489278793335
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-2-0.8",
+          "calls": 30,
+          "triangles": 86295,
+          "camera": [
+            -0.4844106435775757,
+            2.1040000438690183,
+            -7.077630519866943
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-3-0.2",
+          "calls": 64,
+          "triangles": 120469,
+          "camera": [
+            -5.013796329498291,
+            -0.4200000047683716,
+            -5.176684379577637
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-3-0.5",
+          "calls": 66,
+          "triangles": 119043,
+          "camera": [
+            -5.642002105712891,
+            -0.4200000047683716,
+            -1.6865795850753784
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-3-0.8",
+          "calls": 53,
+          "triangles": 107635,
+          "camera": [
+            -5.427500247955322,
+            -0.4200000047683716,
+            1.8641457557678223
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-4-0.2",
+          "calls": 69,
+          "triangles": 114859,
+          "camera": [
+            4.542722702026367,
+            -0.4200000047683716,
+            -3.325234889984131
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-4-0.5",
+          "calls": 48,
+          "triangles": 93495,
+          "camera": [
+            4.651919841766357,
+            -0.4200000047683716,
+            1.2090336084365845
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-4-0.8",
+          "calls": 29,
+          "triangles": 77192,
+          "camera": [
+            4.939779758453369,
+            -0.4200000047683716,
+            5.724694728851318
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-5-0.2",
+          "calls": 59,
+          "triangles": 116883,
+          "camera": [
+            -0.8117620348930359,
+            -0.4200000047683716,
+            0.06113293021917343
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-5-0.5",
+          "calls": 54,
+          "triangles": 113109,
+          "camera": [
+            -1.373831868171692,
+            -0.4200000047683716,
+            0.4679277241230011
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "path-5-0.8",
+          "calls": 47,
+          "triangles": 102340,
+          "camera": [
+            -2.06378436088562,
+            -0.4200000047683716,
+            0.4222032129764557
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        }
+      ],
+      "motion": {
+        "a": [
+          1.5317550151923034,
+          1.0870098002620412,
+          0.8052547850697378,
+          0.9682449848076964,
+          1.4129901997379586,
+          1.6947452149302622
+        ],
+        "b": [
+          1.55643109761442,
+          1.1178211080570155,
+          0.8113900104425954,
+          0.9435689023855799,
+          1.3821788919429843,
+          1.6886099895574047
+        ],
+        "paused": [
+          1.55643109761442,
+          1.1178211080570155,
+          0.8113900104425954,
+          0.9435689023855799,
+          1.3821788919429843,
+          1.6886099895574047
+        ],
+        "reduced": [
+          1.6,
+          1.6,
+          1.6,
+          1.6,
+          1.6,
+          1.6
+        ]
+      },
+      "cycles": [
+        {
+          "geometries": 163,
+          "textures": 18
+        },
+        {
+          "geometries": 163,
+          "textures": 18
+        },
+        {
+          "geometries": 163,
+          "textures": 18
+        },
+        {
+          "geometries": 163,
+          "textures": 18
+        },
+        {
+          "geometries": 163,
+          "textures": 18
+        },
+        {
+          "geometries": 163,
+          "textures": 18
+        }
+      ],
+      "recovery": [
+        {
+          "high": false,
+          "changed": true,
+          "calls": 43,
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "high": true,
+          "changed": true,
+          "calls": 119,
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 31,
+            "tunnelRibs": 60,
+            "tunnelPanels": 440,
+            "batches": 48,
+            "releasedGeometryBytes": 4985240,
+            "removedEmptyGroups": 744,
+            "releasedCanvasBytes": 33554432
+          }
+        }
+      ]
+    },
+    {
+      "variant": "orbit",
+      "counts": [
+        {
+          "name": "launch",
+          "calls": 159,
+          "triangles": 139968,
+          "camera": [
+            5.179999828338623,
+            0.6100000023841858,
+            8.699999809265137
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "ground",
+          "calls": 75,
+          "triangles": 73500,
+          "camera": [
+            -3.5,
+            0.5949999868869782,
+            -1
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "street",
+          "calls": 39,
+          "triangles": 32324,
+          "camera": [
+            4.800000190734863,
+            0.5949999868869782,
+            5
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "bridge",
+          "calls": 69,
+          "triangles": 72544,
+          "camera": [
+            -0.11131101846694946,
+            2.780000019073486,
+            -5.825254440307617
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "name": "tunnel",
+          "calls": 75,
+          "triangles": 59006,
+          "camera": [
+            3.249912738800049,
+            2.299451994895935,
+            0.7403509020805359
+          ],
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        }
+      ],
+      "motion": {
+        "a": [
+          1.5401680504106903,
+          1.0972134545028263,
+          0.807045404092136,
+          0.9598319495893097,
+          1.4027865454971735,
+          1.692954595907864
+        ],
+        "b": [
+          1.5643204166882856,
+          1.128274915186406,
+          0.8139544984981203,
+          0.9356795833117143,
+          1.3717250848135938,
+          1.6860455015018798
+        ],
+        "paused": [
+          1.5643204166882856,
+          1.128274915186406,
+          0.8139544984981203,
+          0.9356795833117143,
+          1.3717250848135938,
+          1.6860455015018798
+        ],
+        "reduced": [
+          1.6,
+          1.6,
+          1.6,
+          1.6,
+          1.6,
+          1.6
+        ]
+      },
+      "cycles": [
+        {
+          "geometries": 137,
+          "textures": 19
+        },
+        {
+          "geometries": 137,
+          "textures": 19
+        },
+        {
+          "geometries": 137,
+          "textures": 19
+        },
+        {
+          "geometries": 137,
+          "textures": 19
+        },
+        {
+          "geometries": 137,
+          "textures": 19
+        },
+        {
+          "geometries": 137,
+          "textures": 19
+        }
+      ],
+      "recovery": [
+        {
+          "high": false,
+          "changed": true,
+          "calls": 71,
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        },
+        {
+          "high": true,
+          "changed": true,
+          "calls": 122,
+          "stats": {
+            "storefronts": 52,
+            "bridgeMarkers": 27,
+            "tunnelRibs": 4,
+            "tunnelPanels": 27,
+            "batches": 48,
+            "releasedGeometryBytes": 3699280,
+            "removedEmptyGroups": 298,
+            "releasedCanvasBytes": 33554432
+          }
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "SwiftShader is not a physical PC GPU benchmark.",
+    "Recovery build; previous-host test results are not results for this build."
+  ],
+  "result": "pass",
+  "unit_tests": 98,
+  "browser_regressions": [
+    "render",
+    "course: desktop/small-pc/landscape",
+    "touch:portrait/landscape",
+    "smoke",
+    "audio"
+  ],
+  "synthetic_soak": {
+    "frames": 19788,
+    "launches": 6,
+    "restarts": 1,
+    "elapsedMs": 600551,
+    "errors": [],
+    "result": "pass",
+    "limits": [
+      "Periodic controls and forced unpause; simulation restart, not full application restart; no memory-leak certification."
+    ]
+  },
+  "standalone": {
+    "result": "pass",
+    "requests": [
+      "/"
+    ],
+    "allRequests": [
+      "http://127.0.0.1:5206/"
+    ],
+    "errors": [],
+    "offline": true,
+    "checks": [
+      "load",
+      "start",
+      "keyboard launch",
+      "simultaneous flippers",
+      "pause/resume"
+    ],
+    "limits": [
+      "Served one self-contained HTML over loopback then disabled networking; direct file opening not verified."
+    ]
+  }
+}

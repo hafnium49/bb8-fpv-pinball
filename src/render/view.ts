@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { NightMarket } from './night-market';
+import { marketColors, nightMarketSky } from './night-market-art';
+import { reuseMaterialSamples } from './material-optimizations';
 import { bumpers, targets } from '../physics/table';
 import type { PinballSimulation } from '../physics/simulation';
 import { ArcadeTable } from './table-model';
@@ -28,6 +30,8 @@ export class PinballView {
   private post?: ArcadePost;
   private environment: THREE.WebGLRenderTarget;
   private circuit?: ElevatedCircuit;
+  readonly nightMarket: NightMarket;
+  private sky = nightMarketSky();
   private clearance = new CameraClearance();
   private previousMode: CameraMode = 'fpv';
   private look = new THREE.Vector3();
@@ -39,12 +43,12 @@ export class PinballView {
   private restoreEnvironment = () => {
     this.environment.dispose(); this.environment = this.createEnvironment();
     this.scene.environment = this.environment.texture;
-    this.shadowRevision = -1; this.budget.reset(); this.resize();
+    this.post?.dispose(); this.post = undefined; this.setQuality(this.highQuality);
   };
 
   constructor(readonly container: HTMLElement, circuitEnabled = false, reference = false) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-    this.renderer.setClearColor(0x06070a);
+    this.renderer.setClearColor(0x091025); this.scene.background = this.sky;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.98;
@@ -54,29 +58,41 @@ export class PinballView {
     this.renderer.domElement.setAttribute('aria-label', 'Illuminated orbital arcade pinball table');
     container.appendChild(this.renderer.domElement);
     this.scene.fog = new THREE.FogExp2(0x080e24, 0.009);
-    this.scene.add(new THREE.HemisphereLight(0xcbdfff, 0x23325e, 1.1));
-    const sun = new THREE.DirectionalLight(0xffe7d2, 1.8);
+    this.scene.add(new THREE.HemisphereLight(0x93b5ed, 0x331a45, .75));
+    const sun = new THREE.DirectionalLight(0xffd5ad, .75);
     sun.position.set(-7, 15, -6); sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
     Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 18, bottom: -18, near: 0.1, far: 45 });
     sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.025; this.scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x6bbfff, 1.0); fill.position.set(8, 5, 10); this.scene.add(fill);
+    const fill = new THREE.DirectionalLight(0x51b9de, .45); fill.position.set(8, 5, 10); this.scene.add(fill);
     this.environment = this.createEnvironment();
-    this.scene.environment = this.environment.texture; this.scene.environmentIntensity = 0.55;
+    this.scene.environment = this.environment.texture; this.scene.environmentIntensity = 0.65;
     this.renderer.domElement.addEventListener('webglcontextrestored', this.restoreEnvironment);
     this.table = reference ? new ReferenceTable(this.scene) : new ArcadeTable(this.scene, circuitEnabled); this.effects = new ArcadeEffects(this.scene);
     if (circuitEnabled && !reference) this.circuit = new ElevatedCircuit(this.scene);
+    this.nightMarket = new NightMarket(this.scene, reference, circuitEnabled);
+    this.scene.traverse(object => { if (object instanceof THREE.Mesh) for (const material of Array.isArray(object.material) ? object.material : [object.material]) if (material instanceof THREE.MeshStandardMaterial) reuseMaterialSamples(material); });
     this.setQuality(this.highQuality);
   }
 
   private createEnvironment() {
-    const pmrem = new THREE.PMREMGenerator(this.renderer), room = new RoomEnvironment();
-    const result = pmrem.fromScene(room, 0.04); room.dispose(); pmrem.dispose(); return result;
+    const pmrem = new THREE.PMREMGenerator(this.renderer), room = new THREE.Scene();
+    const geometry = new THREE.BoxGeometry(), materials: THREE.Material[] = [];
+    const wall = new THREE.MeshBasicMaterial({ color: 0x080e21, side: THREE.BackSide }); materials.push(wall);
+    const shell = new THREE.Mesh(geometry, wall); shell.scale.set(30, 16, 40); room.add(shell);
+    marketColors.forEach((color, i) => {
+      const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(2.2) }); materials.push(material);
+      for (const side of [-1, 1]) { const sign = new THREE.Mesh(geometry, material); sign.position.set(side * 11, 1.5 + (i % 3) * 1.7, -12 + i * 4.6); sign.scale.set(.04, 2.0 + i % 2, .6); room.add(sign); }
+      const canopy = new THREE.Mesh(geometry, material); canopy.position.set(-7 + i * 2.8, 6.5, -2 + i % 2 * 4); canopy.scale.set(.12, .025, 18); room.add(canopy);
+    });
+    const result = pmrem.fromScene(room, .015);
+    geometry.dispose(); materials.forEach(material => material.dispose()); pmrem.dispose(); return result;
   }
 
   /** Eco keeps the same artwork and mechanics, with fewer pixels and no bloom/shadow pass. */
   setQuality(high: boolean) {
     this.budget.reset(); this.shadowRevision = -1;
+    this.scene.environment = high ? this.environment.texture : null;
     this.highQuality = high; this.renderer.shadowMap.enabled = high; this.table.setQuality(high);
     // Render directly on older GPUs: an RGBA8 intermediate would clip HDR
     // before tone mapping and could never reach the glow's HDR threshold.
@@ -108,6 +124,7 @@ export class PinballView {
     const start = performance.now();
     const p = sim.position, v = sim.velocity, visualDt = sim.paused ? 0 : dt;
     this.table.update(sim, visualDt);
+    this.nightMarket.update(visualDt, this.effects.reducedMotion);
     this.circuit?.update(sim);
     for (const event of sim.events) {
       if (event.type === 'bumper') { const b = sim.reference ? courseBumpers[event.index] : bumpers[event.index]; this.effects.hit(b.x, b.z, b.color, event.points, 'y' in b ? b.y : 0); }
@@ -162,7 +179,7 @@ export class PinballView {
 
   dispose() {
     this.renderer.domElement.removeEventListener('webglcontextrestored', this.restoreEnvironment);
-    this.effects.dispose(); this.circuit?.dispose(); this.table.dispose(); this.environment.dispose();
+    this.effects.dispose(); this.nightMarket.dispose(); this.sky.dispose(); this.circuit?.dispose(); this.table.dispose(); this.environment.dispose();
     this.post?.dispose(); this.renderer.dispose();
   }
 }

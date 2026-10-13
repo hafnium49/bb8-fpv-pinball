@@ -54,3 +54,30 @@ test('material, shadow and spatial boundaries stay separate to preserve renderin
   const result = batchStaticMeshes(root, new Set());
   assert.equal(result.batches, 1); assert.equal(root.children.length, 4);
 });
+
+test('world-space procedural geometry uses its actual center for spatial culling', () => {
+  const root = new THREE.Group(), material = new THREE.MeshStandardMaterial();
+  for (const x of [1, 1.5, 21, 21.5]) {
+    const g = new THREE.BoxGeometry(); g.translate(x, 0, 1);
+    root.add(new THREE.Mesh(g, material));
+  }
+  const result = batchStaticMeshes(root, new Set(), 5);
+  assert.equal(result.batches, 2);
+  assert.equal(root.children.length, 2);
+  assert.ok(result.geometries.every(g => g.boundingBox!.max.x - g.boundingBox!.min.x < 2));
+});
+
+test('static build cleanup frees only unreferenced owned geometry and empty groups',async()=>{
+  const{releaseStaticBuildInputs}=await import('../src/render/static-batch');
+  const root=new THREE.Group(),parent=new THREE.Group(),child=new THREE.Group();root.add(parent);parent.add(child);
+  const live=new THREE.BoxGeometry(),unused=new THREE.PlaneGeometry(),material=new THREE.MeshStandardMaterial();
+  const hidden=new THREE.Mesh(live,material);hidden.visible=false;root.add(hidden);
+  const resources=new Set<{dispose():void}>([live,unused,material]),disposed=new Set();
+  for(const r of [live,unused,material])r.addEventListener('dispose',()=>disposed.add(r));
+  const result=releaseStaticBuildInputs(root,resources);
+  assert.equal(result.geometries,1);assert.ok(result.bytes>0);assert.equal(result.emptyGroups,2);
+  assert.deepEqual([...disposed],[unused]);assert.equal(resources.has(unused),false);assert.equal(resources.has(live),true);assert.equal(resources.has(material),true);
+  assert.deepEqual(root.children,[hidden]);assert.equal(hidden.visible,false);
+  assert.deepEqual(releaseStaticBuildInputs(root,resources),{geometries:0,bytes:0,emptyGroups:0});
+  live.dispose();material.dispose();
+});

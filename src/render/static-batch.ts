@@ -12,7 +12,10 @@ export function batchStaticMeshes(root: THREE.Object3D, moving: Set<THREE.Object
     for (let ancestor: THREE.Object3D | null = object; ancestor; ancestor = ancestor.parent) if (moving.has(ancestor)) return;
     const material = object.material;
     if (material.transparent || object.geometry.morphAttributes.position || !object.visible) return;
-    object.getWorldPosition(center).applyMatrix4(rootInverse);
+    // Procedural meshes may carry world-space vertices with an origin at zero.
+    // Bucket their actual bounds, not that arbitrary transform origin.
+    object.geometry.computeBoundingBox();
+    object.geometry.boundingBox!.getCenter(center).applyMatrix4(object.matrixWorld).applyMatrix4(rootInverse);
     const key = [material.uuid, object.castShadow, object.receiveShadow, object.layers.mask, object.renderOrder,
       Object.keys(object.geometry.attributes).sort().join(','), Math.floor(center.x / cellSize), Math.floor(center.z / cellSize)].join(':');
     const bucket = buckets.get(key) || []; bucket.push(object); buckets.set(key, bucket);
@@ -55,4 +58,25 @@ export function batchStaticMeshes(root: THREE.Object3D, moving: Set<THREE.Object
     object.updateMatrix(); object.matrixAutoUpdate = false; object.matrixWorldAutoUpdate = false;
   });
   return { geometries, removed, batches };
+}
+
+/** Release construction-only geometry after a fully static group has been merged.
+ * The caller owns these resources; never use this on externally referenced or
+ * moving groups. Live geometry and every non-geometry resource remain owned.
+ */
+export function releaseStaticBuildInputs(root: THREE.Object3D, resources: Set<{ dispose(): void }>) {
+  const live = new Set<THREE.BufferGeometry>(), groups: THREE.Group[] = [];
+  root.traverse(object => {
+    if (object instanceof THREE.Mesh) live.add(object.geometry);
+    if (object instanceof THREE.Group && object !== root) groups.push(object);
+  });
+  let geometries = 0, bytes = 0, emptyGroups = 0;
+  for (const resource of resources) if (resource instanceof THREE.BufferGeometry && !live.has(resource)) {
+    const attributes=Object.values(resource.attributes) as (THREE.BufferAttribute | THREE.InterleavedBufferAttribute)[];
+    bytes += attributes.reduce((sum,attribute) => sum + (attribute instanceof THREE.InterleavedBufferAttribute ? attribute.data.array : attribute.array).byteLength,0) + (resource.index?.array.byteLength || 0);
+    resource.dispose(); resources.delete(resource); geometries++;
+  }
+  // Bottom-up pruning also removes parents made empty by removing child groups.
+  for (const group of groups.reverse()) if (group.children.length === 0) { group.removeFromParent(); emptyGroups++; }
+  return { geometries, bytes, emptyGroups };
 }

@@ -94,9 +94,9 @@ export function playfieldTexture(circuitEnabled = false) {
 }
 
 /** One atlas supplies warm and cool star caps without a texture per bumper. */
-export function bumperBadgeTexture() {
-  const { image, c } = canvas(1024, 512);
-  for (let tile = 0; tile < 2; tile++) {
+export function bumperBadgeTexture(points: number[] = [100, 100]) {
+  const { image, c } = canvas(points.length * 512, 512);
+  for (let tile = 0; tile < points.length; tile++) {
     const cx = tile * 512 + 256;
     const cap = c.createRadialGradient(cx - 60, 190, 5, cx, 256, 255);
     cap.addColorStop(0, '#fffef2'); cap.addColorStop(.78, '#e8e4ce'); cap.addColorStop(1, '#b6b6a7');
@@ -108,7 +108,7 @@ export function bumperBadgeTexture() {
       n ? c.lineTo(cx + Math.cos(a) * r, 236 + Math.sin(a) * r) : c.moveTo(cx + Math.cos(a) * r, 236 + Math.sin(a) * r);
     }
     c.closePath(); c.fillStyle = tile ? '#168dab' : '#dba211'; c.fill(); c.stroke();
-    c.textAlign = 'center'; c.fillStyle = tile ? '#257d92' : '#916b17'; c.font = 'bold 32px monospace'; c.fillText('100', cx, 416);
+    c.textAlign = 'center'; c.fillStyle = tile ? '#257d92' : '#916b17'; c.font = 'bold 32px monospace'; c.fillText(String(points[tile]), cx, 416);
   }
   return texture(image);
 }

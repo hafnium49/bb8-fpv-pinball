@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { marketPaving } from './night-market-paving';
 import data from '../physics/reference-course-data.json';
 /** Original artwork placed at the reference's board landmarks, rather than
 * reusing the old ORBIT texture's unrelated bumper/route positions. */
@@ -15,6 +16,7 @@ export function referencePlayfield() {
   bg.addColorStop(1, '#231936');
   c.fillStyle = bg;
   c.fillRect(0, 0, 480, 820);
+  const paving=marketPaving(); c.drawImage(paving.image as HTMLCanvasElement,0,0,480,820); paving.dispose();
   const glow = c.createRadialGradient(220, 285, 0, 220, 285, 320);
   glow.addColorStop(0, '#b6a7fa4f');
   glow.addColorStop(1, '#19133700');
@@ -130,6 +132,7 @@ export function referenceDeckArtwork() {
   const c = image.getContext('2d')!;
   c.fillStyle = '#263765';
   c.fillRect(0, 0, 512, 512);
+  const paving=marketPaving(512,512); c.drawImage(paving.image as HTMLCanvasElement,0,0); paving.dispose();
   c.strokeStyle = '#668bc55c';
   c.lineWidth = 2;
   for (let i = 0; i <= 512; i += 32) {
