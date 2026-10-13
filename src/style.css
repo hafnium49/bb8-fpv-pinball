@@ -186,8 +186,8 @@ h1 em { font-style: inherit; color: var(--amber); }
   .ranking-panel .score-list li { flex: 1; padding-top: 3px; padding-bottom: 3px; }
   .topbar { left: auto; right: 10px; width: 264px; height: auto; padding: 8px; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 12px; overflow-y: auto; }
   .wordmark { min-height: 34px; flex: 0 0 auto; justify-content: center; }
-  .wordmark strong { font: 900 24px Georgia, serif; letter-spacing: -.05em; color: #f9ce77; text-shadow: 0 -1px #ffebc4, 0 2px #825220, 0 3px #382415, 0 0 7px #e69b4870; white-space: nowrap; }
-  .pinball-title { display: inline; }
+  .wordmark strong { font: 900 24px Georgia, serif; letter-spacing: -.05em; color: #f9ce77; text-shadow: 0 -1px #ffebc4, 0 2px #825220, 0 3px #382415, 0 0 7px #e69b4870; white-space: normal; text-align: center; }
+  .pinball-title { display: inline; font-size: 15px; letter-spacing: .02em; }
   .orbit-mark, .brand-note { display: none; }
   .hud { order: 1; min-height: 112px; flex: 0 0 auto; padding: 11px 10px; border-color: #939a98; row-gap: 10px; }
   #score { font-size: 31px; letter-spacing: .02em; }

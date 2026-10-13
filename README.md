@@ -1,4 +1,4 @@
-# ORBIT — BB-8 inspired FPV pinball
+# Be the Ball 8: FPV Pinball
 
 Pinball from inside the ball. The ball rolls and ricochets physically, while the default camera keeps its horizon level and smoothly follows the direction of travel. The default course uses the measured layout of [Hyperspace Pinball](https://pinball-fbd1a.firebaseapp.com/): three ramps, a raised mini playfield, nine bumpers, two flipper pairs and three subway routes. Artwork, materials, droid sounds and the FPV presentation are original.
 
@@ -28,7 +28,7 @@ The [recovery-build release notes](docs/NEON-RECOVERY-2026-10-14.md) describe th
 
 ## Orbital arcade visuals
 
-The [reference cabinet recreation](docs/reference-cabinet-release.md) brings the Hyperspace Pinball reference's three-column PC layout, curved wood/chrome enclosure, purple illustrated playfield, cream apron cards and star-topped jet bumpers to ORBIT. The left panel shows this browser's top ten scores and eight recent completed games. The right console contains an amber dot display, three bumper lamps, actual game statistics, controls and scoring. The full cabinet appears before play; entering the table restores stabilized FPV. Smaller screens retain compact controls. Pause offers a separate Music volume slider while master SOUND controls the full mix.
+The [reference cabinet recreation](docs/reference-cabinet-release.md) brings the Hyperspace Pinball reference's three-column PC layout, curved wood/chrome enclosure, purple illustrated playfield, cream apron cards and star-topped jet bumpers to Be the Ball 8: FPV Pinball. The left panel shows this browser's top ten scores and eight recent completed games. The right console contains an amber dot display, three bumper lamps, actual game statistics, controls and scoring. The full cabinet appears before play; entering the table restores stabilized FPV. Smaller screens retain compact controls. Pause offers a separate Music volume slider while master SOUND controls the full mix.
 
 The [iPhone touch and cabinet follow-up](docs/iphone-touch-cabinet-release.md) prevents visible touch-focus changes from pausing play, keeps independent finger/key holds, and adds the reference-inspired wood surround, ivory/red flippers, amber dot display and metal control pads. Backgrounding the page still pauses and silences the game.
 
