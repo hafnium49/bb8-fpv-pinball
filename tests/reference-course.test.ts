@@ -2,9 +2,30 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PinballSimulation } from '../src/physics/simulation';
 import { BALL_RADIUS, STEP } from '../src/physics/table';
-import { courseBumpers, courseFlippers, courseGate, courseLaunch, courseRamps, courseSpinners, courseTargets, courseTunnels, deckHeight, pathFrame } from '../src/physics/reference-course';
+import { courseBumpers, courseFlippers, courseGate, courseLaunch, coursePortals, courseRamps, courseSpinners, courseTargets, courseTunnels, deckHeight, pathFrame } from '../src/physics/reference-course';
 import { SoundDirector, flipperWarning } from '../src/ui/sound-director';
 async function sim() { const s = await PinballSimulation.create({ course: 'reference' }); s.start(); s.launch(.5); s.events.length = 0; return s; }
+for (const [index, portal] of coursePortals.entries())
+  test(`wormhole ${index}: exits to the lower field without an automatic scoring loop`, async () => {
+    const s = await sim();
+    try {
+      s.ball.setTranslation({ ...portal, y: BALL_RADIUS + .015 }, true);
+      s.ball.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      s.ball.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      let captured = false, released = false, lowerField = false;
+      for (let n = 0; n < Math.ceil(20 / STEP); n++) {
+        s.step();
+        captured ||= s.reference!.guided;
+        released ||= captured && !s.reference!.guided;
+        lowerField ||= s.position.z > 5;
+        if (s.events.some(e => e.type === 'drain')) break;
+      }
+      assert.equal(s.events.filter(e => e.type === 'ramp' && e.name === 'WORMHOLE').length, 1);
+      assert.ok(captured && released, 'portal captures and releases the ball');
+      assert.ok(lowerField, 'ball returns to the playable lower field');
+      assert.ok(s.events.some(e => e.type === 'drain'), 'unattended ball drains naturally');
+    } finally { s.dispose(); }
+  });
 function place(s: PinballSimulation, x: number, y: number, z: number, vx: number, vz: number) { s.ball.setTranslation({ x, y, z }, true); s.ball.setLinvel({ x: vx, y: 0, z: vz }, true); s.ball.setAngvel({ x: 0, y: 0, z: 0 }, true); s.events.length = 0; }
 test('course contains the measured six ground bumpers, three deck bumpers, two flipper pairs and three separate ramps', () => {
   assert.equal(courseBumpers.length, 9);

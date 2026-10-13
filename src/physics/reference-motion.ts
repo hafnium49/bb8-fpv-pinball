@@ -259,7 +259,9 @@ export class ReferenceMotion {
     }
     for (const [i, portal] of coursePortals.entries())
       if (Math.hypot(p.x - portal.x, p.z - portal.z) < .34) {
-        this.scoop(portal, { x: i ? 6 : -6, y: 0, z: 10 }, .3, coursePortals[1 - i]);
+        // Eject downfield. A sideways kick from the left exit hits the center
+        // bumper and arch, returning to the right portal in a scoring loop.
+        this.scoop(portal, { x: 0, y: 0, z: 10 }, .3, coursePortals[1 - i]);
         events.push({ type: 'ramp', name: 'WORMHOLE', points: 1500 });
         return;
       }
