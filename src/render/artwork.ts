@@ -89,7 +89,7 @@ export function playfieldTexture(circuitEnabled = false) {
     const lines = side < 0 ? ['HOLD SPACE · RELEASE', 'A / D · FLIPPERS', '3 BALLS · ONE ORBIT'] : ['JET BUMPERS 100', 'BOOST TARGETS 250', circuitEnabled ? 'FULL CIRCUIT 750' : 'LIGHT THE REACTORS'];
     lines.forEach((line, i) => c.fillText(line, cx, cy - 10 + i * 20));
   }
-  c.fillStyle = '#ffdc68'; c.font = 'bold 30px sans-serif'; c.fillText('ORBIT PINBALL', x(0), z(10.72));
+  c.fillStyle = '#ffdc68'; c.font = 'bold 30px sans-serif'; c.fillText('Be the Ball 8: FPV Pinball', x(0), z(10.72), 600);
   return texture(image);
 }
 
@@ -119,8 +119,8 @@ export function backboardTexture() {
   const glow = c.createLinearGradient(0, 0, 1024, 0); glow.addColorStop(0, '#12667b'); glow.addColorStop(0.5, '#1a1946'); glow.addColorStop(1, '#82431d');
   c.fillStyle = glow; c.fillRect(8, 8, 1008, 240); c.fillStyle = '#071128'; c.fillRect(13, 13, 998, 230);
   c.strokeStyle = '#60eaf8'; c.lineWidth = 2; c.strokeRect(28, 28, 968, 200);
-  c.textAlign = 'center'; c.font = 'italic 900 114px sans-serif'; c.fillStyle = '#effbff'; c.shadowColor = '#5ce5ff'; c.shadowBlur = 16;
-  c.fillText('ORBIT', 512, 151); c.shadowBlur = 0;
+  c.textAlign = 'center'; c.font = 'italic 900 64px sans-serif'; c.fillStyle = '#effbff'; c.shadowColor = '#5ce5ff'; c.shadowBlur = 16;
+  c.fillText('Be the Ball 8', 512, 151, 720); c.shadowBlur = 0;
   c.font = 'bold 20px monospace'; c.fillStyle = '#ffb65a'; c.fillText('SECTOR 07     •     ORBITAL ARCADE', 512, 199);
   c.font = 'bold 24px monospace'; c.fillStyle = '#63e8f5'; c.fillText('01', 102, 140); c.fillStyle = '#ffb65a'; c.fillText('FPV', 915, 140);
   for (let y = 0; y < 256; y += 4) { c.fillStyle = '#00000022'; c.fillRect(0, y, 1024, 1); }
