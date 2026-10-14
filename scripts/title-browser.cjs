@@ -9,20 +9,25 @@ const assert = require('node:assert/strict');
   let browser;
   try {
     await server.listen();
-    browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined, headless: true,
-      args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+    const launchOptions = { executablePath: process.env.CHROME_PATH || undefined, headless: true,
+      args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] };
     const results = [];
     for (const [width, height] of [[1440,900],[1280,720],[768,1024],[844,390],[667,375],[375,812],[430,932]]) {
+      console.log(`Checking ${width}x${height}`);
+      browser = await chromium.launch(launchOptions);
       const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
       const page = await context.newPage(); const errors = [];
       page.on('pageerror', e => errors.push(e.message));
       await page.goto(server.resolvedUrls.local[0], { waitUntil: 'networkidle' });
       await page.locator('#start:not([disabled])').waitFor({ timeout: 60000 });
+      // Freeze continuous GPU work, as in cabinet-browser.cjs; render each state once.
+      await page.evaluate(() => { const {view}=window.orbitDebug; window.titleRender=view.render.bind(view); view.render=()=>{}; });
       assert.equal(await page.title(), 'Be the Ball 8: FPV Pinball');
       for (const phase of ['intro','ready']) {
         if (phase === 'ready') await page.locator('#start').click();
         await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
-        await page.screenshot({ path: path.join(output, `${width}x${height}-${phase}.png`) });
+        await page.evaluate(() => window.titleRender(window.orbitDebug.sim, 1/60));
+        await page.screenshot({ path: path.join(output, `${width}x${height}-${phase}.png`), timeout: 60000 });
         const layout = await page.evaluate(() => {
           const box = e => { const r=e.getBoundingClientRect(); return { x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height }; };
           const w=document.querySelector('.wordmark'), t=w.querySelector('strong'), a=document.querySelector('.top-actions');
@@ -37,8 +42,10 @@ const assert = require('node:assert/strict');
         assert.equal(layout.title, 'Be the Ball 8: FPV Pinball');
         assert.deepEqual(errors, [], 'browser runtime errors');
         results.push({width,height,phase,...layout});
+        fs.writeFileSync(path.join(output,'layout-results.json'), JSON.stringify(results,null,2));
       }
       await context.close();
+      await browser.close(); browser=undefined;
     }
     fs.writeFileSync(path.join(output,'layout-results.json'), JSON.stringify(results,null,2));
     console.log('Title layout checks passed across seven desktop/tablet/mobile viewports.');
