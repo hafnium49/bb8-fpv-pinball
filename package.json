@@ -23,7 +23,8 @@
     "standalone": "npm run build && node scripts/standalone.mjs",
     "test:course:browser": "node scripts/reference-course-browser.cjs",
     "test:course": "node --import tsx scripts/reference-course-check.ts",
-    "test:course:audio": "node scripts/reference-course-audio.cjs"
+    "test:course:audio": "node scripts/reference-course-audio.cjs",
+    "test:title:browser": "node scripts/title-browser.cjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "0.21.0",
