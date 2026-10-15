@@ -8,6 +8,7 @@ import { bumperBadgeTexture, woodTexture } from './artwork';
 import { referencePlayfield, referenceDeckArtwork } from './reference-artwork';
 import { nightRouteTexture, mechanismInlayTexture } from './night-market-paving';
 import { illuminateBackFace } from './material-optimizations';
+import { fidelityMode, glazeRoughness } from './fidelity-bake';
 import { batchStaticMeshes } from './static-batch';
 export const SUBWAY_UNDERTRAY_Y = -.912;
 
@@ -81,6 +82,9 @@ export class ReferenceTable {
     const wood = this.keep(new THREE.MeshStandardMaterial({ map: this.keep(woodTexture()), roughness: .5, metalness: 0 }));
     const floorArt = this.keep(referencePlayfield());
     const floor = this.keep(new THREE.MeshPhysicalMaterial({ map: floorArt, emissiveMap: floorArt, emissive: 0xffffff, emissiveIntensity: .22, roughness: .27, metalness: .28, clearcoat: 1, clearcoatRoughness: .13, side: THREE.DoubleSide }));
+    if (fidelityMode(window.location.search) === 'roughness') {
+      floor.roughnessMap = this.keep(glazeRoughness()); floor.roughness = 1;
+    }
     const base = this.data({ ...fieldData, vertices: new Float32Array(fieldData.vertices.map((n, i) => i % 3 === 1 ? n + .008 : n)) }, floor, this.scene, false, 'field');
     base.name = 'Reference playfield';
     this.data({ ...fieldData, vertices: new Float32Array(fieldData.vertices.map((n, i) => i % 3 === 1 ? n + SUBWAY_UNDERTRAY_Y : n)) }, black).name = 'Subway undertray';
