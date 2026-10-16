@@ -1,6 +1,6 @@
 # FPV fidelity spike and lighter wall bases
 
-Status: draft experiment; visual/performance acceptance is outstanding. Do not merge or deploy on the strength of unit tests alone.
+Status: complete fixed-pose software-renderer comparison and independent visual review. See the [final results and recommendation](fpv-fidelity-results.md) and [per-measurement CSV](fpv-fidelity-measurements.csv). The optional material experiment remains default-off; actual-device performance and input latency remain unmeasured.
 
 Baseline: `3c478dd7d4185750f6daac69780da0ebcc5aa063`. Existing title-only draft PR #17 (`e34e2430092a11420af94814b5ec47467bfe3e49`) is separate and unchanged. This branch preserves the repository's original audio asset; it does not replace or delete it.
 
@@ -12,7 +12,7 @@ Architectural bases now use lighter neutral slate **#74828C**:
 - Actual lower subway walls now use their own opaque slate material instead of the dark route-floor texture. Slate emission (.35) keeps that material independent of environment lighting in Eco. Floor paving and tunnel guide lights are unchanged.
 - Under-deck rail faces, fascia and soffit are covered. Ramp riding surfaces/undersides remain their existing paving, and recessed windows/sign backgrounds intentionally remain dark; this is not a global recoloring of every dark surface.
 
-These surfaces occur in both the reference and classic/circuit courses. Sky/background, floor/paving, sign backgrounds, brass, recessed windows and neon colors remain unchanged. Existing atlas/palette batching is preserved. The lower-tunnel correction separates a material, which can add draw batches/program variation; it adds no texture, light, geometry or postprocessing pass. Its measured cost is unknown. Other wall-atlas/enamel material parameters are unchanged. Rendered contrast still requires desktop/mobile visual inspection; diffuse and emissive slots share the wall artwork, so verify it does not become too bright under bloom.
+These surfaces occur in both the reference and classic/circuit courses. Sky/background, floor/paving, sign backgrounds, brass, recessed windows and neon colors remain unchanged. Existing atlas/palette batching is preserved. The lower-tunnel correction separates a material, which can add draw batches/program variation; it adds no texture, light, geometry or postprocessing pass. Measured final-frame counters add one draw call at the bridge fixture and three at the other fixtures, with unchanged triangle and texture counts. Other wall-atlas/enamel material parameters are unchanged. Diffuse and emissive slots share the wall artwork; the fixed-pose Eco/High captures are reviewed for readable contrast and bloom.
 
 ## Opt-in material experiment
 The renderer already has ACES tone mapping, procedural PMREM environment lighting, physical clearcoat materials, shadow-revision caching, HDR bloom, adaptive resolution, static batching, palette/atlas consolidation and repeated texture-sample reuse. These are existing features, not claimed new improvements.
@@ -24,7 +24,7 @@ The reference playfield experiment is strictly opt-in:
 
 Physics, audio, input, camera, collision geometry and adaptive-budget logic are untouched. The optional artwork also appears in the intro preview; no camera mode or overhead inset is added. This is a small material experiment, not a full scene redesign.
 
-## Initial verification (before review corrections)
+## Historical verification (before final comparison)
 - Baseline: 100 tests, 97 pass, 3 audio-dependent failures because the original WAV could not be retrieved into this local workspace through the connector.
 - Combined candidate: 105 tests, 102 pass, the same 3 missing-WAV failures. The original WAV remains in this repository and must be present for full CI checks.
 - Three new fidelity tests pass: strict mode allowlist, deterministic/bounded roughness data, fixed contact drawing/restoration.
@@ -87,9 +87,9 @@ Startup timings separate simulation creation, pose preparation, view constructio
 For manual inspection open either server's `/spikes/fidelity/?source=pr&quality=eco&pose=underdeck&viewport=mobile&fidelity=baseline` (use `source=main` for the baseline server). Other supported quality/pose/variant names match the matrix above. Production defaults are unchanged by these harness options.
 
 ## Evidence interpretation and follow-up checks
-1. Produce and inspect matching old-main/PR desktop/mobile FPV captures for every automated pose in both Eco and High, especially the user-reported under-deck and tunnel walls. Check bloom and readable contrast. Then inspect moving gameplay for shimmer; static captures cannot establish that.
+1. The completed-run report records fixed-pose desktop/mobile Eco/High visual review, including under-deck and tunnel walls. Moving gameplay shimmer remains outside these static captures.
 2. Software-GPU measurements diagnose relative rendering cost on this CI runner only. Actual target desktop/mobile A/B gameplay is needed before claiming device-specific performance or response equivalence. That limitation must remain explicit; it is not evidence of a regression or an automatic blocker to merging a default-off experiment.
 3. Physics, audio and input code are unchanged. Existing automated gameplay checks remain relevant; broader device playtesting should exercise keyboard/simultaneous touch, pause/blur, launch-lane exit, three-ball lifecycle and reduced motion. Event-to-present latency requires separate instrumentation if response equivalence is claimed.
 4. Reconcile with the title PR's latest head before approved integration.
 
-Recommendation: baked-only is the lowest runtime-risk experiment by code structure. Whether it looks better, and whether the extra roughness lookup earns its cost, remains unverified.
+Recommendation: keep the requested lighter walls as the normal change and keep both optional material modes default-off. Baked contacts are the lower-cost experiment by structure and measured resource counters. Their visual effect is subtle, clearest around under-deck bumper bases. The roughness map changes highlights but the software timing evidence does not show that its extra lookup earns its cost; do not promote it to the default based on this run.
