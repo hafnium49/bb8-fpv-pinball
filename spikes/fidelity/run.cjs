@@ -47,10 +47,10 @@ async function run() {
       try {
         const response = await page.goto(entry.url, { waitUntil: 'load', timeout: 120000 });
         if (!response?.ok()) throw new Error(`Harness HTTP status: ${response?.status()}`);
-        const waitForStatus = status => page.waitForFunction(expected => {
+        const waitForStatus = (status, timeout = 120000) => page.waitForFunction(expected => {
           const current = document.querySelector('#report')?.getAttribute('data-status');
           return current === expected || current === 'error';
-        }, status, { timeout: 120000 });
+        }, status, { timeout });
         const readReport = async (phase = 'reading report') => {
           evidence.assertClean(`before ${phase}`);
           const result = JSON.parse(await page.evaluate(() => {
@@ -72,6 +72,7 @@ async function run() {
             ready.highQuality !== (entry.quality === 'high') || ready.adaptiveResolution !== false || ready.reducedMotion !== true) {
           throw new Error('Requested viewport, quality, DPR, reduced-motion or fixed-resolution setting did not take effect.');
         }
+        if (ready.warmupFrames !== config.warmupFrames || ready.sampleFrames !== config.sampleFrames) throw new Error('Requested sampling profile did not take effect.');
         const expectedViewport = entry.viewport === 'mobile' ? [844, 390] : [960, 540];
         if (JSON.stringify(ready.viewport) !== JSON.stringify(expectedViewport)) throw new Error('Unexpected stage dimensions.');
         if (config.requestedRenderer === 'hardware' && ready.softwareRendererDetected) throw new Error('Hardware was requested but the browser reports a software renderer.');
@@ -84,7 +85,7 @@ async function run() {
         if (entry.repeat === 0) await checkedScreenshot(page, path.join(out, `${key}-${entry.source}-${entry.variant}.png`), readReport);
         await readReport('before measurement');
         await page.locator('#run').click();
-        await waitForStatus('complete');
+        await waitForStatus('complete', config.measurementTimeoutMs);
         const result = await readReport('after measurement');
         evidence.assertClean('before accepting measurement');
         if (JSON.stringify(result.fixedState) !== state) throw new Error('Fixed state changed between readiness and measurement.');

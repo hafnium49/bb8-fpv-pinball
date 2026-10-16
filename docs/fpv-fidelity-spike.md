@@ -42,7 +42,22 @@ Review corrections add dedicated lower-tunnel wall material coverage, under-deck
 ## Browser execution history and remaining measurement limits
 Installed Chromium could not start because of a socket permission error. An expanded launch failed during environment setup. The available cloud browser could not reach the workspace's localhost server. The portable runner also failed before rendering.
 
-The earlier own-cloud attempts produced no valid rendered evidence. A bounded PR18-only GitHub Actions workflow now runs the shared comparison on a standard Ubuntu runner with explicitly requested SwiftShader. It has read-only repository contents permission, no deployment, no stored checkout credentials, and a 45-minute timeout. It uploads complete or failed raw evidence for seven days. Results must be evaluated for their exact source head; a successful unit/build check is not a rendered comparison. Actual PC/iPhone performance, GPU timings and input latency remain unmeasured.
+The earlier own-cloud attempts produced no valid rendered evidence. A bounded PR18-only GitHub Actions workflow now runs the shared comparison on a standard Ubuntu runner with explicitly requested SwiftShader. It has read-only repository contents permission, no deployment, no stored checkout credentials, and a 25-minute timeout per condition (at most four standard runners concurrently), plus a 10-minute aggregation step. It uploads complete or failed raw evidence for seven days. Results must be evaluated for their exact source head; a successful unit/build check is not a rendered comparison. Actual PC/iPhone performance, GPU timings and input latency remain unmeasured.
+
+## First rendered run: partial evidence, not a complete benchmark
+
+[Run 38840880132](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38840880132), source `c4266fcd760f1ca3221ce44c8005b5fd594b97cd`, completed only **8/160** cases: desktop/Eco/ground, four treatments, forward/reverse repeats. The next launch measurement exceeded its 120-second timeout. Its failed manifest is retained; it is not accepted as full coverage. [Raw partial artifact](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38840880132/artifacts/12021771979) expires after seven days.
+
+The actual renderer was ANGLE/Vulkan **SwiftShader Device (Subzero)**. At 960x540, DPR1, 60 warmup +240 measured frames:
+- Old main: frame-delivery p95 800.0 /816.6 ms; CPU submission p95 4.7 /4.5 ms; 144 draw calls; 176754 triangles.
+- PR default walls: frame-delivery p95 800.1 /816.6 ms; CPU submission p95 4.5 /4.5 ms; 147 draw calls; identical triangle count.
+- Baked: p95 816.6 /800.1 ms. Roughness: p95 833.3 /816.6 ms. These small differences on this overloaded software renderer do not establish a performance benefit or regression.
+- The wall material separation adds three draw batches in this view; roughness adds one texture. Optional JS heap reported 37.3 MB for every case, a coarse JS-heap snapshot rather than total/GPU allocation.
+- Startup was cache-sensitive (approximately 1.2–4.7 seconds), so it is not a controlled cold-start comparison. Most sampled frames exceeded50 ms. No input latency was measured.
+
+Actual ground captures were inspected independently: patterned wall faces visibly change from near-black to lighter slate, with preserved framing, readable neon/patterns, dark sky and floor. This validates this one pose only; optional floor differences are subtle here.
+
+To complete the matrix in bounded CI, subsequent runs use **15 warmup +60 sampled frames**, retaining the full-resolution screenshots. Each of20 viewport/quality/pose conditions runs all four treatments and both orders sequentially on one runner. The aggregator rejects any missing/failed condition. Timings are compared only within each condition/runner, never pooled across machines. A 60-frame p95 is exploratory tail evidence, not a robust device-performance certification. The original60/240 profile remains the default for manual runs.
 
 ## Reproduce an actual old-main/PR comparison
 

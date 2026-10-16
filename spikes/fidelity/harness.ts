@@ -6,7 +6,6 @@ import { clampFPVPitch, prepareFixture, readOptions, summarize } from './fixture
 const report = document.querySelector<HTMLPreElement>('#report')!;
 const run = document.querySelector<HTMLButtonElement>('#run')!;
 const stage = document.querySelector<HTMLElement>('#stage')!;
-const WARMUP_FRAMES = 60, SAMPLE_FRAMES = 240;
 
 declare global { interface Window { __fidelityAssertHealthy?: () => void } }
 
@@ -18,6 +17,7 @@ function fail(error: unknown) {
 
 async function main() {
   const options = readOptions(location.search);
+  const WARMUP_FRAMES = options.warmupFrames, SAMPLE_FRAMES = options.sampleFrames;
   const viewport = options.viewport === 'mobile' ? [844, 390] : [960, 540];
   stage.style.width = `${viewport[0]}px`; stage.style.height = `${viewport[1]}px`;
   const start = performance.now();

@@ -29,11 +29,16 @@ export function readOptions(search: string) {
     if (!values.includes(value as T)) throw new Error(`Unsupported ${key}: ${value}`);
     return value as T;
   };
+  const count = (key: string, fallback: number, minimum: number, maximum: number) => {
+    const value = Number(query.get(key) ?? fallback);
+    if (!Number.isInteger(value) || value < minimum || value > maximum) throw new Error(`Unsupported ${key}: expected integer ${minimum}–${maximum}.`);
+    return value;
+  };
   const source = allowed('source', ['main', 'pr'], 'pr');
   const variant = allowed('fidelity', ['baseline', 'baked', 'roughness'], 'baseline');
   if (source === 'main' && variant !== 'baseline') throw new Error('Old main supports only the baseline variant.');
   return {
-    source, variant,
+    source, variant, warmupFrames: count('warmup', 60, 15, 600), sampleFrames: count('samples', 240, 60, 2400),
     quality: allowed('quality', ['eco', 'high'], 'high'),
     pose: allowed('pose', poseNames, 'ground'),
     viewport: allowed('viewport', ['desktop', 'mobile'], 'desktop'),

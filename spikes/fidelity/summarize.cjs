@@ -2,7 +2,7 @@
 const { readFileSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 const { isDeepStrictEqual } = require('node:util');
-const { readConfig, buildMatrix, caseUrl, viewports, qualities, poses, treatments } = require('./matrix.cjs');
+const { readSavedConfig, buildMatrix, caseUrl, viewports, qualities, poses, treatments } = require('./matrix.cjs');
 
 const EXPECTED_MEASUREMENTS = 160;
 const metrics = [
@@ -31,9 +31,9 @@ function finiteMetric(value, name, integer = false) {
   return value;
 }
 
-function checkTiming(row, key) {
+function checkTiming(row, key, sampleCount) {
   const raw = row.samples?.[key], reported = row[key];
-  if (!Array.isArray(raw) || raw.length !== 240 || reported?.samples !== 240) fail(`${caseKey(row)} must contain 240 ${key} samples`);
+  if (!Array.isArray(raw) || raw.length !== sampleCount || reported?.samples !== sampleCount) fail(`${caseKey(row)} must contain ${sampleCount} ${key} samples`);
   for (const value of raw) finiteMetric(value, `${caseKey(row)} ${key} sample`);
   if (key === 'frameIntervalMs' && raw.some(value => value === 0)) fail(`${caseKey(row)} contains a zero frame interval`);
   if (key === 'frameIntervalMs') {
@@ -41,7 +41,9 @@ function checkTiming(row, key) {
         row.longFramesOver50ms !== raw.filter(value => value > 50).length) fail(`${caseKey(row)} long-frame counts disagree with raw samples`);
   }
   const sorted = [...raw].sort((a, b) => a - b);
-  const expected = { median: (sorted[119] + sorted[120]) / 2, p95: sorted[227], max: sorted[239], samples: 240 };
+  const middle = Math.floor(sampleCount / 2);
+  const expected = { median: sampleCount % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2,
+    p95: sorted[Math.ceil(sampleCount * .95) - 1], max: sorted.at(-1), samples: sampleCount };
   for (const field of Object.keys(expected)) if (reported[field] !== expected[field]) fail(`${caseKey(row)} ${key}.${field} disagrees with raw samples`);
 }
 
@@ -62,11 +64,8 @@ function summarizeRun(manifest, rows) {
   if (!manifest.finishedAt || !Number.isFinite(Date.parse(manifest.finishedAt))) fail('missing final completion timestamp');
   const saved = manifest.config;
   if (!saved || saved.repeats !== 2) fail('requires exactly two paired forward/reverse repeats');
-  const config = readConfig({
-    FIDELITY_BASELINE_URL: saved.baselineUrl, FIDELITY_PR_URL: saved.prUrl,
-    FIDELITY_BASELINE_COMMIT: saved.baselineCommit, FIDELITY_PR_COMMIT: saved.prCommit,
-    FIDELITY_REPEATS: String(saved.repeats), FIDELITY_DPR: String(saved.deviceScaleFactor), PERF_GPU: saved.requestedRenderer,
-  });
+  const config = readSavedConfig(saved);
+  if (Object.values(config.filters).some(Boolean)) fail('full summary requires unfiltered coverage');
   const expected = buildMatrix(config), plans = new Map(), measurements = new Map();
   for (const planned of manifest.cases) {
     const key = caseKey(planned);
@@ -95,7 +94,7 @@ function summarizeRun(manifest, rows) {
         row.reducedMotion !== true || row.requestedRenderer !== config.requestedRenderer) fail(`requested rendering settings did not match for ${key}`);
     if (typeof row.gpu !== 'string' || !row.gpu || typeof row.softwareRendererDetected !== 'boolean') fail(`missing renderer identity for ${key}`);
     if (config.requestedRenderer === 'hardware' && row.softwareRendererDetected) fail(`software renderer reported in requested hardware run ${key}`);
-    if (row.warmupFrames !== 60 || row.sampleFrames !== 240 || row.livePhysics !== false || row.audio !== false ||
+    if (row.warmupFrames !== config.warmupFrames || row.sampleFrames !== config.sampleFrames || row.livePhysics !== false || row.audio !== false ||
         row.gpuTime !== 'not measured' || row.inputLatency !== 'not measured') fail(`workload metadata mismatch for ${key}`);
     if (!row.fixedState || !Array.isArray(row.fixedState.cameraPosition) || !Array.isArray(row.fixedState.cameraQuaternion) ||
         !Array.isArray(row.fixedState.cameraProjection) || !Array.isArray(row.fixedState.buffer) ||
@@ -103,7 +102,7 @@ function summarizeRun(manifest, rows) {
     const groupKey = `${entry.viewport}/${entry.quality}/${entry.pose}`;
     if (fixedStates.has(groupKey) && !isDeepStrictEqual(fixedStates.get(groupKey), row.fixedState)) fail(`non-comparable fixed state for ${groupKey}`);
     fixedStates.set(groupKey, row.fixedState);
-    checkTiming(row, 'frameIntervalMs'); checkTiming(row, 'cpuSubmitMs');
+    checkTiming(row, 'frameIntervalMs', config.sampleFrames); checkTiming(row, 'cpuSubmitMs', config.sampleFrames);
     finiteMetric(row.drawCalls, `${key} drawCalls`, true); finiteMetric(row.triangles, `${key} triangles`, true);
     if (row.heapBytes !== null) finiteMetric(row.heapBytes, `${key} heapBytes`, true);
     finiteMetric(row.startupTimingsMs?.sceneReady, `${key} startup sceneReady`);
@@ -133,7 +132,7 @@ function summarizeRun(manifest, rows) {
     runId: manifest.runId, startedAt: manifest.startedAt, finishedAt: manifest.finishedAt,
     browserVersion: manifest.browserVersion ?? 'not recorded', config,
     gpu: [...new Set(rows.map(row => row.gpu))], softwareDetected: rows.some(row => row.softwareRendererDetected),
-    measurements: rows.length, groups,
+    measurements: rows.length, aggregation: manifest.aggregation ?? null, groups,
   };
 }
 
@@ -150,7 +149,9 @@ function renderMarkdown(summary) {
     '- Commit labels are operator-declared; this report does not independently verify the served source revision.',
     `- Browser: ${escape(summary.browserVersion)}. Requested renderer: ${escape(summary.config.requestedRenderer)}. Device pixel ratio: ${summary.config.deviceScaleFactor}.`,
     `- Reported renderer(s): ${summary.gpu.map(escape).join('; ')}. Software signature detected: ${summary.softwareDetected ? 'yes' : 'no'}.`,
-    '- Every measurement uses 60 warmup frames followed by 240 sampled frames. Adaptive resolution is disabled and reduced motion is enabled.', '',
+    `- Declared sampling profile: ${summary.config.warmupFrames} warmup frames followed by ${summary.config.sampleFrames} sampled frames per measurement. Adaptive resolution is disabled and reduced motion is enabled.`,
+    summary.config.warmupFrames === 60 && summary.config.sampleFrames === 240 ? '- Default 60/240 sampling profile.' : '- Non-default bounded sampling profile; the 60-sample p95 is exploratory and provides weak tail-latency evidence. Fewer samples limit percentile precision. Do not pool or directly substitute this evidence for a different sampling profile.',
+    summary.aggregation ? `- Aggregated from ${summary.aggregation.shards.length} completed condition shards; repetitions remain paired within each shard. Separate CI jobs may have different host load. Cross-condition timings are not a controlled GPU comparison.` : '- All conditions were recorded in one declared run.', '',
     '## Interpretation limits', '',
     summary.config.requestedRenderer === 'software' || summary.softwareDetected
       ? '- Software rendering was requested and/or detected. These timings characterize this software-renderer workload and cannot establish hardware-GPU playability.'

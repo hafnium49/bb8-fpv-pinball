@@ -89,7 +89,7 @@ test('fixed-camera pitch uses the production 18-degree or reduced-motion 8-degre
 });
 
 test('harness options strictly label quality/source and never claim old-main bake variants', () => {
-  assert.deepEqual(readOptions(''), { source: 'pr', variant: 'baseline', quality: 'high', pose: 'ground', viewport: 'desktop', commitLabel: 'unlabelled' });
+  assert.deepEqual(readOptions(''), { source: 'pr', variant: 'baseline', quality: 'high', pose: 'ground', viewport: 'desktop', commitLabel: 'unlabelled', warmupFrames: 60, sampleFrames: 240 });
   assert.equal(readOptions('?source=main&quality=eco&pose=tunnel&viewport=mobile').quality, 'eco');
   assert.equal(readOptions('?source=pr&fidelity=roughness&commit=abcdef0').commitLabel, 'abcdef0');
   for (const query of ['?source=legacy', '?quality=medium', '?pose=unknown', '?viewport=phone', '?fidelity=unknown', '?source=main&fidelity=baked']) {
@@ -153,7 +153,7 @@ test('portable harness has no fidelity-bake dependency and normal build typechec
   assert.match(packageJson.scripts['typecheck:fidelity'], /tsconfig\.fidelity\.json/);
   assert.ok(JSON.parse(read('../tsconfig.fidelity.json')).include.includes('spikes/fidelity/**/*.ts'));
   const harness = read('../spikes/fidelity/harness.ts');
-  assert.match(harness, /WARMUP_FRAMES = 60, SAMPLE_FRAMES = 240/);
+  assert.match(harness, /WARMUP_FRAMES = options.warmupFrames, SAMPLE_FRAMES = options.sampleFrames/);
   assert.match(harness, /gpuTime: 'not measured'/);
   assert.match(harness, /inputLatency: 'not measured'/);
   assert.match(harness, /caller-supplied; not independently verified/);
@@ -229,4 +229,35 @@ test('context polling gates warmup, readiness, every rendered frame and complete
   assert.match(runner, /await readReport\('before measurement'\)/);
   assert.match(runner, /await readReport\('after measurement'\)/);
   assert.match(runner, /evidence.assertClean\('before accepting measurement'\)/);
+});
+
+
+test('sampling profiles are bounded, declared in queries and preserve the default profile', () => {
+  const defaults = readConfig(env);
+  assert.equal(defaults.warmupFrames, 60); assert.equal(defaults.sampleFrames, 240);
+  const bounded = readConfig({ ...env, FIDELITY_WARMUP: '15', FIDELITY_SAMPLES: '60', FIDELITY_MEASUREMENT_TIMEOUT_MS: '600000' });
+  assert.equal(bounded.measurementTimeoutMs, 600000);
+  const options = readOptions(new URL(caseUrl(bounded, buildMatrix(bounded)[0])).search);
+  assert.equal(options.warmupFrames, 15); assert.equal(options.sampleFrames, 60);
+  for (const [key, value] of [['FIDELITY_WARMUP', '14'], ['FIDELITY_SAMPLES', '59'], ['FIDELITY_SAMPLES', '60.5'], ['FIDELITY_MEASUREMENT_TIMEOUT_MS', '600001']]) {
+    assert.throws(() => readConfig({ ...env, [key]: value }));
+  }
+  for (const query of ['?warmup=14', '?samples=59', '?samples=6000', '?samples=NaN']) assert.throws(() => readOptions(query));
+});
+
+test('each filtered condition preserves all eight treatment/order cases and twenty shards cover the full matrix', () => {
+  const full = buildMatrix(readConfig(env));
+  const collected: any[] = [];
+  for (const viewport of ['desktop', 'mobile']) for (const quality of ['eco', 'high']) for (const pose of poseNames) {
+    const config = readConfig({ ...env, FIDELITY_VIEWPORT: viewport, FIDELITY_QUALITY: quality, FIDELITY_POSE: pose });
+    const shard = buildMatrix(config);
+    assert.equal(shard.length, 8);
+    assert.ok(shard.every((entry: any) => entry.viewport === viewport && entry.quality === quality && entry.pose === pose));
+    collected.push(...shard);
+  }
+  assert.deepEqual(collected, full);
+  for (const key of ['FIDELITY_VIEWPORT', 'FIDELITY_QUALITY', 'FIDELITY_POSE']) assert.throws(() => readConfig({ ...env, [key]: 'unknown' }));
+  const runner = readFileSync(new URL('../spikes/fidelity/run.cjs', import.meta.url), 'utf8');
+  assert.match(runner, /status, timeout = 120000/);
+  assert.match(runner, /waitForStatus\('complete', config.measurementTimeoutMs\)/);
 });
