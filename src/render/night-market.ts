@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { WALL_BASE_COLOR } from './wall-palette';
 import { batchStaticMeshes, releaseStaticBuildInputs } from './static-batch';
 import { bridgePendantFits, signClearsRouteEyes, tubeClearsRouteEyes, type Point3 } from './night-market-clearance';
 import { atlasFace, marketColors, nightMarketAtlas, nightMarketInlayAtlas } from './night-market-art';
@@ -33,7 +34,7 @@ export class NightMarket {
     const inlay = this.keep(nightMarketInlayAtlas());
     this.inlay = this.keep(new THREE.MeshPhysicalMaterial({ map: inlay, emissiveMap: inlay, emissive: 0xffffff, emissiveIntensity: .65,
       metalness: .45, roughness: .22, clearcoat: 1, clearcoatRoughness: .10, side: THREE.DoubleSide }));
-    this.enamel = this.keep(new THREE.MeshPhysicalMaterial({ color: 0x344659, metalness: .45, roughness: .24, clearcoat: 1, clearcoatRoughness: .12 }));
+    this.enamel = this.keep(new THREE.MeshPhysicalMaterial({ color: WALL_BASE_COLOR, metalness: .45, roughness: .24, clearcoat: 1, clearcoatRoughness: .12 }));
     this.brass = this.keep(new THREE.MeshStandardMaterial({ color: 0xcfaa6b, metalness: .8, roughness: .26 }));
     this.dark = this.keep(new THREE.MeshStandardMaterial({ color: 0x18273f, metalness: .4, roughness: .32 }));
     this.glow = marketColors.map(color => this.keep(new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.6, metalness: .35, roughness: .22 })));

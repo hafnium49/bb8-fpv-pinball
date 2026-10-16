@@ -1,0 +1,113 @@
+name: FPV fidelity software-GPU comparison
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - src/**
+      - spikes/fidelity/**
+      - package*.json
+      - tsconfig*.json
+      - .github/workflows/fidelity-spike.yml
+permissions:
+  contents: read
+concurrency:
+  group: fidelity-spike-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  compare:
+    if: github.event.pull_request.number == 18 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        viewport: [desktop, mobile]
+        quality: [eco, high]
+        pose: [ground, launch, bridge, tunnel, underdeck]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          ref: 3c478dd7d4185750f6daac69780da0ebcc5aa063
+          path: baseline
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install locked dependencies and shared harness
+        run: |
+          cd candidate && npm ci && cd ..
+          cd baseline && npm ci && cd ..
+          mkdir -p baseline/spikes
+          cp -R candidate/spikes/fidelity baseline/spikes/fidelity
+          cd candidate && npx playwright install --with-deps chromium
+      - name: Compare one condition with paired treatments on the same runner
+        working-directory: candidate
+        env:
+          FIDELITY_BASELINE_URL: http://127.0.0.1:5188/spikes/fidelity/
+          FIDELITY_PR_URL: http://127.0.0.1:5198/spikes/fidelity/
+          FIDELITY_BASELINE_COMMIT: 3c478dd7d4185750f6daac69780da0ebcc5aa063
+          FIDELITY_PR_COMMIT: ${{ github.event.pull_request.head.sha }}
+          FIDELITY_OUT: artifacts/fidelity
+          FIDELITY_VIEWPORT: ${{ matrix.viewport }}
+          FIDELITY_QUALITY: ${{ matrix.quality }}
+          FIDELITY_POSE: ${{ matrix.pose }}
+          FIDELITY_WARMUP: '15'
+          FIDELITY_SAMPLES: '60'
+          FIDELITY_MEASUREMENT_TIMEOUT_MS: '600000'
+          PERF_GPU: software
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/fidelity
+          (cd ../baseline && npm run dev -- --port 5188 --strictPort) > artifacts/fidelity/baseline-server.log 2>&1 &
+          BASE_PID=$!
+          npm run dev -- --port 5198 --strictPort > artifacts/fidelity/pr-server.log 2>&1 &
+          PR_PID=$!
+          trap 'kill "$BASE_PID" "$PR_PID" 2>/dev/null || true' EXIT
+          node -e 'Promise.all([5188,5198].map(async p=>{for(let i=0;i<100;i++){try{if((await fetch(`http://127.0.0.1:${p}/spikes/fidelity/`)).ok)return;}catch{}await new Promise(r=>setTimeout(r,100));}throw Error(`Server ${p} unavailable`);})).catch(e=>{console.error(e);process.exit(1)})'
+          node spikes/fidelity/run.cjs --plan > artifacts/fidelity/plan.json
+          node spikes/fidelity/run.cjs
+      - name: Upload shard evidence, including partial failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpv-shard-${{ matrix.viewport }}-${{ matrix.quality }}-${{ matrix.pose }}
+          path: candidate/artifacts/fidelity/
+          if-no-files-found: warn
+          retention-days: 7
+  summarize:
+    needs: compare
+    if: always() && github.event.pull_request.number == 18 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: fpv-shard-*
+          path: artifacts/shards
+      - name: Require all 20 complete conditions and summarize paired evidence
+        run: |
+          node spikes/fidelity/aggregate.cjs artifacts/shards artifacts/fidelity
+          node spikes/fidelity/summarize.cjs artifacts/fidelity > artifacts/fidelity/summary.md
+          cat artifacts/fidelity/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload complete comparison report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpv-software-evidence-${{ github.event.pull_request.head.sha }}
+          path: artifacts/fidelity/
+          if-no-files-found: warn
+          retention-days: 7
