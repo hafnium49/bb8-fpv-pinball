@@ -1,11 +1,14 @@
 import { PinballSimulation } from '../../src/physics/simulation';
 import { PinballView } from '../../src/render/view';
+import { watchRenderHealth } from './render-health';
 import { clampFPVPitch, prepareFixture, readOptions, summarize } from './fixtures';
 
 const report = document.querySelector<HTMLPreElement>('#report')!;
 const run = document.querySelector<HTMLButtonElement>('#run')!;
 const stage = document.querySelector<HTMLElement>('#stage')!;
 const WARMUP_FRAMES = 60, SAMPLE_FRAMES = 240;
+
+declare global { interface Window { __fidelityAssertHealthy?: () => void } }
 
 function fail(error: unknown) {
   report.dataset.status = 'error';
@@ -23,16 +26,26 @@ async function main() {
   const { fixture, preparationSteps } = prepareFixture(sim, options.pose);
   const poseReady = performance.now();
   const view = new PinballView(stage, true, true);
+  const gl = view.renderer.getContext();
+  const health = watchRenderHealth(view.renderer.domElement, gl, fail);
+  // Let the runner poll the live context immediately around screenshot capture,
+  // including the idle gap between initial readiness and the Run click.
+  window.__fidelityAssertHealthy = () => health.assertHealthy('before evidence capture');
+  health.assertHealthy('after renderer construction');
   view.setQuality(options.quality === 'high');
   view.budget.enabled = false;
   view.mode = 'fpv'; view.heading = fixture.heading;
   view.routeCamera.pitch = clampFPVPitch(fixture.pitch, view.effects.reducedMotion);
   const viewReady = performance.now();
+  health.assertHealthy('before shader warmup');
   await view.warmup();
+  health.assertHealthy('after shader warmup');
   const shadersReady = performance.now();
+  health.assertHealthy('before first render');
   view.render(sim, 0, 1000 / 60);
   const firstRenderReady = performance.now();
-  const gl = view.renderer.getContext(), debug = gl.getExtension('WEBGL_debug_renderer_info');
+  health.assertHealthy('after first render');
+  const debug = gl.getExtension('WEBGL_debug_renderer_info');
   const gpu = String(debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
   const snapshot = () => ({
     ball: { ...sim.position }, velocity: { ...sim.velocity }, rotation: { ...sim.ball.rotation() }, simulationTime: sim.time,
@@ -42,7 +55,7 @@ async function main() {
   });
   const fixedState = snapshot(), fixedStateJSON = JSON.stringify(fixedState);
   const base = {
-    schemaVersion: 2, harness: 'shared-old-main-vs-pr', ...options,
+    schemaVersion: 2, harness: 'shared-old-main-vs-pr', healthChecks: 'context-loss-latched-v1', ...options,
     sourceUrl: location.href, commitLabelVerification: 'caller-supplied; not independently verified by browser',
     viewportName: options.viewport, viewport, dpr: devicePixelRatio, buffer: fixedState.buffer, highQuality: view.highQuality,
     adaptiveResolution: view.budget.enabled, gpu, softwareRendererDetected: /swiftshader|llvmpipe|software|softpipe/i.test(gpu),
@@ -58,6 +71,7 @@ async function main() {
     startupNotes: 'Simulation creation through first submitted render; excludes module evaluation/navigation/download and is not time to interactive.',
   };
   const display = (value: unknown, status: string) => {
+    health.assertHealthy(`before publishing ${status}`);
     report.textContent = JSON.stringify(value, null, 2); report.dataset.status = status;
   };
   display({ ...base, status: 'ready', notes: 'Fixed camera and paused simulation. Audio is not initialized.' }, 'ready');
@@ -74,9 +88,11 @@ async function main() {
       for (let i = 0; i < WARMUP_FRAMES + SAMPLE_FRAMES; i++) {
         const frameTime = await new Promise<number>(requestAnimationFrame);
         if (document.hidden || hiddenDuringRun) throw new Error('Page lost foreground visibility; discard this timing run.');
+        health.assertHealthy(`before measurement frame ${i}`);
         const before = performance.now();
         view.render(sim, 0, 1000 / 60);
         const after = performance.now();
+        health.assertHealthy(`after measurement frame ${i}`);
         if (i >= WARMUP_FRAMES) { frameIntervals.push(frameTime - previous); cpuSubmit.push(after - before); }
         previous = frameTime;
       }
@@ -97,6 +113,6 @@ async function main() {
       run.disabled = false;
     } catch (error) { fail(error); }
   });
-  window.addEventListener('pagehide', () => { view.dispose(); sim.dispose(); }, { once: true });
+  window.addEventListener('pagehide', () => { health.dispose(); view.dispose(); sim.dispose(); }, { once: true });
 }
 main().catch(fail);

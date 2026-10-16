@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { EventEmitter } from 'node:events';
+import { watchRenderHealth } from '../spikes/fidelity/render-health';
 import { readFileSync } from 'node:fs';
 import { courseFlippers, courseLaunch, courseRamps, courseTunnels, deckHeight, deckOutline, pathFrame } from '../src/physics/reference-course';
 import { BALL_RADIUS } from '../src/physics/table';
@@ -9,6 +11,7 @@ import { clampFPVPitch, getFixture, poseNames, prepareFixture, readOptions, summ
 
 const require = createRequire(import.meta.url);
 const { readConfig, buildMatrix, caseUrl } = require('../spikes/fidelity/matrix.cjs');
+const { watchBrowserErrors, checkedScreenshot } = require('../spikes/fidelity/browser-evidence.cjs');
 const env = {
   FIDELITY_BASELINE_URL: 'http://127.0.0.1:5188', FIDELITY_PR_URL: 'http://127.0.0.1:5198',
   FIDELITY_BASELINE_COMMIT: '1234567890abcdef', FIDELITY_PR_COMMIT: 'abcdef1234567890',
@@ -155,4 +158,75 @@ test('portable harness has no fidelity-bake dependency and normal build typechec
   assert.match(harness, /inputLatency: 'not measured'/);
   assert.match(harness, /caller-supplied; not independently verified/);
   assert.match(harness, /view\.budget\.enabled = false/);
+});
+
+
+test('WebGL loss event latches permanently, including a loss between readiness and click', () => {
+  const canvas = new EventTarget(), failures: Error[] = [];
+  const health = watchRenderHealth(canvas, { isContextLost: () => false }, error => failures.push(error));
+  health.assertHealthy('ready');
+  canvas.dispatchEvent(new Event('webglcontextlost'));
+  canvas.dispatchEvent(new Event('webglcontextrestored'));
+  assert.equal(failures.length, 1);
+  assert.throws(() => health.assertHealthy('before click'), /WebGL context lost/);
+  assert.throws(() => health.assertHealthy('publishing complete'), /WebGL context lost/);
+  canvas.dispatchEvent(new Event('webglcontextlost'));
+  assert.equal(failures.length, 1, 'the first failure is retained');
+  health.dispose();
+});
+
+test('context polling rejects loss before the browser dispatches its event', () => {
+  for (const phase of ['after renderer construction', 'before shader warmup', 'after shader warmup', 'after first render', 'ready', 'before measurement frame 0', 'after measurement frame 299', 'complete']) {
+    const failures: Error[] = [];
+    let lost = true;
+    const health = watchRenderHealth(new EventTarget(), { isContextLost: () => lost }, error => failures.push(error));
+    assert.throws(() => health.assertHealthy(phase), /WebGL context lost/);
+    lost = false;
+    assert.throws(() => health.assertHealthy('restored'), /WebGL context lost/);
+    assert.equal(failures.length, 1);
+    health.dispose();
+  }
+});
+
+test('runner collects console.error shader failures and uncaught page exceptions', () => {
+  const page = new EventEmitter(), evidence = watchBrowserErrors(page);
+  const message = (type: string, text: string) => ({ type: () => type, text: () => text, location: () => ({ url: 'harness.ts' }) });
+  page.emit('console', message('warning', 'diagnostic warning'));
+  evidence.assertClean('ready');
+  page.emit('console', message('error', 'THREE.WebGLProgram: shader failed to compile'));
+  assert.throws(() => evidence.assertClean('ready'), /console.error: THREE.WebGLProgram/);
+  page.emit('pageerror', new Error('render exception'));
+  assert.equal(evidence.errors.length, 2);
+  assert.throws(() => evidence.assertClean('after measurement'), /pageerror: render exception/);
+});
+
+test('screenshot evidence rejects existing errors before capture and errors emitted during capture', async () => {
+  for (const when of ['before', 'during']) {
+    const page = new EventEmitter() as EventEmitter & { locator: () => unknown };
+    const evidence = watchBrowserErrors(page);
+    let captures = 0;
+    const emitError = () => page.emit('console', { type: () => 'error', text: () => 'WebGL failure', location: () => ({}) });
+    page.locator = () => ({ screenshot: async () => { captures++; if (when === 'during') emitError(); } });
+    if (when === 'before') emitError();
+    await assert.rejects(checkedScreenshot(page, 'unused.png', async (phase: string) => evidence.assertClean(phase)), /WebGL failure/);
+    assert.equal(captures, when === 'before' ? 0 : 1);
+  }
+});
+
+test('context polling gates warmup, readiness, every rendered frame and completed results', () => {
+  const harness = readFileSync(new URL('../spikes/fidelity/harness.ts', import.meta.url), 'utf8');
+  assert.match(harness, /watchRenderHealth\(view.renderer.domElement, gl, fail\)/);
+  assert.match(harness, /health.assertHealthy\('before shader warmup'\);\s*await view.warmup\(\);\s*health.assertHealthy\('after shader warmup'\)/);
+  assert.match(harness, /health.assertHealthy\('before first render'\);\s*view.render/);
+  assert.match(harness, /health.assertHealthy\('after first render'\)/);
+  assert.match(harness, /health.assertHealthy\(`before publishing \$\{status\}`\)/);
+  assert.match(harness, /health.assertHealthy\(`before measurement frame \$\{i\}`\)/);
+  assert.match(harness, /health.assertHealthy\(`after measurement frame \$\{i\}`\)/);
+  const runner = readFileSync(new URL('../spikes/fidelity/run.cjs', import.meta.url), 'utf8');
+  assert.match(runner, /window\.__fidelityAssertHealthy\(\)/);
+  assert.match(runner, /await readReport\('readiness'\)/);
+  assert.match(runner, /await checkedScreenshot/);
+  assert.match(runner, /await readReport\('before measurement'\)/);
+  assert.match(runner, /await readReport\('after measurement'\)/);
+  assert.match(runner, /evidence.assertClean\('before accepting measurement'\)/);
 });

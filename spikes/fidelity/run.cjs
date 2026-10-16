@@ -4,6 +4,7 @@
 const { mkdirSync, writeFileSync, existsSync } = require('node:fs');
 const path = require('node:path');
 const { readConfig, buildMatrix, caseUrl } = require('./matrix.cjs');
+const { watchBrowserErrors, checkedScreenshot } = require('./browser-evidence.cjs');
 
 async function run() {
   const config = readConfig(process.env), cases = buildMatrix(config);
@@ -42,8 +43,7 @@ async function run() {
         viewport: entry.viewport === 'mobile' ? { width: 844, height: 520 } : { width: 1000, height: 760 },
         deviceScaleFactor: config.deviceScaleFactor, reducedMotion: 'reduce',
       });
-      const errors = [];
-      page.on('pageerror', error => errors.push(error.message));
+      const evidence = watchBrowserErrors(page), errors = evidence.errors;
       try {
         const response = await page.goto(entry.url, { waitUntil: 'load', timeout: 120000 });
         if (!response?.ok()) throw new Error(`Harness HTTP status: ${response?.status()}`);
@@ -51,13 +51,22 @@ async function run() {
           const current = document.querySelector('#report')?.getAttribute('data-status');
           return current === expected || current === 'error';
         }, status, { timeout: 120000 });
-        const readReport = async () => {
-          const result = JSON.parse(await page.locator('#report').innerText());
+        const readReport = async (phase = 'reading report') => {
+          evidence.assertClean(`before ${phase}`);
+          const result = JSON.parse(await page.evaluate(() => {
+            const report = document.querySelector('#report');
+            if (report?.getAttribute('data-status') !== 'error') {
+              if (typeof window.__fidelityAssertHealthy !== 'function') throw new Error('Missing live WebGL health check. Copy the updated harness to both checkouts.');
+              window.__fidelityAssertHealthy();
+            }
+            return report?.textContent || '{}';
+          }));
+          evidence.assertClean(`after ${phase}`);
           if (result.status === 'error') throw new Error(result.error);
           return result;
         };
         await waitForStatus('ready');
-        const ready = await readReport();
+        const ready = await readReport('readiness');
         for (const key of ['source', 'variant', 'pose', 'quality']) if (ready[key] !== entry[key]) throw new Error(`Harness ${key} did not match request.`);
         if (ready.viewportName !== entry.viewport || ready.dpr !== config.deviceScaleFactor ||
             ready.highQuality !== (entry.quality === 'high') || ready.adaptiveResolution !== false || ready.reducedMotion !== true) {
@@ -67,22 +76,23 @@ async function run() {
         if (JSON.stringify(ready.viewport) !== JSON.stringify(expectedViewport)) throw new Error('Unexpected stage dimensions.');
         if (config.requestedRenderer === 'hardware' && ready.softwareRendererDetected) throw new Error('Hardware was requested but the browser reports a software renderer.');
         const commit = entry.source === 'main' ? config.baselineCommit : config.prCommit;
-        if (ready.commitLabel !== commit || ready.schemaVersion !== 2) throw new Error('Wrong harness version or commit label. Copy the same harness to both checkouts.');
+        if (ready.commitLabel !== commit || ready.schemaVersion !== 2 || ready.healthChecks !== 'context-loss-latched-v1') throw new Error('Wrong harness version or commit label. Copy the same harness to both checkouts.');
         const key = `${entry.viewport}-${entry.quality}-${entry.pose}`;
         const state = JSON.stringify(ready.fixedState);
         if (fixedStates.has(key) && fixedStates.get(key) !== state) throw new Error(`Non-comparable camera/simulation/buffer state: ${key}`);
         fixedStates.set(key, state);
-        if (entry.repeat === 0) await page.locator('#stage').screenshot({ path: path.join(out, `${key}-${entry.source}-${entry.variant}.png`) });
+        if (entry.repeat === 0) await checkedScreenshot(page, path.join(out, `${key}-${entry.source}-${entry.variant}.png`), readReport);
+        await readReport('before measurement');
         await page.locator('#run').click();
         await waitForStatus('complete');
-        const result = await readReport();
-        if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
+        const result = await readReport('after measurement');
+        evidence.assertClean('before accepting measurement');
         if (JSON.stringify(result.fixedState) !== state) throw new Error('Fixed state changed between readiness and measurement.');
         rows.push({ ...result, repeat: entry.repeat, order: entry.order, orderIndex: entry.orderIndex,
           requestedRenderer: config.requestedRenderer, errors });
         save(); console.log(`${rows.length}/${planned.length}: ${key} ${entry.source}/${entry.variant} ${entry.order}`);
       } catch (error) {
-        manifest.failedCase = entry; throw error;
+        manifest.failedCase = entry; manifest.failedBrowserErrors = errors; throw error;
       } finally { await page.close(); }
     }
     manifest.status = 'complete'; manifest.finishedAt = new Date().toISOString(); save();

@@ -35,7 +35,9 @@ Physics, audio, input, camera, collision geometry and adaptive-budget logic are 
 
 Remote CI passed on `63832d3351d5f9f8c2584e8dff7970616c80c192`: [run #87](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38811587611) verified all 105 tests, circuit/flipper-guide/reference-course checks and the full production build with the original WAV. This is historical evidence for that commit only. Review corrections require their own exact-head check; use the PR checks rather than treating the older result as validation of later changes.
 
-Review corrections add dedicated lower-tunnel wall material coverage, under-deck coverage assertions, and a compiled old-main/PR comparison harness. Local corrected suite: **112/115 passed**, with the same three missing-WAV failures; all four wall tests and eight harness tests pass. Source/harness typechecks and circuit, guide and reference-course checks pass. Full local build still cannot resolve the absent WAV. See the current exact-head PR checks for complete-checkout verification.
+The first correction head `6afa3e13740029cd72b788bad34a0a17cee13e3e` also passed [run #89](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38839148954): 115/115 tests, source and harness typechecks, circuit/guide/course checks and full production build. Later reliability fixes require their own exact-head CI.
+
+Review corrections add dedicated lower-tunnel wall material coverage, under-deck coverage assertions, and a compiled old-main/PR comparison harness. Local corrected suite: **117/120 passed**, with the same three missing-WAV failures; all four wall tests and thirteen harness tests pass. Source/harness typechecks and circuit, guide and reference-course checks pass. Full local build still cannot resolve the absent WAV. See the current exact-head PR checks for complete-checkout verification.
 
 ## Unmeasured evidence and merge gate
 Installed Chromium could not start because of a socket permission error. An expanded launch failed during environment setup. The available cloud browser could not reach the workspace's localhost server. The portable runner also failed before rendering.
@@ -59,7 +61,7 @@ node spikes/fidelity/run.cjs --plan
 CHROME_PATH=/path/to/chromium node spikes/fidelity/run.cjs
 ```
 
-Runner output goes into a timestamped `artifacts/fidelity/` directory: manifest, raw results and matching PNGs. Missing/distinct-source configuration errors fail before launch. A failed/incomplete manifest is not a successful benchmark. It defaults to SwiftShader/software rendering; `PERF_GPU=hardware` requests the normal GPU path, but verify the recorded actual renderer string. Software data is only a relative diagnostic, never desktop/iPhone proof.
+Runner output goes into a timestamped `artifacts/fidelity/` directory: manifest, raw results and matching PNGs. Missing/distinct-source configuration errors fail before launch. Browser page/console errors and WebGL context loss invalidate the case; failures are latched so later restoration cannot turn that run into a pass. A failed/incomplete manifest is not a successful benchmark. It defaults to SwiftShader/software rendering; `PERF_GPU=hardware` requests the normal GPU path, but verify the recorded actual renderer string. Software data is only a relative diagnostic, never desktop/iPhone proof.
 
 The default matrix is 160 measurements: 2 viewports × Eco/High × ground/launch/bridge/tunnel/underdeck × 4 treatments × 2 forward/reverse repeats. Treatments are old-main baseline, PR default walls, PR baked, PR roughness. Thus old-main versus PR baseline isolates this PR's default wall change; PR baseline versus baked/roughness evaluates the opt-in floor experiments. Screenshots are saved for the first repeat of every treatment/condition.
 
