@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { WALL_BASE_COLOR, WALL_BASE_CSS } from '../src/render/wall-palette';
+import { WALL_BASE_COLOR, WALL_BASE_CSS, tunnelWallMaterial } from '../src/render/wall-palette';
 import { marketColors, nightMarketInlayAtlas, nightMarketSky } from '../src/render/night-market-art';
 
 function fakeCanvas() {
@@ -34,4 +34,30 @@ test('sky colors remain unchanged and shell uses the dedicated wall base',()=>{
  const source=readFileSync(new URL('../src/render/night-market.ts',import.meta.url),'utf8');
  assert.match(source,/this\.enamel = .*color: WALL_BASE_COLOR/);
  assert.match(source,/color: 0x18273f, metalness/); // recessed windows remain dark
+});
+
+
+test('lower tunnel walls have a dedicated slate material and retain floor paving',()=>{
+ const material=tunnelWallMaterial();
+ try {
+  assert.equal(material.color.getHex(),WALL_BASE_COLOR);
+  assert.equal(material.emissive.getHex(),WALL_BASE_COLOR);
+  assert.equal(material.emissiveIntensity,.35);
+  assert.equal(material.map,null);assert.equal(material.emissiveMap,null);
+  assert.equal(material.transparent,false);
+ } finally {material.dispose();}
+ const source=readFileSync(new URL('../src/render/reference-table.ts',import.meta.url),'utf8');
+ assert.match(source,/const tunnelWall = this\.keep\(tunnelWallMaterial\(\)\)/);
+ assert.match(source,/this\.routeSurface\(path, 'floor', tunnelPaint, group\)/);
+ assert.match(source,/this\.routeSurface\(path, 'walls', tunnelWall, group\)/);
+ assert.doesNotMatch(source,/this\.routeSurface\(path, 'walls', tunnelPaint, group\)/);
+});
+
+test('under-deck wall faces and soffit retain dedicated inlay coverage',()=>{
+ const source=readFileSync(new URL('../src/render/night-market.ts',import.meta.url),'utf8');
+ assert.match(source,/\[\.\.\.courseRails, \.\.\.deckRails\]\.forEach/);
+ assert.match(source,/this\.mesh\(soffit, this\.inlay\)/);
+ assert.match(source,/length \/ pieces \* \.96, \.035, \.02, this\.enamel/);
+ // This request does not recolor the ramp riding surface, floor or sign recesses.
+ assert.match(source,/color: 0x18273f, metalness/);
 });

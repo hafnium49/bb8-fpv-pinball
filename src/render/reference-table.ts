@@ -10,6 +10,7 @@ import { nightRouteTexture, mechanismInlayTexture } from './night-market-paving'
 import { illuminateBackFace } from './material-optimizations';
 import { fidelityMode, glazeRoughness } from './fidelity-bake';
 import { batchStaticMeshes } from './static-batch';
+import { tunnelWallMaterial } from './wall-palette';
 export const SUBWAY_UNDERTRAY_Y = -.912;
 
 /** Course rendering shares every coordinate with the reference simulation. */
@@ -152,12 +153,14 @@ export class ReferenceTable {
     });
     // Actual below-board subway routes. Warm strips give FPV a readable tunnel.
     const tunnelPaint = this.keep(new THREE.MeshPhysicalMaterial({ map: routeMap, emissiveMap: routeMap, emissive: 0x88c9ef, emissiveIntensity: .35, metalness: .35, roughness: .24, clearcoat: 1, clearcoatRoughness: .12, side: THREE.DoubleSide })), tunnelLight = this.paint(0x57cfe6, .2, .4, .8);
+    // Lower collision-facing walls are separate from the unchanged floor paving.
+    const tunnelWall = this.keep(tunnelWallMaterial());
     courseTunnels.forEach(path => {
       const group = new THREE.Group();
       group.name = `${path.name} subway`;
       this.scene.add(group);
       this.routeSurface(path, 'floor', tunnelPaint, group);
-      this.routeSurface(path, 'walls', tunnelPaint, group);
+      this.routeSurface(path, 'walls', tunnelWall, group);
       this.data(pathWires(path, [[-.38, .16], [.38, .16]], .018), tunnelLight, group, false);
     });
     for (const [i, hole] of courseHoles.entries())

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && npm run typecheck:fidelity && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/browser-smoke.cjs",
@@ -23,7 +23,9 @@
     "standalone": "npm run build && node scripts/standalone.mjs",
     "test:course:browser": "node scripts/reference-course-browser.cjs",
     "test:course": "node --import tsx scripts/reference-course-check.ts",
-    "test:course:audio": "node scripts/reference-course-audio.cjs"
+    "test:course:audio": "node scripts/reference-course-audio.cjs",
+    "typecheck:fidelity": "tsc --noEmit -p tsconfig.fidelity.json",
+    "benchmark:fidelity": "node spikes/fidelity/run.cjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "0.21.0",
