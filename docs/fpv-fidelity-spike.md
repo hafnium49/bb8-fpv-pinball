@@ -39,10 +39,10 @@ The first correction head `6afa3e13740029cd72b788bad34a0a17cee13e3e` also passed
 
 Review corrections add dedicated lower-tunnel wall material coverage, under-deck coverage assertions, and a compiled old-main/PR comparison harness. Local corrected suite: **117/120 passed**, with the same three missing-WAV failures; all four wall tests and thirteen harness tests pass. Source/harness typechecks and circuit, guide and reference-course checks pass. Full local build still cannot resolve the absent WAV. See the current exact-head PR checks for complete-checkout verification.
 
-## Unmeasured evidence and merge gate
+## Browser execution history and remaining measurement limits
 Installed Chromium could not start because of a socket permission error. An expanded launch failed during environment setup. The available cloud browser could not reach the workspace's localhost server. The portable runner also failed before rendering.
 
-Consequently this run has no valid same-pose screenshots, frame-time p95, draw-call measurements, long-frame counts, runtime memory/startup measurements, GPU timings or input latency. No hardware or software-GPU performance improvement is claimed. Desktop/mobile visual and live-play acceptance remain outstanding.
+The earlier own-cloud attempts produced no valid rendered evidence. A bounded PR18-only GitHub Actions workflow now runs the shared comparison on a standard Ubuntu runner with explicitly requested SwiftShader. It has read-only repository contents permission, no deployment, no stored checkout credentials, and a 45-minute timeout. It uploads complete or failed raw evidence for seven days. Results must be evaluated for their exact source head; a successful unit/build check is not a rendered comparison. Actual PC/iPhone performance, GPU timings and input latency remain unmeasured.
 
 ## Reproduce an actual old-main/PR comparison
 
@@ -71,10 +71,10 @@ Startup timings separate simulation creation, pose preparation, view constructio
 
 For manual inspection open either server's `/spikes/fidelity/?source=pr&quality=eco&pose=underdeck&viewport=mobile&fidelity=baseline` (use `source=main` for the baseline server). Other supported quality/pose/variant names match the matrix above. Production defaults are unchanged by these harness options.
 
-## Acceptance before integration
+## Evidence interpretation and follow-up checks
 1. Produce and inspect matching old-main/PR desktop/mobile FPV captures for every automated pose in both Eco and High, especially the user-reported under-deck and tunnel walls. Check bloom and readable contrast. Then inspect moving gameplay for shimmer; static captures cannot establish that.
-2. Run repeated A/B tests on actual target desktop/mobile hardware, first at fixed quality/resolution, then live gameplay with adaptive budget enabled. Agree device/frame budgets; require no material p95 or long-frame regression.
-3. Exercise keyboard/simultaneous touch, pause/blur, launch-lane exit, three-ball lifecycle, reduced motion and context restoration. Measure event-to-present latency separately if response equivalence is required.
+2. Software-GPU measurements diagnose relative rendering cost on this CI runner only. Actual target desktop/mobile A/B gameplay is needed before claiming device-specific performance or response equivalence. That limitation must remain explicit; it is not evidence of a regression or an automatic blocker to merging a default-off experiment.
+3. Physics, audio and input code are unchanged. Existing automated gameplay checks remain relevant; broader device playtesting should exercise keyboard/simultaneous touch, pause/blur, launch-lane exit, three-ball lifecycle and reduced motion. Event-to-present latency requires separate instrumentation if response equivalence is claimed.
 4. Reconcile with the title PR's latest head before approved integration.
 
 Recommendation: baked-only is the lowest runtime-risk experiment by code structure. Whether it looks better, and whether the extra roughness lookup earns its cost, remains unverified.
