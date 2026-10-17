@@ -49,12 +49,12 @@ app.innerHTML = `
     </div>
     <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-copy" hidden><div class="modal-card"><span id="modal-kicker" class="eyebrow amber">TAKE A BREATHER</span><h2 id="modal-title">Paused.</h2><p id="modal-copy">Your orbit will be right here.</p><button id="resume" class="primary">BACK TO THE TABLE <span>↗</span></button><button id="restart" class="text-button">Start a new game</button><div id="modal-settings"><button id="dialog-sound" class="text-button">SOUND OFF</button></div><div id="modal-feedback"></div></div></section>
     <dialog id="fullscreen-help" aria-labelledby="fullscreen-help-title" aria-describedby="fullscreen-help-copy">
-      <h2 id="fullscreen-help-title">Play without browser bars.</h2>
-      <p id="fullscreen-help-copy"></p>
+      <h2 id="fullscreen-help-title" tabindex="-1" autofocus>Play without browser bars.</h2>
+      <div id="fullscreen-help-body"><p id="fullscreen-help-copy"></p>
       <ol><li>On iPhone, open this page in <b>Safari</b>.</li><li>Tap <b>Share</b>, then <b>Add to Home Screen</b> (you may need to scroll).</li><li>If shown, keep <b>Open as Web App</b> on, then tap <b>Add</b>.</li><li>Launch <b>ORBIT</b> from its Home Screen icon.</li></ol>
       <p>Other devices: look in your browser menu for <b>Install app</b> or <b>Add to Home Screen</b>. You can also keep playing in this tab.</p>
       <p class="fullscreen-note">Installing opens a new session; finish your current game first. An internet connection is required.</p>
-      <button id="fullscreen-help-close" class="primary" autofocus>GOT IT</button>
+      </div><button id="fullscreen-help-close" class="primary">GOT IT</button>
     </dialog>
     <div id="loading-error" class="loading-error" role="alert" hidden></div>
   </main>`;

@@ -42,7 +42,7 @@ function installFixture(mode) {
 }
 async function open(mode, viewport = { width: 844, height: 390 }, mobile = true, start = true) {
   const context = await browser.newContext({ viewport, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: 1 });
-  await context.addInitScript(installFixture, mode);
+  if (mode !== 'native') await context.addInitScript(installFixture, mode);
   page = await context.newPage(); page.setDefaultTimeout(120000);
   page.on('pageerror', error => errors.push(`${mode}: ${error.message}`));
   await page.goto(server.resolvedUrls.local[0], { waitUntil: 'networkidle' });
@@ -68,7 +68,7 @@ async function helpGeometry(label) {
   const result = await page.evaluate(() => {
     const dialog = document.getElementById('fullscreen-help');
     const bounds = el => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; };
-    return { open: dialog.open, modal: dialog.matches(':modal'), dialog: bounds(dialog), close: bounds(document.getElementById('fullscreen-help-close')),
+    return { open: dialog.open, modal: dialog.matches(':modal'), dialog: bounds(dialog), heading: bounds(document.getElementById('fullscreen-help-title')), close: bounds(document.getElementById('fullscreen-help-close')),
       width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth,
       title: document.getElementById('fullscreen-help-title').textContent,
       copy: document.getElementById('fullscreen-help-copy').textContent, instructions: dialog.textContent,
@@ -80,7 +80,7 @@ async function helpGeometry(label) {
   assert.match(result.instructions, /safari/i, `${label}: missing Safari instruction`);
   assert.match(result.instructions, /share/i, `${label}: missing Share instruction`);
   assert.ok(result.scrollWidth <= result.width + 1, `${label}: horizontal overflow`);
-  for (const [name, r] of [['dialog', result.dialog], ['close', result.close]]) {
+  for (const [name, r] of [['dialog', result.dialog], ['heading', result.heading], ['close', result.close]]) {
     assert.ok(r.width > 0 && r.height > 0 && r.x >= -1 && r.y >= -1 && r.x + r.width <= result.width + 1 && r.y + r.height <= result.height + 1,
       `${label}: ${name} outside viewport: ${JSON.stringify(r)}`);
   }
@@ -141,6 +141,26 @@ async function verifyPreviewAssets() {
     await capture(`${mode}-landscape`);
     cases.push({ name: mode, result: 'pass' }); await context.close(); page = undefined;
   }
+  {
+    const context = await open('native', { width: 1440, height: 900 }, false);
+    const available = await page.evaluate(() => typeof document.getElementById('game').requestFullscreen === 'function' ||
+      typeof document.getElementById('game').webkitRequestFullscreen === 'function');
+    await page.locator('#fullscreen').click();
+    await page.waitForFunction(() => document.fullscreenElement || document.webkitFullscreenElement || document.getElementById('fullscreen-help').open);
+    const entered = await page.evaluate(() => !!(document.fullscreenElement || document.webkitFullscreenElement));
+    if (entered) {
+      assert.equal(await page.locator('#fullscreen').getAttribute('aria-label'), 'Exit fullscreen');
+      await capture('native-desktop-fullscreen');
+      await page.locator('#fullscreen').click();
+      await page.waitForFunction(() => !document.fullscreenElement && !document.webkitFullscreenElement);
+      assert.equal(await page.locator('#fullscreen').getAttribute('aria-label'), 'Enter fullscreen');
+    } else {
+      await helpGeometry('native-browser-fallback');
+    }
+    cases.push({ name: 'native-desktop-smoke', result: 'pass', available, entered,
+      note: entered ? 'Actual engine fullscreen enter and exit succeeded.' : 'Engine did not grant native fullscreen; app showed its fallback. Native fullscreen remains unverified.' });
+    await context.close(); page = undefined;
+  }
   const titles = {};
   for (const mode of ['unsupported', 'rejected']) {
     for (const fixture of [
@@ -166,7 +186,22 @@ async function verifyPreviewAssets() {
       await page.waitForFunction(() => document.activeElement.id === 'resume');
       assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), true, 'Help Escape resumed a paused game');
       await page.locator('#resume').click();
+      await page.evaluate(() => {
+        for (const [index, id] of ['left', 'right', 'launch'].entries()) document.getElementById(id).dispatchEvent(new PointerEvent('pointerdown', {
+          pointerId: 701 + index, pointerType: 'touch', button: 0, bubbles: true, cancelable: true,
+        }));
+        // Physics is frozen in visual fixtures; seed an already accumulated charge.
+        window.orbitDebug.sim.charge = 0.6;
+      });
+      assert.deepEqual(await page.evaluate(() => ({ ...window.orbitDebug.sim.controls })), { left: true, right: true, launch: true });
       await page.locator('#fullscreen').click();
+      await page.waitForFunction(() => document.getElementById('fullscreen-help').open);
+      assert.deepEqual(await page.evaluate(() => ({ ...window.orbitDebug.sim.controls })), { left: false, right: false, launch: false }, 'Help must clear every simultaneous hold');
+      assert.equal(await page.evaluate(() => window.orbitDebug.sim.charge), 0, 'Help must cancel accumulated launch charge');
+      await page.evaluate(() => {
+        for (const pointerId of [701, 702, 703]) window.dispatchEvent(new PointerEvent('pointerup', { pointerId, pointerType: 'touch' }));
+      });
+      assert.equal(await page.evaluate(() => window.orbitDebug.sim.phase), 'ready', 'Late releases must not launch the ball');
       await page.locator('#fullscreen-help-close').click();
       assert.equal(await page.locator('#fullscreen-help').evaluate(el => el.open), false);
       await page.waitForFunction(() => document.activeElement.id === 'resume');
@@ -187,10 +222,39 @@ async function verifyPreviewAssets() {
     await context.close(); page = undefined;
   }
 
+  {
+    const context = await open('unsupported');
+    await page.locator('#fullscreen').click();
+    await page.evaluate(() => { window.orbitDebug.sim.phase = 'over'; });
+    await page.waitForFunction(() => !document.getElementById('modal').hidden && document.getElementById('resume').hidden);
+    await page.locator('#fullscreen-help-close').click();
+    await page.waitForFunction(() => document.activeElement.id === 'restart');
+    assert.equal(await page.evaluate(() => window.orbitDebug.sim.phase), 'over');
+    cases.push({ name: 'game-over-help-restores-restart-focus', result: 'pass' });
+    await context.close(); page = undefined;
+  }
   for (const mode of ['standalone', 'display-fullscreen', 'ios-standalone']) {
     const context = await open(mode);
     assert.equal(await page.locator('#fullscreen').isVisible(), false, `${mode}: installed app must hide redundant fullscreen button`);
-    cases.push({ name: mode, result: 'pass' }); await context.close(); page = undefined;
+    const views = [];
+    for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }]) {
+      await page.setViewportSize(viewport);
+      await page.waitForFunction(() => {
+        const { view } = window.orbitDebug, host = document.getElementById('viewport');
+        return Math.abs(view.camera.aspect - host.clientWidth / host.clientHeight) < 0.001;
+      });
+      const geometry = await page.evaluate(() => {
+        const rect = el => { const r = el.getBoundingClientRect(); return { id: el.id, x: r.x, y: r.y, width: r.width, height: r.height }; };
+        return { width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth,
+          buttons: ['left', 'launch', 'right', 'quality', 'sound', 'pause'].map(id => rect(document.getElementById(id))) };
+      });
+      assert.ok(geometry.scrollWidth <= geometry.width + 1, `${mode}: horizontal overflow`);
+      for (const r of geometry.buttons) assert.ok(r.width >= 44 && r.height >= 44 && r.x >= -1 && r.y >= -1 &&
+        r.x + r.width <= geometry.width + 1 && r.y + r.height <= geometry.height + 1, `${mode}: invalid standalone control bounds ${JSON.stringify(r)}`);
+      const rendering = await capture(`${mode}-${viewport.width > viewport.height ? 'landscape' : 'portrait'}`);
+      views.push({ geometry, rendering });
+    }
+    cases.push({ name: mode, result: 'pass', views }); await context.close(); page = undefined;
   }
   await verifyPreviewAssets();
   assert.deepEqual(errors, []);

@@ -246,11 +246,13 @@ h1 em { font-style: inherit; color: var(--amber); }
 }
 
 /* A top-layer dialog stays usable in native fullscreen and short landscape viewports. */
-#fullscreen-help { color: #e8edf0; background: var(--panel); border: 1px solid var(--cyan); border-radius: 12px; width: min(460px, calc(100% - 32px - var(--safe-left) - var(--safe-right))); max-height: calc(100dvh - 32px - var(--safe-top) - var(--safe-bottom)); padding: 20px; overflow-y: auto; margin: auto; }
+#fullscreen-help { color: #e8edf0; background: var(--panel); border: 1px solid var(--cyan); border-radius: 12px; width: min(460px, calc(100% - 32px - var(--safe-left) - var(--safe-right))); max-height: calc(100dvh - 32px - var(--safe-top) - var(--safe-bottom)); padding: 20px; overflow: hidden; margin: auto; }
+#fullscreen-help[open] { display: flex; flex-direction: column; gap: 12px; }
+#fullscreen-help-body { min-height: 0; overflow-y: auto; }
 #fullscreen-help::backdrop { background: #030810cc; }
-#fullscreen-help h2 { margin: 0 0 12px; color: var(--amber); font-size: 24px; }
+#fullscreen-help h2 { flex-shrink: 0; margin: 0; color: var(--amber); font-size: 24px; }
 #fullscreen-help p, #fullscreen-help li { font-size: 14px; line-height: 1.5; }
 #fullscreen-help ol { padding-left: 22px; }
 #fullscreen-help li + li { margin-top: 6px; }
 #fullscreen-help .fullscreen-note { color: var(--muted); font-size: 12px; }
-#fullscreen-help .primary { min-height: 44px; width: 100%; }
+#fullscreen-help .primary { flex-shrink: 0; min-height: 44px; width: 100%; }
