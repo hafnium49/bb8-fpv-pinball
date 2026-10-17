@@ -1,0 +1,498 @@
+{
+  "scene": "orbit",
+  "sourceRef": "21cbb73e02adc82285f811d89b1539a6a14b7ec7",
+  "viewport": [
+    844,
+    390
+  ],
+  "method": "Actual main scene constructors with no-op 2D texture canvas; Three.js mesh bounding-sphere frustum culling and geometry/material-group counts; no renderer instantiated.",
+  "limitations": [
+    "Static estimates, not measured WebGL renderer counters or timings.",
+    "No camera physics clearance: ideal ball center plus 0.30m camera height.",
+    "No effects, postprocessing, shadow passes or live mechanism state; initial table state except ball translation.",
+    "Texture canvas is stubbed and no pixels/shaders are executed. Geometry and batching use source unchanged.",
+    "No iPhone GPU, Safari, sensor, input, frame time or thermal evidence."
+  ],
+  "rows": [
+    {
+      "pose": "launch",
+      "direction": "forward",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 129,
+      "estimatedSubmittedTriangles": 120220,
+      "visibleMeshObjects": 127,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "launch",
+      "direction": "left45",
+      "yawDegrees": -45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 141,
+      "estimatedSubmittedTriangles": 128232,
+      "visibleMeshObjects": 139,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "launch",
+      "direction": "right45",
+      "yawDegrees": 45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 89,
+      "estimatedSubmittedTriangles": 92406,
+      "visibleMeshObjects": 87,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "launch",
+      "direction": "left90",
+      "yawDegrees": -90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 101,
+      "estimatedSubmittedTriangles": 103222,
+      "visibleMeshObjects": 99,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "launch",
+      "direction": "right90",
+      "yawDegrees": 90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 27,
+      "estimatedSubmittedTriangles": 25258,
+      "visibleMeshObjects": 27,
+      "transparentCalls": 0
+    },
+    {
+      "pose": "launch",
+      "direction": "up25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 25,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 126,
+      "estimatedSubmittedTriangles": 116436,
+      "visibleMeshObjects": 124,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "launch",
+      "direction": "down25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": -25,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 128,
+      "estimatedSubmittedTriangles": 119620,
+      "visibleMeshObjects": 126,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "launch",
+      "direction": "rear180",
+      "yawDegrees": 180,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        5.18,
+        0.61,
+        8.7
+      ],
+      "estimatedSceneCalls": 25,
+      "estimatedSubmittedTriangles": 25564,
+      "visibleMeshObjects": 25,
+      "transparentCalls": 0
+    },
+    {
+      "pose": "ground",
+      "direction": "forward",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 86,
+      "estimatedSubmittedTriangles": 84466,
+      "visibleMeshObjects": 84,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "ground",
+      "direction": "left45",
+      "yawDegrees": -45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 65,
+      "estimatedSubmittedTriangles": 71370,
+      "visibleMeshObjects": 63,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "ground",
+      "direction": "right45",
+      "yawDegrees": 45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 108,
+      "estimatedSubmittedTriangles": 107390,
+      "visibleMeshObjects": 106,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "ground",
+      "direction": "left90",
+      "yawDegrees": -90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 51,
+      "estimatedSubmittedTriangles": 61596,
+      "visibleMeshObjects": 49,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "ground",
+      "direction": "right90",
+      "yawDegrees": 90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 106,
+      "estimatedSubmittedTriangles": 107968,
+      "visibleMeshObjects": 104,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "ground",
+      "direction": "up25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 25,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 85,
+      "estimatedSubmittedTriangles": 82986,
+      "visibleMeshObjects": 83,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "ground",
+      "direction": "down25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": -25,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 86,
+      "estimatedSubmittedTriangles": 84466,
+      "visibleMeshObjects": 84,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "ground",
+      "direction": "rear180",
+      "yawDegrees": 180,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        -4,
+        0.605,
+        -1
+      ],
+      "estimatedSceneCalls": 78,
+      "estimatedSubmittedTriangles": 66166,
+      "visibleMeshObjects": 76,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "bridge",
+      "direction": "forward",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 80,
+      "estimatedSubmittedTriangles": 90090,
+      "visibleMeshObjects": 78,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "bridge",
+      "direction": "left45",
+      "yawDegrees": -45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 52,
+      "estimatedSubmittedTriangles": 62624,
+      "visibleMeshObjects": 50,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "bridge",
+      "direction": "right45",
+      "yawDegrees": 45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 106,
+      "estimatedSubmittedTriangles": 110708,
+      "visibleMeshObjects": 104,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "bridge",
+      "direction": "left90",
+      "yawDegrees": -90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 49,
+      "estimatedSubmittedTriangles": 61274,
+      "visibleMeshObjects": 47,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "bridge",
+      "direction": "right90",
+      "yawDegrees": 90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 120,
+      "estimatedSubmittedTriangles": 116926,
+      "visibleMeshObjects": 118,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "bridge",
+      "direction": "up25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 25,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 67,
+      "estimatedSubmittedTriangles": 81302,
+      "visibleMeshObjects": 65,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "bridge",
+      "direction": "down25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": -25,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 84,
+      "estimatedSubmittedTriangles": 91946,
+      "visibleMeshObjects": 82,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "bridge",
+      "direction": "rear180",
+      "yawDegrees": 180,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        0.49514235250754346,
+        2.78,
+        -5.718801487555273
+      ],
+      "estimatedSceneCalls": 67,
+      "estimatedSubmittedTriangles": 75136,
+      "visibleMeshObjects": 65,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "tunnel",
+      "direction": "forward",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 77,
+      "estimatedSubmittedTriangles": 65638,
+      "visibleMeshObjects": 75,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "tunnel",
+      "direction": "left45",
+      "yawDegrees": -45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 62,
+      "estimatedSubmittedTriangles": 56096,
+      "visibleMeshObjects": 60,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "tunnel",
+      "direction": "right45",
+      "yawDegrees": 45,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 88,
+      "estimatedSubmittedTriangles": 91738,
+      "visibleMeshObjects": 86,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "tunnel",
+      "direction": "left90",
+      "yawDegrees": -90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 54,
+      "estimatedSubmittedTriangles": 49606,
+      "visibleMeshObjects": 52,
+      "transparentCalls": 4
+    },
+    {
+      "pose": "tunnel",
+      "direction": "right90",
+      "yawDegrees": 90,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 113,
+      "estimatedSubmittedTriangles": 108980,
+      "visibleMeshObjects": 111,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "tunnel",
+      "direction": "up25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": 25,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 77,
+      "estimatedSubmittedTriangles": 65638,
+      "visibleMeshObjects": 75,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "tunnel",
+      "direction": "down25",
+      "yawDegrees": 0,
+      "pitchOffsetDegrees": -25,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 80,
+      "estimatedSubmittedTriangles": 67138,
+      "visibleMeshObjects": 78,
+      "transparentCalls": 5
+    },
+    {
+      "pose": "tunnel",
+      "direction": "rear180",
+      "yawDegrees": 180,
+      "pitchOffsetDegrees": 0,
+      "cameraPosition": [
+        3.249912720363918,
+        2.299452026054987,
+        0.7403509231013518
+      ],
+      "estimatedSceneCalls": 93,
+      "estimatedSubmittedTriangles": 90200,
+      "visibleMeshObjects": 91,
+      "transparentCalls": 4
+    }
+  ]
+}
