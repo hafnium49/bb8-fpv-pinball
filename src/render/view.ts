@@ -106,7 +106,7 @@ export class PinballView {
     const ratio = renderPixelRatio(w, h, window.devicePixelRatio, this.highQuality, this.budget.scale);
     this.renderer.setPixelRatio(ratio); this.renderer.setSize(w, h);
     this.post?.resize(this.renderer.domElement.width, this.renderer.domElement.height);
-    this.camera.aspect = w / h; this.projectionFov = -1;
+    this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); this.projectionFov = -1;
   }
 
   async warmup() {

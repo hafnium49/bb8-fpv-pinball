@@ -153,6 +153,8 @@ export class PinballSimulation {
     this.events.push({ type: 'launch' });
   }
 
+  cancelLaunchCharge() { this.previousLaunch = false; this.charge = 0; }
+
   releaseControls() {
     this.controls.left = this.controls.right = this.controls.launch = false;
     this.previousLaunch = false;

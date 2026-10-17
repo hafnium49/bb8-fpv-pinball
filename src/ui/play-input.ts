@@ -12,7 +12,11 @@ export class PlayInput {
     this.sync(); return true;
   }
   holdPointer(id: number, control: PlayControl) { this.pointers.set(id, control); this.sync(); }
-  releasePointer(id: number) { if (this.pointers.delete(id)) this.sync(); }
+  releasePointer(id: number) {
+    const control = this.pointers.get(id);
+    if (this.pointers.delete(id)) this.sync();
+    return control;
+  }
   clearKeyboard() { this.keys.clear(); this.sync(); }
   clear() { this.keys.clear(); this.pointers.clear(); this.sync(); }
   private sync() {
