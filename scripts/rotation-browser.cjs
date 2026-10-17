@@ -157,6 +157,49 @@ async function capture(label) {
     assert.deepEqual(await state(), before);
     if (fixture.touch) {
       await page.evaluate(() => { const { begin, sim } = window.orbitDebug; begin(); sim.update = window.rotationUpdate; });
+      // Native taps exercise browser touch dispatch. The hybrid fixture has a
+      // fine primary pointer and no emulated touchscreen, so uses owner fixtures below.
+      if (!fixture.hybrid) for (let i = 0; i < 8; i++) {
+        await page.locator(i % 2 ? '#right' : '#left').tap();
+        const tapped = await state();
+        assert.equal(tapped.paused, false, `${fixture.name}: native tap paused play`);
+        assert.equal(tapped.modal, false);
+        assert.deepEqual(tapped.controls, released);
+      }
+      await hold(910, 'left'); await hold(911, 'right'); await hold(912, 'left');
+      const holdTime = await page.evaluate(() => window.orbitDebug.sim.time);
+      await page.waitForFunction(time => window.orbitDebug.sim.time > time + 0.025, holdTime);
+      assert.deepEqual((await state()).controls, { left: true, right: true, launch: false }, `${fixture.name}: simultaneous hold failed`);
+      await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 910, pointerType: 'touch' })));
+      assert.deepEqual((await state()).controls, { left: true, right: true, launch: false }, `${fixture.name}: cancellation cleared another finger on the pad`);
+      await hold(913, 'launch');
+      await page.waitForFunction(() => window.orbitDebug.sim.charge > 0.05);
+      const cancelTime = await page.evaluate(() => {
+        window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 913, pointerType: 'touch' }));
+        return window.orbitDebug.sim.time;
+      });
+      // Wait for actual fixed-step physics, not an arbitrary wall-clock delay.
+      await page.waitForFunction(time => window.orbitDebug.sim.time > time + 0.025, cancelTime);
+      const cancelled = await state();
+      assert.equal(cancelled.phase, 'ready', `${fixture.name}: pointercancel fired charged ball before rotation`);
+      assert.equal(cancelled.charge, 0, `${fixture.name}: pointercancel retained launch charge`);
+      assert.deepEqual(cancelled.controls, { left: true, right: true, launch: false }, `${fixture.name}: launch cancellation cleared other fingers`);
+      await page.evaluate(() => {
+        for (const pointerId of [911, 912]) window.dispatchEvent(new PointerEvent('pointerup', { pointerId, pointerType: 'touch' }));
+      });
+      await hold(914, 'launch');
+      await page.waitForFunction(() => window.orbitDebug.sim.charge > 0.05);
+      await page.evaluate(() => {
+        const button = document.getElementById('launch');
+        // Capture loss follows ordinary release in browsers; it must not
+        // turn the intentional release into a cancelled launch.
+        for (const type of ['pointerup', 'lostpointercapture']) button.dispatchEvent(new PointerEvent(type, {
+          pointerId: 914, pointerType: 'touch', bubbles: true,
+        }));
+      });
+      await page.waitForFunction(() => window.orbitDebug.sim.phase === 'playing');
+      assert.deepEqual((await state()).controls, released, `${fixture.name}: normal release retained input`);
+      await page.evaluate(() => window.orbitDebug.begin());
       await hold(903, 'launch');
       await page.waitForFunction(() => window.orbitDebug.sim.charge > 0.05);
       await resize(fixture.from);
@@ -189,7 +232,7 @@ async function capture(label) {
     limits: ['Viewport resizing and injected orientationchange/pointer events emulate rotation, not physical sensors or browser chrome.',
       'Safe areas are CSS-variable fixtures, not a hardware-notch measurement.',
       'WebKit on Linux is engine compatibility evidence, not physical iPhone/iPad validation.',
-      'Physics is frozen for state/geometry screenshots; charging cancellation uses live fixed-step physics. No device FPS claim.'] }, null, 2) + '\n');
+      'Physics is frozen for state/geometry screenshots; native taps, held inputs and launch cancellation use live fixed-step physics. No device FPS claim.'] }, null, 2) + '\n');
 })().catch(async error => {
   console.error(error); process.exitCode = 1; mkdirSync(out, { recursive: true });
   writeFileSync(`${out}/failure.json`, JSON.stringify({ error: error.stack, cases, errors }, null, 2));

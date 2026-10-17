@@ -210,7 +210,7 @@ function begin() {
   setDialog(false); $('toast').classList.remove('visible'); toastUntil = 0;
   $('intro').hidden = true; $('desktop-start-slot').hidden = true; $('game').classList.remove('intro-state'); $('game').focus(); refreshDisplay();
   for (const id of ['hud', 'play-controls']) $(id).hidden = false;
-  toast('Hold SPACE, then release to launch');
+  toast(touchDevice() ? 'Hold LAUNCH, then release to fire' : 'Hold SPACE, then release to launch');
 }
 function showPause() {
   audio.setPaused(true); clearComms(); headLoss.reset(); if (view) view.mode = 'fpv';
