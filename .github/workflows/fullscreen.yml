@@ -1,0 +1,43 @@
+name: Fullscreen and installed-app experience
+on:
+  pull_request:
+    paths: ['src/**', 'public/**', 'index.html', 'vite.config.ts', 'scripts/fullscreen-browser.cjs', 'package*.json', '.github/workflows/fullscreen.yml']
+  push:
+    branches: [main]
+    paths: ['src/**', 'public/**', 'index.html', 'vite.config.ts', 'scripts/fullscreen-browser.cjs', 'package*.json', '.github/workflows/fullscreen.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fullscreen-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  fullscreen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps ${{ matrix.engine }}
+      - name: Check fullscreen fallbacks, installed mode, deployed icons, and WebGL screenshots
+        env:
+          FULLSCREEN_ENGINE: ${{ matrix.engine }}
+        run: node scripts/fullscreen-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fullscreen-${{ matrix.engine }}-${{ github.sha }}
+          path: artifacts/fullscreen-${{ matrix.engine }}/
+          if-no-files-found: warn
