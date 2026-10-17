@@ -115,7 +115,8 @@ async function verifyPreviewAssets() {
   });
   assert.equal(assets.start, root); assert.equal(assets.scope, root);
   assert.equal(assets.manifest.start_url, './'); assert.equal(assets.manifest.scope, './');
-  assert.equal(assets.manifest.display, 'standalone');
+  assert.equal(assets.manifest.display, 'fullscreen');
+  assert.deepEqual(assets.manifest.display_override, ['fullscreen', 'standalone']);
   for (const image of assets.images) assert.ok(image.url.startsWith(root), `Icon escaped deployed subpath: ${image.url}`);
   for (const size of [180, 192, 512]) assert.ok(assets.images.some(image => image.width === size && image.height === size), `Missing decoded ${size}px icon`);
   await context.close(); cases.push({ name: 'production-subpath-manifest-and-icons', result: 'pass', assets });
@@ -133,6 +134,13 @@ async function verifyPreviewAssets() {
       args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', ...JSON.parse(process.env.CHROME_ARGS || '[]')] });
   for (const mode of ['standard', 'prefixed']) {
     const context = await open(mode);
+    // Start's real user gesture must request fullscreen before gameplay.
+    assert.equal(await page.locator('#game').getAttribute('data-display-mode'), 'fullscreen');
+    assert.equal(await page.locator('#fullscreen-help').evaluate(el => el.open), false);
+    assert.deepEqual(await page.evaluate(() => window.fullscreenCalls), { enter: 1, exit: 0 });
+    await page.locator('#fullscreen').click();
+    await page.waitForFunction(() => document.getElementById('game').dataset.displayMode === 'browser');
+    await page.evaluate(() => { window.fullscreenCalls = { enter: 0, exit: 0 }; });
     assert.equal(await page.locator('#fullscreen').getAttribute('aria-label'), 'Enter fullscreen');
     await page.locator('#fullscreen').click();
     await page.waitForFunction(() => document.getElementById('fullscreen').getAttribute('aria-label') === 'Exit fullscreen');
@@ -174,6 +182,12 @@ async function verifyPreviewAssets() {
       { name: 'compact-landscape', width: 568, height: 320, mobile: true },
     ]) {
       const context = await open(mode, { width: fixture.width, height: fixture.height }, fixture.mobile);
+      assert.equal(await page.locator('#fullscreen-help').evaluate(el => el.open), false, 'Start never blocks play with a fullscreen notice');
+      assert.equal(await page.locator('#game').getAttribute('data-display-mode'), 'browser');
+      if (mode === 'rejected' && fixture.mobile) {
+        await page.evaluate(() => document.dispatchEvent(new Event('fullscreenerror')));
+        assert.equal(await page.locator('#fullscreen-help').evaluate(el => el.open), false, 'Delayed automatic request error must not interrupt play');
+      }
       if (mode === 'unsupported' || mode === 'legacy-dialog') {
         assert.equal(await page.locator('#fullscreen').getAttribute('aria-label'), 'Play without browser bars');
         assert.equal((await page.locator('#fullscreen').innerText()).trim(), 'APP');
@@ -268,24 +282,45 @@ async function verifyPreviewAssets() {
   for (const mode of ['standalone', 'display-fullscreen', 'ios-standalone']) {
     const context = await open(mode);
     assert.equal(await page.locator('#fullscreen').isVisible(), false, `${mode}: installed app must hide redundant fullscreen button`);
+    assert.equal(await page.locator('#game').getAttribute('data-display-mode'), 'standalone');
+    assert.equal(await page.locator('#fullscreen-help').evaluate(el => el.open), false);
+    assert.equal(await page.locator('#quality').isVisible(), false);
+    assert.equal(await page.locator('#sound').isVisible(), false);
     const views = [];
     for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }]) {
       await page.setViewportSize(viewport);
+      const safe = viewport.width > viewport.height ? { top: 0, right: 47, bottom: 21, left: 47 } : { top: 47, right: 0, bottom: 34, left: 0 };
+      await page.evaluate(safe => { for (const [side, value] of Object.entries(safe)) document.documentElement.style.setProperty(`--safe-${side}`, `${value}px`); }, safe);
       await page.waitForFunction(() => {
         const { view } = window.orbitDebug, host = document.getElementById('viewport');
         return Math.abs(view.camera.aspect - host.clientWidth / host.clientHeight) < 0.001;
       });
+      if (await page.locator('#resume').isVisible()) await page.locator('#resume').click();
+      assert.equal(await page.locator('#modal').isVisible(), false, 'Capture playable game, not pause overlay');
       const geometry = await page.evaluate(() => {
         const rect = el => { const r = el.getBoundingClientRect(); return { id: el.id, x: r.x, y: r.y, width: r.width, height: r.height }; };
         return { width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth,
-          buttons: ['left', 'launch', 'right', 'quality', 'sound', 'pause'].map(id => rect(document.getElementById(id))) };
+          canvas: rect(document.querySelector('#viewport canvas')), hud: rect(document.getElementById('hud')),
+          buttons: ['left', 'launch', 'right', 'pause'].map(id => rect(document.getElementById(id))) };
       });
       assert.ok(geometry.scrollWidth <= geometry.width + 1, `${mode}: horizontal overflow`);
       for (const r of geometry.buttons) assert.ok(r.width >= 44 && r.height >= 44 && r.x >= -1 && r.y >= -1 &&
         r.x + r.width <= geometry.width + 1 && r.y + r.height <= geometry.height + 1, `${mode}: invalid standalone control bounds ${JSON.stringify(r)}`);
+      for (const r of geometry.buttons) assert.ok(r.x >= safe.left && r.y >= safe.top && r.x + r.width <= viewport.width - safe.right + 1 && r.y + r.height <= viewport.height - safe.bottom + 1, `${mode}: control infringes simulated safe area`);
+      assert.equal(geometry.canvas.x, 0); assert.equal(geometry.canvas.y, 0);
+      assert.equal(geometry.canvas.width, viewport.width); assert.equal(geometry.canvas.height, viewport.height);
+      assert.ok(geometry.hud.height < 85, 'Installed gameplay keeps a compact HUD');
       const rendering = await capture(`${mode}-${viewport.width > viewport.height ? 'landscape' : 'portrait'}`);
       views.push({ geometry, rendering });
     }
+    await page.locator('#pause').click();
+    assert.equal(await page.locator('#dialog-quality').isVisible(), true);
+    assert.equal(await page.locator('#dialog-sound').isVisible(), true);
+    const quality = await page.locator('#dialog-quality').innerText();
+    await page.locator('#dialog-quality').click();
+    assert.notEqual(await page.locator('#dialog-quality').innerText(), quality);
+    await page.locator('#resume').click();
+    assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), false);
     cases.push({ name: mode, result: 'pass', views }); await context.close(); page = undefined;
   }
   await verifyPreviewAssets();

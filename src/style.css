@@ -261,3 +261,26 @@ h1 em { font-style: inherit; color: var(--amber); }
 #fullscreen-help:not([open]) { display: none; }
 .fullscreen-help-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: #030810cc; }
 .fullscreen-help-overlay #fullscreen-help { position: relative; inset: auto; margin: auto; }
+
+
+/* Installed iPhone gameplay and native fullscreen use the whole screen, with a
+   single compact HUD row. Keep the canvas full-bleed; inset only touch targets.
+   Browser mode deliberately does not claim or imitate browser-chrome removal. */
+:root.touch-device #game.immersive-play:not(.intro-state) .topbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  background: linear-gradient(#080e24b3, transparent);
+}
+:root.touch-device #game.immersive-play:not(.intro-state) .wordmark,
+:root.touch-device #game.immersive-play:not(.intro-state) #quality,
+:root.touch-device #game.immersive-play:not(.intro-state) #sound { display: none; }
+:root.touch-device #game.immersive-play:not(.intro-state) .hud {
+  grid-column: 1; grid-row: 1; width: min(300px, 100%); padding: 5px 9px;
+  border: 1px solid #76838788; background: #090d0dbb; box-shadow: none;
+}
+:root.touch-device #game.immersive-play:not(.intro-state) .hud .eyebrow { display: none; }
+:root.touch-device #game.immersive-play:not(.intro-state) #score { font-size: 22px; }
+:root.touch-device #game.immersive-play:not(.intro-state) #score.long-score { font-size: 18px; }
+:root.touch-device #game.immersive-play:not(.intro-state) .top-actions { grid-column: 2; }
+:root.touch-device #game.immersive-play:not(.intro-state) .flipper-button small { display: none; }
+#modal-settings > button + button { margin-left: 16px; }

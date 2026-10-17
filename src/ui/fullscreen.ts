@@ -77,10 +77,14 @@ export function setupFullscreen(options: {
   const icon = button.innerHTML;
   const standalone = matchMedia('(display-mode: standalone)'), fullscreen = matchMedia('(display-mode: fullscreen)');
   let busy = false;
+  let automaticRequest = false;
   const update = () => {
     const active = !!fullscreenElement(document);
     // Native fullscreen can also match display-mode: fullscreen. Keep its exit button.
-    button.hidden = !active && standaloneDisplay(navigator, standalone.matches, fullscreen.matches);
+    const installed = !active && standaloneDisplay(navigator, standalone.matches, fullscreen.matches);
+    game.dataset.displayMode = active ? 'fullscreen' : installed ? 'standalone' : 'browser';
+    game.classList.toggle('immersive-play', active || installed);
+    button.hidden = installed;
     const supported = !!fullscreenAPI(game, document);
     const label = active ? 'Exit fullscreen' : supported ? 'Enter fullscreen' : 'Play without browser bars';
     button.setAttribute('aria-label', label); button.title = label;
@@ -101,6 +105,7 @@ export function setupFullscreen(options: {
   };
   button.addEventListener('click', async () => {
     if (busy) return;
+    automaticRequest = false;
     const api = fullscreenAPI(game, document);
     if (!api) { showHelp(false); return; }
     busy = true; update();
@@ -111,8 +116,20 @@ export function setupFullscreen(options: {
   help.querySelector('#fullscreen-help-close')!.addEventListener('click', dialog.close);
   for (const event of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(event, update);
   // Older prefixed implementations signal failure by event rather than a rejected promise.
-  for (const event of ['fullscreenerror', 'webkitfullscreenerror']) document.addEventListener(event, () => showHelp(true));
+  for (const event of ['fullscreenerror', 'webkitfullscreenerror']) document.addEventListener(event, () => { if (!automaticRequest) showHelp(true); });
   standalone.addEventListener('change', update); fullscreen.addEventListener('change', update);
   window.addEventListener('pageshow', update);
   update();
+  return {
+    // Called directly from the Start tap, before any await consumes user activation.
+    // A denied/unsupported request must never cover the game with an install guide.
+    enterForPlay: () => {
+      if (busy || fullscreenElement(document) || standaloneDisplay(navigator, standalone.matches, fullscreen.matches)) return;
+      const api = fullscreenAPI(game, document);
+      if (!api) return;
+      busy = true; automaticRequest = true; update();
+      try { Promise.resolve(api.enter()).catch(() => {}).finally(() => { busy = false; update(); }); }
+      catch { busy = false; update(); }
+    },
+  };
 }
