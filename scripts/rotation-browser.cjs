@@ -17,6 +17,15 @@ const sizes = [
 ];
 const viewport = ([width, height]) => ({ width, height });
 async function resize(size) {
+  // A touch Start can now enter real fullscreen. Desktop automation cannot
+  // resize a fullscreen OS window to emulate rotation; restore the browser
+  // before setting viewport metrics. Installed-mode rotation is covered by
+  // fullscreen-browser.cjs without pretending this is physical iOS rotation.
+  await page.evaluate(async () => {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (document.webkitFullscreenElement) await document.webkitExitFullscreen();
+  });
+  await page.waitForFunction(() => !document.fullscreenElement && !document.webkitFullscreenElement);
   await page.setViewportSize(viewport(size));
   await page.waitForFunction(() => {
     const { view } = window.orbitDebug, el = document.getElementById('viewport');
