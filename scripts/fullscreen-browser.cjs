@@ -181,6 +181,12 @@ async function verifyPreviewAssets() {
       await page.waitForFunction(() => document.getElementById('fullscreen-help').open);
       const geometry = await helpGeometry(`${mode}-${fixture.name}`); titles[mode] = geometry.title;
       const rendering = await capture(`${mode}-${fixture.name}`);
+      if (fixture.name === 'compact-landscape') {
+        await page.keyboard.press('Tab');
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'fullscreen-help-body', 'Keyboard must reach scrollable instructions');
+        await page.keyboard.press('ArrowDown');
+        await page.waitForFunction(() => document.getElementById('fullscreen-help-body').scrollTop > 0);
+      }
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => !document.getElementById('fullscreen-help').open);
       await page.waitForFunction(() => document.activeElement.id === 'resume');

@@ -249,6 +249,7 @@ h1 em { font-style: inherit; color: var(--amber); }
 #fullscreen-help { color: #e8edf0; background: var(--panel); border: 1px solid var(--cyan); border-radius: 12px; width: min(460px, calc(100% - 32px - var(--safe-left) - var(--safe-right))); max-height: calc(100dvh - 32px - var(--safe-top) - var(--safe-bottom)); padding: 20px; overflow: hidden; margin: auto; }
 #fullscreen-help[open] { display: flex; flex-direction: column; gap: 12px; }
 #fullscreen-help-body { min-height: 0; overflow-y: auto; }
+#fullscreen-help-body:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 #fullscreen-help::backdrop { background: #030810cc; }
 #fullscreen-help h2 { flex-shrink: 0; margin: 0; color: var(--amber); font-size: 24px; }
 #fullscreen-help p, #fullscreen-help li { font-size: 14px; line-height: 1.5; }
