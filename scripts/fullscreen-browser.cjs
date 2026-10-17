@@ -313,6 +313,27 @@ async function verifyPreviewAssets() {
       const rendering = await capture(`${mode}-${viewport.width > viewport.height ? 'landscape' : 'portrait'}`);
       views.push({ geometry, rendering });
     }
+    const play = await page.evaluate(() => {
+      const { sim } = window.orbitDebug;
+      const pointer = (id, type, pointerId) => document.getElementById(id).dispatchEvent(new PointerEvent(type, {
+        pointerId, pointerType: 'touch', button: 0, bubbles: true, cancelable: true,
+      }));
+      pointer('left', 'pointerdown', 801); pointer('right', 'pointerdown', 802);
+      const simultaneous = sim.controls.left && sim.controls.right;
+      pointer('left', 'pointerup', 801); pointer('right', 'pointerup', 802);
+      pointer('launch', 'pointerdown', 803);
+      for (let i = 0; i < 90; i++) sim.step();
+      const charge = sim.charge;
+      pointer('launch', 'pointerup', 803); sim.step();
+      const launched = sim.phase === 'playing';
+      const from = { ...sim.position };
+      for (let i = 0; i < 60; i++) sim.step();
+      return { simultaneous, charge, launched, from, to: { ...sim.position }, controls: { ...sim.controls } };
+    });
+    assert.equal(play.simultaneous, true); assert.ok(play.charge > .5); assert.equal(play.launched, true);
+    assert.ok(Math.hypot(play.to.x - play.from.x, play.to.z - play.from.z) > 1, 'Installed launch must move the physical ball');
+    assert.deepEqual(play.controls, { left: false, right: false, launch: false });
+    await capture(`${mode}-playing-landscape`);
     await page.locator('#pause').click();
     assert.equal(await page.locator('#dialog-quality').isVisible(), true);
     assert.equal(await page.locator('#dialog-sound').isVisible(), true);
@@ -321,7 +342,7 @@ async function verifyPreviewAssets() {
     assert.notEqual(await page.locator('#dialog-quality').innerText(), quality);
     await page.locator('#resume').click();
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), false);
-    cases.push({ name: mode, result: 'pass', views }); await context.close(); page = undefined;
+    cases.push({ name: mode, result: 'pass', views, play }); await context.close(); page = undefined;
   }
   await verifyPreviewAssets();
   assert.deepEqual(errors, []);
