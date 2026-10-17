@@ -2,6 +2,7 @@ import './style.css';
 import { cabinetDisplay } from './ui/cabinet-display';
 import { rankedScores, readScores, saveRun } from './ui/local-scores';
 import { PlayInput, pauseOnWindowBlur } from './ui/play-input';
+import { observeGameLayout, usesDesktopCabinet } from './ui/game-layout';
 import { PinballSimulation } from './physics/simulation';
 import { PinballView } from './render/view';
 import { HeadLossCamera, HEAD_LOSS_CAPTION } from './render/head-loss';
@@ -79,8 +80,12 @@ let toastUntil = 0, previousPhase = 'intro', last = performance.now();
 let commsUntil = 0;
 const coarseInput = matchMedia('(pointer: coarse)');
 const desktopCabinet = matchMedia('(min-width: 1024px) and (min-height: 600px)');
+const anyCoarseInput = matchMedia('(any-pointer: coarse)');
+const touchDevice = () => anyCoarseInput.matches || navigator.maxTouchPoints > 0;
+const cabinetLayout = () => usesDesktopCabinet(desktopCabinet.matches, touchDevice());
 function arrangeIntro() {
-  const parent = desktopCabinet.matches ? $('desktop-start-slot') : $('intro');
+  document.documentElement.classList.toggle('touch-device', touchDevice());
+  const parent = cabinetLayout() ? $('desktop-start-slot') : $('intro');
   if ($('intro-content').parentElement !== parent) parent.append($('intro-content'));
 }
 arrangeIntro();
@@ -116,10 +121,10 @@ function setDialog(open: boolean) {
   }
 }
 function refreshDisplay() {
-  const key = `${sim.phase}:${sim.paused}:${sim.score}:${sim.balls}:${sim.charge > 0}:${sim.route.active}:${sim.route.phase}:${sim.route.completions}:${sim.reference?.name}:${coarseInput.matches}:${desktopCabinet.matches}`;
+  const key = `${sim.phase}:${sim.paused}:${sim.score}:${sim.balls}:${sim.charge > 0}:${sim.route.active}:${sim.route.phase}:${sim.route.completions}:${sim.reference?.name}:${coarseInput.matches}:${cabinetLayout()}`;
   if (key === displayCache) return;
   const d = cabinetDisplay({ phase: sim.phase, paused: sim.paused, score: sim.score, balls: sim.balls, charge: sim.charge, route: sim.route, circuit: circuitEnabled, reference: referenceEnabled, routeName: sim.reference?.name, coarse: coarseInput.matches });
-  displayCache = key; $('hud').hidden = !d.visible && !desktopCabinet.matches;
+  displayCache = key; $('hud').hidden = !d.visible && !cabinetLayout();
   $('score').textContent = d.score; $('score').classList.toggle('long-score', d.score.length > 6);
   $('balls').textContent = d.balls; $('balls').setAttribute('aria-label', d.ballLabel); $('hint').textContent = d.status;
   $('panel-ball').textContent = `${Math.min(3, Math.max(1, 4 - sim.balls))} / 3`;
@@ -226,6 +231,12 @@ function gameOver() {
   $('modal-copy').textContent = 'Three balls. One more orbit?'; $('resume').hidden = true;
   $('restart').textContent = 'PLAY AGAIN ↗'; playInput.clear(); setDialog(true); refreshDisplay();
 }
+function cancelPointer(id: number) {
+  // Cancellation is not an intentional launch release. It can arrive before
+  // the browser's orientation notification, or after normal pointerup.
+  const control = playInput.releasePointer(id);
+  if (control === 'launch' && !sim.controls.launch) sim.cancelLaunchCharge();
+}
 function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
   const button = $<HTMLButtonElement>(id);
   button.addEventListener('pointerdown', e => {
@@ -235,8 +246,9 @@ function pointerButton(id: string, key: 'left' | 'right' | 'launch') {
     try { button.setPointerCapture(e.pointerId); } catch { /* Global release handlers cover unavailable capture. */ }
     playInput.holdPointer(e.pointerId, key); void activateSound();
   });
-  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture'] as const)
-    button.addEventListener(name, e => playInput.releasePointer(e.pointerId));
+  button.addEventListener('pointerup', e => playInput.releasePointer(e.pointerId));
+  for (const name of ['pointercancel', 'lostpointercapture'] as const)
+    button.addEventListener(name, e => cancelPointer(e.pointerId));
   button.addEventListener('contextmenu', e => e.preventDefault());
 }
 
@@ -301,15 +313,22 @@ async function boot() {
     window.addEventListener('keyup', e => {
       playInput.releaseKey(e.code);
     });
-    for (const name of ['pointerup', 'pointercancel'] as const)
-      window.addEventListener(name, e => playInput.releasePointer(e.pointerId));
+    window.addEventListener('pointerup', e => playInput.releasePointer(e.pointerId));
+    window.addEventListener('pointercancel', e => cancelPointer(e.pointerId));
     window.addEventListener('blur', () => {
       if (pauseOnWindowBlur(document.hidden, coarseInput.matches, lastPointerType)) showPause();
       else playInput.clearKeyboard();
     });
     window.addEventListener('pagehide', showPause);
     document.addEventListener('visibilitychange', () => { if (document.hidden) showPause(); else if (!$('modal').hidden) ($('resume').hidden ? $('restart') : $('resume')).focus(); });
-    window.addEventListener('resize', () => { arrangeIntro(); view.resize(); });
+    observeGameLayout($('viewport'), () => {
+      arrangeIntro(); view.resize(); refreshDisplay();
+    }, () => {
+      // Rotation moves touch targets; discard old owners without releasing a
+      // charged shot or resetting the run, camera, pause state or sound.
+      playInput.clear(); sim.releaseControls(); sim.cancelLaunchCharge(); refreshControls();
+    });
+    anyCoarseInput.addEventListener('change', () => { arrangeIntro(); view.resize(); refreshDisplay(); });
     view.renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); showPause(); toast('Graphics paused · waiting for recovery', 20); });
     view.renderer.domElement.addEventListener('webglcontextrestored', () => { toast('Graphics restored · resume when ready'); });
 

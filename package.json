@@ -25,7 +25,8 @@
     "test:course": "node --import tsx scripts/reference-course-check.ts",
     "test:course:audio": "node scripts/reference-course-audio.cjs",
     "typecheck:fidelity": "tsc --noEmit -p tsconfig.fidelity.json",
-    "benchmark:fidelity": "node spikes/fidelity/run.cjs"
+    "benchmark:fidelity": "node spikes/fidelity/run.cjs",
+    "test:rotation:browser": "node scripts/rotation-browser.cjs"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "0.21.0",

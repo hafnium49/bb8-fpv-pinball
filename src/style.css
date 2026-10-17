@@ -1,4 +1,4 @@
-:root { font-family: system-ui, sans-serif; color: #e8edf0; background: #080e24; font-synthesis: none; --amber: #ffc36b; --cyan: #63d6e8; --muted: #a3adb5; --panel: #111719; }
+:root { font-family: system-ui, sans-serif; color: #e8edf0; background: #080e24; font-synthesis: none; --amber: #ffc36b; --cyan: #63d6e8; --muted: #a3adb5; --panel: #111719; --safe-top: env(safe-area-inset-top, 0px); --safe-right: env(safe-area-inset-right, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-left: env(safe-area-inset-left, 0px); }
 * { box-sizing: border-box; }
 body { margin: 0; overflow: hidden; }
 button, a, input { -webkit-tap-highlight-color: transparent; }
@@ -6,12 +6,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 button:disabled { cursor: default; }
 [hidden] { display: none !important; }
-#game, #viewport { position: absolute; inset: 0; width: 100%; height: 100dvh; overflow: hidden; }
+#game, #viewport { position: absolute; inset: 0; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
 #game { outline: none; }
 #viewport { touch-action: none; }
 #viewport canvas { width: 100%; height: 100%; display: block; }
 #viewport::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 52% 44%, transparent 55%, #03071955 100%); }
-.topbar { position: absolute; z-index: 4; top: 0; left: 0; width: 100%; padding: max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); display: grid; grid-template-columns: minmax(80px, 1fr) minmax(0, 340px) minmax(232px, 1fr); align-items: center; gap: 12px; background: linear-gradient(#171613ed, #11141888, transparent); }
+.topbar { position: absolute; z-index: 4; top: 0; left: 0; width: 100%; padding: max(8px, var(--safe-top)) max(16px, var(--safe-right)) 8px max(16px, var(--safe-left)); display: grid; grid-template-columns: minmax(80px, 1fr) minmax(0, 340px) minmax(232px, 1fr); align-items: center; gap: 12px; background: linear-gradient(#171613ed, #11141888, transparent); }
 .wordmark { display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; min-width: 0; }
 .orbit-mark { font-size: 32px; color: var(--cyan); line-height: 1; }
 .wordmark strong { font-size: 20px; font-style: italic; letter-spacing: .10em; color: #e8d6ac; text-shadow: 0 1px #000, 0 0 8px #bc782c55; }
@@ -64,7 +64,7 @@ h1 em { font-style: inherit; color: var(--amber); }
 .instructions p { margin: 6px 0; }
 .intro-index { position: absolute; bottom: 20px; left: 32px; right: 32px; display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
 .intro-index b { margin-left: 20px; color: var(--cyan); }
-.play-controls { position: absolute; left: max(16px, env(safe-area-inset-left)); right: max(16px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; }
+.play-controls { position: absolute; left: max(16px, var(--safe-left)); right: max(16px, var(--safe-right)); bottom: max(14px, var(--safe-bottom)); z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; }
 .play-controls button { pointer-events: auto; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .play-controls button > * { pointer-events: none; }
 .flipper-button { width: 155px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: linear-gradient(145deg, #33393a, #101516 45%, #252d2d); border: 2px solid #8b999c; border-radius: 5px; box-shadow: inset 0 1px #e1e6dd55, inset 0 -3px #0009, 0 0 0 3px #090c0d99, 0 5px 20px #0007; }
@@ -81,14 +81,14 @@ h1 em { font-style: inherit; color: var(--amber); }
 #launch:disabled { color: var(--muted); border-color: #536265; }
 .charge-track { width: 100%; height: 3px; background: #ffb45322; display: block; margin-top: 8px; }
 #charge { display: block; height: 100%; width: 0; background: var(--amber); }
-.droid-comms { position: absolute; z-index: 3; bottom: calc(104px + max(14px, env(safe-area-inset-bottom))); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; width: max-content; max-width: calc(100% - 28px); padding: 8px 12px; border: 1px solid var(--cyan); border-radius: 6px; background: var(--panel); pointer-events: none; }
+.droid-comms { position: absolute; z-index: 3; bottom: calc(104px + max(14px, var(--safe-bottom))); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; width: max-content; max-width: calc(100% - 28px); padding: 8px 12px; border: 1px solid var(--cyan); border-radius: 6px; background: var(--panel); pointer-events: none; }
 .comms-label { color: var(--cyan); font-size: 12px; white-space: nowrap; }
 #droid-line { font-size: 14px; line-height: 1.35; font-weight: 650; overflow-wrap: anywhere; }
 .droid-comms.urgent { border-color: var(--amber); }
 .droid-comms.urgent .comms-label, .droid-comms.urgent #droid-line { color: var(--amber); }
 .flipper-button.warning { outline: 2px solid #ffd69a; outline-offset: 2px; box-shadow: inset 0 0 20px #ffb45322; }
 .droid-comms.sr-only { width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; border: 0; }
-.modal { position: absolute; inset: 0; background: #03081066; z-index: 5; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+.modal { position: absolute; inset: 0; background: #03081066; z-index: 5; display: grid; place-items: center; padding: max(12px, var(--safe-top)) max(12px, var(--safe-right)) max(12px, var(--safe-bottom)) max(12px, var(--safe-left)); }
 .modal-card { text-align: center; width: min(380px, 100%); max-height: 100%; overflow-y: auto; padding: 22px; border: 1px solid #536265; border-top: 2px solid var(--cyan); border-radius: 8px; background: var(--panel); box-shadow: 0 8px 30px #0006; }
 .modal-card h2 { font: 800 36px ui-monospace, monospace; color: var(--amber); margin: 14px 0; overflow-wrap: anywhere; }
 .modal-card p { color: var(--muted); font-size: 14px; margin: 12px 0 18px; }
@@ -101,7 +101,7 @@ h1 em { font-style: inherit; color: var(--amber); }
 #modal-feedback #toast { display: block; min-height: 18px; font-size: 12px; }
 .loading-error { position: absolute; z-index: 9; inset: auto 20px 20px; background: #421f20; color: #ffb8ad; border: 1px solid #b7625a; padding: 15px; font-size: 14px; }
 @media (max-width: 700px) {
-  .topbar { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); grid-template-columns: 1fr auto; gap: 6px; }
+  .topbar { padding-left: max(12px, var(--safe-left)); padding-right: max(12px, var(--safe-right)); grid-template-columns: 1fr auto; gap: 6px; }
   .top-actions { grid-column: 2; }
   .hud { grid-row: 2; grid-column: 1 / -1; }
   .wordmark { gap: 4px; }
@@ -115,9 +115,9 @@ h1 em { font-style: inherit; color: var(--amber); }
   h1 { font-size: 72px; }
   .flipper-button { width: clamp(92px, 25vw, 110px); height: 76px; }
   .flipper-button b { font-size: 12px; }
-  .play-controls { left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); }
+  .play-controls { left: max(12px, var(--safe-left)); right: max(12px, var(--safe-right)); }
   #launch { width: 104px; }
-  .droid-comms { bottom: calc(94px + max(14px, env(safe-area-inset-bottom))); }
+  .droid-comms { bottom: calc(94px + max(14px, var(--safe-bottom))); }
   #droid-line { font-size: 13px; }
 }
 @media (max-width: 360px) { .wordmark strong, .comms-label { display: none; } #launch { width: 96px; } }
@@ -134,13 +134,13 @@ h1 em { font-style: inherit; color: var(--amber); }
   .intro-note, .intro-index { display: none; }
   .flipper-button { width: 125px; height: 64px; gap: 2px; }
   .flipper-icon { font-size: 18px; }
-  .play-controls { bottom: max(12px, env(safe-area-inset-bottom)); }
+  .play-controls { bottom: max(12px, var(--safe-bottom)); }
   #launch { width: 104px; min-height: 52px; padding: 8px; }
-  .droid-comms { bottom: calc(80px + max(12px, env(safe-area-inset-bottom))); padding: 6px 10px; }
+  .droid-comms { bottom: calc(80px + max(12px, var(--safe-bottom))); padding: 6px 10px; }
   .modal-card { padding: 16px; } .modal-card h2 { font-size: 28px; }
 }
 @media (max-width: 620px) and (orientation: landscape) { .wordmark strong { display: none; } .topbar { grid-template-columns: 28px minmax(0, 1fr) auto; } }
-@media (max-height: 360px) and (orientation: landscape) { .flipper-button { height: 56px; } .flipper-icon { display: none; } .droid-comms { bottom: calc(70px + max(12px, env(safe-area-inset-bottom))); } }
+@media (max-height: 360px) and (orientation: landscape) { .flipper-button { height: 56px; } .flipper-icon { display: none; } .droid-comms { bottom: calc(70px + max(12px, var(--safe-bottom))); } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
 
@@ -174,48 +174,48 @@ h1 em { font-style: inherit; color: var(--amber); }
 .cabinet-guide p { color: #a7abb3; font-size: 12px; line-height: 1.6; margin-bottom: 0; }
 .cabinet-guide kbd { display: inline-block; padding: 3px 6px; border: 1px solid #a8a8a8; border-radius: 2px; background: linear-gradient(#fff, #ced0d4); color: #252831; box-shadow: 0 2px #555; font: 800 12px ui-monospace, monospace; }
 @media (min-width: 1024px) and (min-height: 600px) {
-  #game { --cabinet-left: 246px; --cabinet-right: 286px; background: #06070a; }
-  #viewport { left: var(--cabinet-left); right: var(--cabinet-right); top: 8px; bottom: 8px; width: auto; height: auto; border: 1px solid #171b20; border-radius: 4px; }
-  #viewport::after { display: none; }
-  .ranking-panel, .topbar { top: 8px; bottom: 8px; background: repeating-linear-gradient(0deg, #1f2227 0px, #23262a 1px, #202328 2px, #262a30 4px); border: 1px solid #30343a; box-shadow: inset 0 0 22px #060709; border-radius: 3px; }
-  .ranking-panel { position: absolute; left: 10px; width: 224px; z-index: 2; display: flex; flex-direction: column; padding: 8px; gap: 12px; }
-  .ranking-frame, .recent-frame { display: flex; flex-direction: column; min-height: 0; }
-  .ranking-frame { flex: 1.25; }
-  .recent-frame { flex: 1; }
-  .ranking-panel .score-list { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-  .ranking-panel .score-list li { flex: 1; padding-top: 3px; padding-bottom: 3px; }
-  .topbar { left: auto; right: 10px; width: 264px; height: auto; padding: 8px; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 12px; overflow-y: auto; }
-  .wordmark { min-height: 34px; flex: 0 0 auto; justify-content: center; }
-  .wordmark strong { font: 900 24px Georgia, serif; letter-spacing: -.05em; color: #f9ce77; text-shadow: 0 -1px #ffebc4, 0 2px #825220, 0 3px #382415, 0 0 7px #e69b4870; white-space: nowrap; }
-  .pinball-title { display: inline; }
-  .orbit-mark, .brand-note { display: none; }
-  .hud { order: 1; min-height: 112px; flex: 0 0 auto; padding: 11px 10px; border-color: #939a98; row-gap: 10px; }
-  #score { font-size: 31px; letter-spacing: .02em; }
-  #score.long-score { font-size: 22px; }
-  #balls { font-size: 17px; letter-spacing: 1px; }
-  .hud .eyebrow { color: #bab5a5; font-size: 10px; }
-  .display-status { min-height: 29px; text-align: center; font-size: 13px; letter-spacing: .02em; }
-  .reference-console { order: 4; display: flex; flex-direction: column; gap: 12px; }
-  .top-actions { order: 3; margin-top: 0; flex: 0 0 auto; display: flex; justify-content: center; gap: 6px; }
-  #quality { width: 58px; } #sound { width: 74px; }
-  .icon-button { padding: 4px; }
-  .flipper-button { width: clamp(112px, 11vw, 155px); }
-  .play-controls { left: calc(var(--cabinet-left) + 16px); right: calc(var(--cabinet-right) + 16px); }
-  .droid-comms { left: calc((100% + var(--cabinet-left) - var(--cabinet-right)) / 2); max-width: calc(100% - var(--cabinet-left) - var(--cabinet-right) - 32px); }
-  .intro-panel { background: none; z-index: 5; }
-  .desktop-start-slot { display: block; order: 2; }
-  .intro-content { position: static; width: 100%; max-height: none; padding: 10px; background: #111418; border: 3px solid #858a88; border-radius: 4px; }
-  .intro-content h1, .intro-content > p { display: none; }
-  .intro-content > p { font-size: 12px; margin-bottom: 12px; line-height: 1.55; }
-  .intro-content > .eyebrow { font-size: 10px; letter-spacing: .04em; }
-  .intro-content .primary { width: 100%; }
-  .intro-content .text-button { margin-top: 6px; min-height: 36px; }
-  .intro-content #table-variant { margin-right: 12px; }
-  #intro-best, .intro-note, .intro-index { display: none; }
-  .intro-state .cabinet-guide { display: none; }
-  .intro-state .top-actions { margin-top: 0; }
-  .modal { z-index: 8; }
-  .modal-card { border: 3px solid #9a9a8d; border-radius: 4px; background: repeating-linear-gradient(0deg, #1b1d21, #202329 3px); }
+  :root:not(.touch-device) #game { --cabinet-left: 246px; --cabinet-right: 286px; background: #06070a; }
+  :root:not(.touch-device) #viewport { left: var(--cabinet-left); right: var(--cabinet-right); top: 8px; bottom: 8px; width: auto; height: auto; border: 1px solid #171b20; border-radius: 4px; }
+  :root:not(.touch-device) #viewport::after { display: none; }
+  :root:not(.touch-device) .ranking-panel, :root:not(.touch-device) .topbar { top: 8px; bottom: 8px; background: repeating-linear-gradient(0deg, #1f2227 0px, #23262a 1px, #202328 2px, #262a30 4px); border: 1px solid #30343a; box-shadow: inset 0 0 22px #060709; border-radius: 3px; }
+  :root:not(.touch-device) .ranking-panel { position: absolute; left: 10px; width: 224px; z-index: 2; display: flex; flex-direction: column; padding: 8px; gap: 12px; }
+  :root:not(.touch-device) .ranking-frame, :root:not(.touch-device) .recent-frame { display: flex; flex-direction: column; min-height: 0; }
+  :root:not(.touch-device) .ranking-frame { flex: 1.25; }
+  :root:not(.touch-device) .recent-frame { flex: 1; }
+  :root:not(.touch-device) .ranking-panel .score-list { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  :root:not(.touch-device) .ranking-panel .score-list li { flex: 1; padding-top: 3px; padding-bottom: 3px; }
+  :root:not(.touch-device) .topbar { left: auto; right: 10px; width: 264px; height: auto; padding: 8px; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 12px; overflow-y: auto; }
+  :root:not(.touch-device) .wordmark { min-height: 34px; flex: 0 0 auto; justify-content: center; }
+  :root:not(.touch-device) .wordmark strong { font: 900 24px Georgia, serif; letter-spacing: -.05em; color: #f9ce77; text-shadow: 0 -1px #ffebc4, 0 2px #825220, 0 3px #382415, 0 0 7px #e69b4870; white-space: nowrap; }
+  :root:not(.touch-device) .pinball-title { display: inline; }
+  :root:not(.touch-device) .orbit-mark, :root:not(.touch-device) .brand-note { display: none; }
+  :root:not(.touch-device) .hud { order: 1; min-height: 112px; flex: 0 0 auto; padding: 11px 10px; border-color: #939a98; row-gap: 10px; }
+  :root:not(.touch-device) #score { font-size: 31px; letter-spacing: .02em; }
+  :root:not(.touch-device) #score.long-score { font-size: 22px; }
+  :root:not(.touch-device) #balls { font-size: 17px; letter-spacing: 1px; }
+  :root:not(.touch-device) .hud .eyebrow { color: #bab5a5; font-size: 10px; }
+  :root:not(.touch-device) .display-status { min-height: 29px; text-align: center; font-size: 13px; letter-spacing: .02em; }
+  :root:not(.touch-device) .reference-console { order: 4; display: flex; flex-direction: column; gap: 12px; }
+  :root:not(.touch-device) .top-actions { order: 3; margin-top: 0; flex: 0 0 auto; display: flex; justify-content: center; gap: 6px; }
+  :root:not(.touch-device) #quality { width: 58px; } :root:not(.touch-device) #sound { width: 74px; }
+  :root:not(.touch-device) .icon-button { padding: 4px; }
+  :root:not(.touch-device) .flipper-button { width: clamp(112px, 11vw, 155px); }
+  :root:not(.touch-device) .play-controls { left: calc(var(--cabinet-left) + 16px); right: calc(var(--cabinet-right) + 16px); }
+  :root:not(.touch-device) .droid-comms { left: calc((100% + var(--cabinet-left) - var(--cabinet-right)) / 2); max-width: calc(100% - var(--cabinet-left) - var(--cabinet-right) - 32px); }
+  :root:not(.touch-device) .intro-panel { background: none; z-index: 5; }
+  :root:not(.touch-device) .desktop-start-slot { display: block; order: 2; }
+  :root:not(.touch-device) .intro-content { position: static; width: 100%; max-height: none; padding: 10px; background: #111418; border: 3px solid #858a88; border-radius: 4px; }
+  :root:not(.touch-device) .intro-content h1, :root:not(.touch-device) .intro-content > p { display: none; }
+  :root:not(.touch-device) .intro-content > p { font-size: 12px; margin-bottom: 12px; line-height: 1.55; }
+  :root:not(.touch-device) .intro-content > .eyebrow { font-size: 10px; letter-spacing: .04em; }
+  :root:not(.touch-device) .intro-content .primary { width: 100%; }
+  :root:not(.touch-device) .intro-content .text-button { margin-top: 6px; min-height: 36px; }
+  :root:not(.touch-device) .intro-content #table-variant { margin-right: 12px; }
+  :root:not(.touch-device) #intro-best, :root:not(.touch-device) .intro-note, :root:not(.touch-device) .intro-index { display: none; }
+  :root:not(.touch-device) .intro-state .cabinet-guide { display: none; }
+  :root:not(.touch-device) .intro-state .top-actions { margin-top: 0; }
+  :root:not(.touch-device) .modal { z-index: 8; }
+  :root:not(.touch-device) .modal-card { border: 3px solid #9a9a8d; border-radius: 4px; background: repeating-linear-gradient(0deg, #1b1d21, #202329 3px); }
 }
 
 /* Keep the start action visible in compact landscape browsers. */
@@ -224,4 +224,23 @@ h1 em { font-style: inherit; color: var(--amber); }
   #intro p { font-size: 12px; line-height: 1.3; margin-bottom: 8px; }
   #intro button { margin-top: 4px; }
   .intro-note, .intro-index, #intro-best { display: none; }
+}
+
+/* A touch tablet keeps the immersive viewport even with an attached mouse.
+   Landscape HUD shares one row; controls stay thumb-sized on short phones. */
+@media (orientation: landscape) {
+  :root.touch-device .topbar { grid-template-columns: minmax(28px, 1fr) minmax(0, 340px) auto; gap: 8px; }
+  :root.touch-device .hud { grid-column: 2; grid-row: 1; }
+  :root.touch-device .top-actions { grid-column: 3; }
+  :root.touch-device .intro-content { top: calc(88px + var(--safe-top)); max-height: calc(100% - 100px - var(--safe-top) - var(--safe-bottom)); }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  :root.touch-device .topbar { grid-template-columns: minmax(28px, 1fr) minmax(0, 270px) auto; }
+  .wordmark strong { display: none; }
+  .intro-content, :root.touch-device .intro-content { left: max(7%, var(--safe-left)); top: calc(76px + var(--safe-top)); max-height: calc(100% - 88px - var(--safe-top) - var(--safe-bottom)); }
+}
+@media (max-width: 620px) and (orientation: landscape) {
+  :root.touch-device .topbar { grid-template-columns: 28px minmax(0, 1fr) auto; }
+  .topbar { gap: 6px; }
+  .flipper-button { width: 110px; }
 }
