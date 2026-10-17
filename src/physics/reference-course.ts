@@ -3,7 +3,8 @@ import { BALL_RADIUS } from './table';
 import { tubeData, mergeData, type MeshData, type Vec3 } from './route-geometry';
 import { ShapeUtils, Vector2 } from 'three';
 // Public reference geometry, inspected 2026-10-10. Its board x/y and height
-// become our x/z and y with one uniform scale; no landmark is repositioned.
+// become our x/z and y with one uniform scale. The deck bumper cluster has
+// the small clearance correction documented below.
 export const COURSE_SCALE = .028;
 export const COURSE_GRAVITY = 9;
 export const coursePoint = (x: number, z: number, y = 0): Vec3 => ({ x: (x - 240) * COURSE_SCALE, y: y * COURSE_SCALE, z: (z - 410) * COURSE_SCALE });
@@ -35,9 +36,15 @@ export const courseGate = { ...segment(gateSource), nx: gateSource.one_way![0], 
 export const courseTargets = [...data.segments.filter(s => /target|drop/.test(s.kind)).map(s => segment(s)),
   ...data.deck.segments.filter(s => /target|drop/.test(s.kind)).map(s => segment(s, deckHeight))];
 export const deckRails = data.deck.segments.filter(s => !/target|drop/.test(s.kind)).map(s => segment(s, deckHeight));
+// Inset the deck cluster by 10 reference units (0.28 world units), keeping
+// its internal spacing. The original upper-right bumper leaves only 0.417 /
+// 0.481 gaps to the stand-up targets, less than the 0.56 ball diameter. That
+// creates a closed pocket where repeated powered impacts never escape.
+// Shared coordinates keep the visible bumpers and their colliders aligned.
+const deckBumperInset = { x: -8, z: 6 };
 export const courseBumpers = [...data.bumpers.map((b, i) => ({ ...coursePoint(b.x, b.y), radius: b.r * COURSE_SCALE,
     height: b.r * COURSE_SCALE * 1.1, color: [0xffca32, 0xffca32, 0x38bad7, 0xeb4676, 0x71c873, 0x71c873][i], points: b.score, kick: b.kick * COURSE_SCALE })),
-  ...data.deck.bumpers.map((b, i) => ({ ...coursePoint(b.x, b.y, data.deck.z), radius: b.r * COURSE_SCALE,
+  ...data.deck.bumpers.map((b, i) => ({ ...coursePoint(b.x + deckBumperInset.x, b.y + deckBumperInset.z, data.deck.z), radius: b.r * COURSE_SCALE,
     height: .35, color: [0xffca32, 0xf07b4a, 0xbc66dc][i], points: b.score, kick: b.kick * COURSE_SCALE }))];
 export const coursePosts = data.posts.map(b => ({ ...coursePoint(b.x, b.y), radius: b.r * COURSE_SCALE }));
 export const courseFlippers = [...data.flippers, ...data.deck.flippers].map((f, i) => ({ ...coursePoint(f.px, f.py, i < 2 ? 0 : data.deck.z),
@@ -150,3 +157,4 @@ export function pathWires(path: CoursePath, offsets: readonly (readonly [
 ])[], radius = .035) {
   return mergeData(offsets.map(([x, y]) => tubeData(path.points.map((p, i) => { const f = pathFrame(path, path.lengths[i]); return { x: p.x - f.tangent.z * x, y: p.y + y, z: p.z + f.tangent.x * x }; }), radius, 6)));
 }
+
