@@ -119,7 +119,7 @@ function setDialog(open: boolean) {
   const modal = $('modal');
   if (open && modal.hidden) focusBeforeDialog = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   modal.hidden = !open;
-  for (const node of Array.from($('game').children)) if (node instanceof HTMLElement && node !== modal && node.id !== 'fullscreen-help') node.inert = open;
+  for (const node of Array.from($('game').children)) if (node instanceof HTMLElement && node !== modal && node.id !== 'fullscreen-help' && node.id !== 'fullscreen-help-overlay') node.inert = open;
   if (open) {
     $('modal-settings').append($('best-panel'), $('audio-settings')); $('modal-feedback').append($('toast'));
     if (!document.hidden) ($('resume').hidden ? $('restart') : $('resume')).focus();

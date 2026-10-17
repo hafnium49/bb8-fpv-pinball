@@ -18,11 +18,62 @@ export function standaloneDisplay(navigator: Navigator & { standalone?: boolean 
   return navigator.standalone === true || standalone || fullscreen;
 }
 
+/** Native dialog arrived after WebGL 2 on iOS. Keep the guide usable on those browsers. */
+export function setupHelpDialog(help: HTMLDialogElement, afterClose: () => void) {
+  const native = typeof help.showModal === 'function' && typeof help.close === 'function';
+  let overlay: HTMLDivElement | null = null;
+  let previous: Array<[HTMLElement, string | null]> = [];
+  const heading = help.querySelector<HTMLElement>('[autofocus]')!;
+  const close = () => {
+    if (!help.open) return;
+    if (native) { help.close(); return; }
+    help.open = false; help.removeAttribute('open');
+    overlay!.before(help); overlay!.remove(); overlay = null;
+    for (const [node, value] of previous) {
+      if (value === null) node.removeAttribute('aria-hidden'); else node.setAttribute('aria-hidden', value);
+    }
+    previous = []; afterClose();
+  };
+  if (native) help.addEventListener('close', afterClose);
+  else {
+    help.setAttribute('role', 'dialog'); help.setAttribute('aria-modal', 'true');
+    // Capture before game shortcuts: closing with Escape must not resume play.
+    window.addEventListener('keydown', event => {
+      if (!help.open) return;
+      if (event.key === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); close(); }
+      if (event.key === 'Tab') {
+        const controls = Array.from(help.querySelectorAll<HTMLElement>('button, [tabindex="0"]'));
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === heading)) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    }, true);
+    document.addEventListener('focusin', event => {
+      if (help.open && !help.contains(event.target as Node)) heading.focus();
+    });
+  }
+  return {
+    close,
+    show: () => {
+      if (native) { help.showModal(); return; }
+      overlay = document.createElement('div'); overlay.className = 'fullscreen-help-overlay'; overlay.id = 'fullscreen-help-overlay';
+      help.before(overlay); overlay.append(help);
+      previous = Array.from(overlay.parentElement!.children)
+        .filter((node): node is HTMLElement => node instanceof HTMLElement && node !== overlay)
+        .map(node => [node, node.getAttribute('aria-hidden')]);
+      for (const [node] of previous) node.setAttribute('aria-hidden', 'true');
+      help.open = true; help.setAttribute('open', ''); heading.focus();
+    },
+  };
+}
+
 export function setupFullscreen(options: {
   game: HTMLElement; button: HTMLButtonElement; help: HTMLDialogElement;
   beforeHelp: () => void; afterHelp: () => void;
 }) {
   const { game, button, help, beforeHelp, afterHelp } = options;
+  const dialog = setupHelpDialog(help, afterHelp);
   const icon = button.innerHTML;
   const standalone = matchMedia('(display-mode: standalone)'), fullscreen = matchMedia('(display-mode: fullscreen)');
   let busy = false;
@@ -46,7 +97,7 @@ export function setupFullscreen(options: {
     help.querySelector('#fullscreen-help-copy')!.textContent = rejected
       ? 'The browser declined this fullscreen request. You can close this guide and try again, or open ORBIT as a Home Screen web app.'
       : 'This browser does not offer fullscreen for this game. On iPhone, open ORBIT from the Home Screen to play without the normal browser bars.';
-    help.showModal();
+    dialog.show();
   };
   button.addEventListener('click', async () => {
     if (busy) return;
@@ -57,8 +108,7 @@ export function setupFullscreen(options: {
     catch { showHelp(true); }
     finally { busy = false; update(); }
   });
-  help.querySelector('#fullscreen-help-close')!.addEventListener('click', () => help.close());
-  help.addEventListener('close', afterHelp);
+  help.querySelector('#fullscreen-help-close')!.addEventListener('click', dialog.close);
   for (const event of ['fullscreenchange', 'webkitfullscreenchange']) document.addEventListener(event, update);
   // Older prefixed implementations signal failure by event rather than a rejected promise.
   for (const event of ['fullscreenerror', 'webkitfullscreenerror']) document.addEventListener(event, () => showHelp(true));

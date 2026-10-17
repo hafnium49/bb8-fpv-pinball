@@ -10,6 +10,10 @@ let server, preview, browser, page;
 // behavior, not whether a particular OS grants real fullscreen or installs a PWA.
 function installFixture(mode) {
   let active = null;
+  if (mode === 'legacy-dialog') {
+    Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { configurable: true, value: undefined });
+    Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: undefined });
+  }
   window.fullscreenCalls = { enter: 0, exit: 0 };
   const set = (object, key, value) => Object.defineProperty(object, key, { configurable: true, value });
   for (const key of ['requestFullscreen', 'webkitRequestFullscreen', 'webkitRequestFullScreen']) set(Element.prototype, key, undefined);
@@ -64,7 +68,7 @@ async function capture(label) {
   await page.screenshot({ path: `${out}/${label}.png` });
   return result;
 }
-async function helpGeometry(label) {
+async function helpGeometry(label, native = true) {
   const result = await page.evaluate(() => {
     const dialog = document.getElementById('fullscreen-help');
     const bounds = el => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; };
@@ -74,7 +78,7 @@ async function helpGeometry(label) {
       copy: document.getElementById('fullscreen-help-copy').textContent, instructions: dialog.textContent,
       labelledBy: dialog.getAttribute('aria-labelledby') };
   });
-  assert.equal(result.open, true); assert.equal(result.modal, true, `${label}: help must be a native modal dialog`);
+  assert.equal(result.open, true); assert.equal(result.modal, native, `${label}: unexpected modal implementation`);
   assert.equal(result.labelledBy, 'fullscreen-help-title');
   assert.match(result.copy, /home screen/i, `${label}: missing iPhone Home Screen instructions`);
   assert.match(result.instructions, /safari/i, `${label}: missing Safari instruction`);
@@ -162,7 +166,7 @@ async function verifyPreviewAssets() {
     await context.close(); page = undefined;
   }
   const titles = {};
-  for (const mode of ['unsupported', 'rejected']) {
+  for (const mode of ['unsupported', 'rejected', 'legacy-dialog']) {
     for (const fixture of [
       { name: 'desktop', width: 1440, height: 900, mobile: false },
       { name: 'phone-portrait', width: 390, height: 844, mobile: true },
@@ -170,7 +174,7 @@ async function verifyPreviewAssets() {
       { name: 'compact-landscape', width: 568, height: 320, mobile: true },
     ]) {
       const context = await open(mode, { width: fixture.width, height: fixture.height }, fixture.mobile);
-      if (mode === 'unsupported') {
+      if (mode === 'unsupported' || mode === 'legacy-dialog') {
         assert.equal(await page.locator('#fullscreen').getAttribute('aria-label'), 'Play without browser bars');
         assert.equal((await page.locator('#fullscreen').innerText()).trim(), 'APP');
       }
@@ -179,8 +183,22 @@ async function verifyPreviewAssets() {
       await page.evaluate(() => { window.orbitDebug.sim.paused = true; });
       await page.locator('#fullscreen').click();
       await page.waitForFunction(() => document.getElementById('fullscreen-help').open);
-      const geometry = await helpGeometry(`${mode}-${fixture.name}`); titles[mode] = geometry.title;
+      const geometry = await helpGeometry(`${mode}-${fixture.name}`, mode !== 'legacy-dialog'); titles[mode] = geometry.title;
       const rendering = await capture(`${mode}-${fixture.name}`);
+      if (mode === 'legacy-dialog') {
+        assert.equal(await page.locator('#fullscreen-help').getAttribute('aria-modal'), 'true');
+        await page.locator('#fullscreen-help-close').focus(); await page.keyboard.press('Tab');
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'fullscreen-help-body');
+        await page.keyboard.press('Shift+Tab');
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'fullscreen-help-close');
+        await page.evaluate(() => document.getElementById('resume').focus());
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'fullscreen-help-title');
+        assert.equal(await page.locator('#modal').getAttribute('aria-hidden'), 'true');
+        await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+        assert.equal(await page.locator('.fullscreen-help-overlay').evaluate(el => el.inert), false);
+        await page.locator('#fullscreen-help-title').focus();
+      }
+
       if (fixture.name === 'compact-landscape') {
         await page.keyboard.press('Tab');
         assert.equal(await page.evaluate(() => document.activeElement.id), 'fullscreen-help-body', 'Keyboard must reach scrollable instructions');
@@ -191,6 +209,10 @@ async function verifyPreviewAssets() {
       await page.waitForFunction(() => !document.getElementById('fullscreen-help').open);
       await page.waitForFunction(() => document.activeElement.id === 'resume');
       assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), true, 'Help Escape resumed a paused game');
+      if (mode === 'legacy-dialog') {
+        assert.equal(await page.locator('.fullscreen-help-overlay').count(), 0);
+        assert.equal(await page.locator('#modal').getAttribute('aria-hidden'), null);
+      }
       await page.locator('#resume').click();
       await page.evaluate(() => {
         for (const [index, id] of ['left', 'right', 'launch'].entries()) document.getElementById(id).dispatchEvent(new PointerEvent('pointerdown', {
@@ -218,13 +240,17 @@ async function verifyPreviewAssets() {
     }
   }
   assert.notEqual(titles.unsupported, titles.rejected, 'Unsupported and rejected help need distinct explanations');
-  {
-    const context = await open('unsupported', { width: 1440, height: 900 }, false, false);
+  for (const mode of ['unsupported', 'legacy-dialog']) {
+    const context = await open(mode, { width: 1440, height: 900 }, false, false);
     await page.locator('#fullscreen').click();
+    if (mode === 'legacy-dialog') {
+      await page.evaluate(() => document.getElementById('start').focus());
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'fullscreen-help-title');
+    }
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.getElementById('fullscreen-help').open && document.activeElement.id === 'fullscreen');
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.phase), 'intro');
-    cases.push({ name: 'intro-help-restores-invoker-focus', result: 'pass' });
+    cases.push({ name: `${mode}-intro-help-restores-invoker-focus`, result: 'pass' });
     await context.close(); page = undefined;
   }
 
