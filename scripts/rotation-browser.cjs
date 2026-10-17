@@ -21,11 +21,19 @@ async function resize(size) {
   // resize a fullscreen OS window to emulate rotation; restore the browser
   // before setting viewport metrics. Installed-mode rotation is covered by
   // fullscreen-browser.cjs without pretending this is physical iOS rotation.
+  await page.waitForFunction(() => !document.getElementById('fullscreen').disabled);
   await page.evaluate(async () => {
     if (document.fullscreenElement) await document.exitFullscreen();
     else if (document.webkitFullscreenElement) await document.webkitExitFullscreen();
   });
   await page.waitForFunction(() => !document.fullscreenElement && !document.webkitFullscreenElement);
+  if (engine === 'chromium') {
+    // Document exit and the headless browser-window transition are separate.
+    const session = await page.context().newCDPSession(page);
+    const { windowId } = await session.send('Browser.getWindowForTarget');
+    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'normal' } });
+    await session.detach();
+  }
   await page.setViewportSize(viewport(size));
   await page.waitForFunction(() => {
     const { view } = window.orbitDebug, el = document.getElementById('viewport');
