@@ -126,3 +126,15 @@ Licensed under MIT. `THIRD-PARTY-NOTICES.txt` includes the Three.js and Rapier l
 
 See the [FPV immersion and voice refinement](docs/fpv-immersion-voice.md) and [reference cabinet and UI study](docs/reference-cabinet-ui-study.md).
 
+
+## Fullscreen and iPhone Home Screen play
+
+The fullscreen control uses the browser's element Fullscreen API when available. It tracks enter/exit state (including Escape) and uses the supported WebKit-prefixed API on older browsers. If the browser does not support element fullscreen, the control reads **APP** and opens setup instructions. A denied request gets a separate explanation rather than being mistaken for missing support.
+
+On iPhone, open the game in **Safari → Share → Add to Home Screen**. Keep **Open as Web App** enabled if that option appears, then launch **ORBIT** from the new icon. This removes the normal browser toolbars; the OS status bar/home indicator may remain. Finish the current game before switching, because the Home Screen app opens a new session and browser storage may be separate. Already-installed apps hide the redundant fullscreen control. Portrait and landscape remain supported.
+
+The manifest and Apple web-app metadata explicitly enable standalone launch, with local PNG icons and relative URLs for GitHub Pages project paths. This is an online web app: no service worker or offline cache is installed.
+
+Run `node scripts/fullscreen-browser.cjs` after `npm run build`, or set `FULLSCREEN_ENGINE=webkit`. CI checks actual rendering, mocked API/support states, dialog accessibility and paused input, and built manifest/icon URLs under `/bb8-fpv-pinball/`. Browser emulation cannot verify iPhone browser chrome or the system installation sheet; physical-device installation remains a manual check.
+
+Platform references: [Apple Home Screen instructions](https://support.apple.com/en-lamr/guide/iphone/iphea86e5236/ios), [WebKit iOS 26 web app behavior](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/), and [WebKit's iPhone Fullscreen API issue](https://bugs.webkit.org/show_bug.cgi?id=206854). Capability detection, rather than browser-name detection, decides which control to show.
