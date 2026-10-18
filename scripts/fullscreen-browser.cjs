@@ -30,6 +30,9 @@ function installFixture(mode) {
     }
     Object.defineProperty(window, 'DeviceOrientationEvent', { configurable: true, value: Orientation });
     fixture.emit = () => window.dispatchEvent(new Orientation({ alpha: 0, beta: 90, gamma: 0, absolute: false }));
+    // Keep readings fresh while Playwright scrolls/clicks controls. A single
+    // sample can expire during actionability checks on software-rendered CI.
+    fixture.start = () => { fixture.emit(); setInterval(fixture.emit, 30); };
   }
   let active = null;
   if (mode === 'legacy-dialog') {
@@ -388,6 +391,7 @@ async function verifyPreviewAssets() {
       assert.equal(await page.evaluate(() => window.fullscreenCalls.enter), enters, 'Phone-look setup must not consume activation with fullscreen');
       assert.deepEqual(await page.evaluate(() => ({ requests: window.fullscreenLook.requests,
         denied: window.fullscreenLook.deniedForActivation })), { requests: 1, denied: 0 });
+      await page.evaluate(() => window.fullscreenLook.start());
       await page.waitForFunction(() => {
         window.fullscreenLook.emit();
         window.fullscreenRender(window.orbitDebug.sim, 1 / 60);
