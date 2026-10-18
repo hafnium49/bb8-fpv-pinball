@@ -73,7 +73,7 @@ async function frame() {
     return { calls: view.renderer.info.render.calls, triangles: view.renderer.info.render.triangles,
       contextLost: gl.isContextLost(), renderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
       viewport: [innerWidth, innerHeight], dpr: devicePixelRatio, size: [view.renderer.domElement.width, view.renderer.domElement.height], camera: view.camera.quaternion.toArray(),
-      position: view.camera.position.toArray(), near: view.camera.near, fov: view.camera.fov };
+      rightY: view.camera.matrixWorld.elements[1], position: view.camera.position.toArray(), near: view.camera.near, fov: view.camera.fov };
   });
 }
 async function settle(expected) {
@@ -112,7 +112,7 @@ async function geometry(label, ids) {
 }
 async function capture(label) {
   const rendering = await frame();
-  assert.equal(rendering.contextLost, false); assert.ok(rendering.calls > 0, `${label}: no actual WebGL drawing`);
+  assert.equal(rendering.contextLost, false); assert.ok(Math.abs(rendering.rightY) < 1e-6, `${label}: camera roll is not level`); assert.ok(rendering.calls > 0, `${label}: no actual WebGL drawing`);
   await page.screenshot({ path: `${out}/${label}.png` }); return rendering;
 }
 (async () => {
@@ -218,6 +218,52 @@ async function capture(label) {
     cases.push({ name: 'enable-cancels-held-launch', result: 'pass' }); await context.close();
   }
   {
+    const context = await open(); await calibrate(); await page.locator('#resume').click();
+    // Restore the real fixed-step update so drain delay and next-ball transitions advance.
+    await page.evaluate(() => window.orbitDebug.sim.update = window.lookOriginalUpdate);
+    for (let ball = 1; ball <= 3; ball++) {
+      await page.evaluate(() => {
+        const { sim } = window.orbitDebug; sim.launch(.5);
+        sim.ball.setTranslation({ x: 0, y: -3, z: 0 }, true); sim.ball.setLinvel({ x: 0, y: -1, z: 0 }, true);
+      });
+      if (ball < 3) {
+        await page.waitForFunction(() => window.orbitDebug.sim.phase === 'draining');
+        assert.equal((await state()).paused, false, 'Suspending look must not freeze drain timer');
+        await page.waitForFunction(() => window.orbitDebug.sim.phase === 'ready');
+        assert.equal((await state()).paused, true, 'Next ball must require calibration before launch');
+        assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 3 - ball);
+        await settle('calibrating'); await page.locator('#look-center').click(); await settle('active');
+        await page.locator('#resume').click();
+      } else {
+        await page.waitForFunction(() => window.orbitDebug.sim.phase === 'over'); await settle('suspended');
+        assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 0);
+        assert.equal(await page.locator('#resume').isVisible(), false);
+      }
+    }
+    await page.locator('#restart').click(); await settle('calibrating');
+    assert.equal((await state()).phase, 'ready'); assert.equal((await state()).paused, true);
+    assert.equal(await page.evaluate(() => window.orbitDebug.sim.balls), 3);
+    assert.equal((await state()).charge, 0);
+    cases.push({ name: 'live-three-ball-drain-over-restart-calibration', result: 'pass' }); await context.close();
+  }
+  {
+    const context = await open(); await calibrate(); await page.locator('#resume').click();
+    await page.evaluate(() => {
+      const { sim, headLoss } = window.orbitDebug; headLoss.draw = () => 0;
+      sim.launch(.5); sim.ball.setTranslation({ x: 0, y: .305, z: 0 }, true);
+    });
+    await page.waitForFunction(() => window.orbitDebug.headLoss.eventActive);
+    assert.equal(await page.locator('#droid-line').textContent(), 'Oh no, BB-8 lost its head!');
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv');
+    await capture('manual-lost-head-level');
+    await page.locator('#look-follow-live').click(); await settle('follow');
+    assert.equal(await page.evaluate(() => window.orbitDebug.headLoss.eventActive), true, 'Follow erased existing lost-head event');
+    assert.equal(await page.evaluate(() => window.orbitDebug.view.mode), 'fpv', 'Follow entered Spin halfway through suppressed episode');
+    await page.evaluate(() => window.orbitDebug.sim.time += 3.1);
+    await page.waitForFunction(() => !window.orbitDebug.headLoss.eventActive);
+    cases.push({ name: 'manual-lost-head-caption-retained-follow-no-mid-event-spin', result: 'pass' }); await context.close();
+  }
+  {
     const context = await open('granted', { width: 1440, height: 900 }); await calibrate(); await page.locator('#resume').click();
     await capture('desktop-active');
     const poses = await page.evaluate(async () => {
@@ -244,6 +290,7 @@ async function capture(label) {
       const displayed = (await state()).orientation;
       assert.ok(Math.abs(angleDelta(displayed.heading, neutral.heading - alpha * Math.PI / 180)) < 1e-5, 'Sweep failed to apply requested yaw');
       assert.equal(warm.fov, 82, 'Look changed established perspective FOV');
+      assert.ok(Math.abs(warm.rightY) < 1e-6, 'Directional sweep camera must stay roll-free');
       const label = `${high ? 'high' : 'eco'}-${pose.name.replace(/[^a-z0-9]/gi, '-')}-${direction}`;
       await page.screenshot({ path: `${out}/${label}.png` });
       sweep.push({ label, pose, sensor: [alpha, beta, 0], orientation: (await state()).orientation, cold, warm });
@@ -251,7 +298,7 @@ async function capture(label) {
     cases.push({ name: 'actual-webgl-directional-sweep', result: 'pass', rows: sweep.length }); await context.close();
   }
   assert.deepEqual(errors, []);
-  writeFileSync(`${out}/report.json`, JSON.stringify({ result: 'pass', engine, version: browser.version(), cases, sweep, errors,
+  writeFileSync(`${out}/report.json`, JSON.stringify({ result: 'pass', commit: process.env.GITHUB_SHA || 'local-working-tree', engine, version: browser.version(), cases, sweep, errors,
     limits: ['Synthetic sensor and permission events validate app plumbing, not real device signs or permission UI.',
       'Linux WebKit is not physical iPhone Safari or Home Screen validation.',
       'Screenshots and renderer counters use actual WebGL; software-renderer timings are not hardware GPU benchmarks.',

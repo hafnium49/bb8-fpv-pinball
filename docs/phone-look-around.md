@@ -1,6 +1,6 @@
 # Phone look-around: design proposal
 
-Status: **design and isolated spikes only; not implemented, enabled, or approved for release.**
+Status: **Reviewed design record. Implementation is tracked in [phone-look-around-implementation.md](phone-look-around-implementation.md), behind the explicit `?look=1` opt-in flag. The design-era evidence and unverified physical-device criteria below remain historical context, not claims of completed device tests.**
 
 Baseline: `21cbb73e02adc82285f811d89b1539a6a14b7ec7` (main, 17 October 2026). Independent of fullscreen PR #21 and physics PR #22. No production source, dependency, physics, or deployment changes are part of this proposal.
 

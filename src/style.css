@@ -268,7 +268,7 @@ h1 em { font-style: inherit; color: var(--amber); }
 .look-panel p { margin: 8px 0; font-size: 13px; }
 .look-panel small { display: block; color: var(--muted); font-size: 11px; }
 .look-buttons, .look-live { display: flex; flex-wrap: wrap; gap: 6px; }
-.look-buttons button, .look-live button { min-height: 44px; padding: 7px 12px; border: 1px solid #667a81; border-radius: 5px; background: #14252e; color: #e9ffff; font: 600 12px inherit; touch-action: manipulation; }
+.look-buttons button, .look-live button { min-height: 44px; padding: 7px 12px; border: 1px solid #667a81; border-radius: 5px; background: #14252e; color: #e9ffff; font-family: inherit; font-size: 12px; font-weight: 600; touch-action: manipulation; }
 .look-live { position: absolute; z-index: 3; right: max(12px, var(--safe-right)); top: calc(74px + var(--safe-top)); }
 .look-live[hidden], .look-panel[hidden], .look-buttons button[hidden] { display: none; }
 .look-buttons button:focus-visible, .look-live button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }

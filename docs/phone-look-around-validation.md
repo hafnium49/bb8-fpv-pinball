@@ -1,5 +1,7 @@
 # Look-around design validation
 
+Historical design evidence. Current implementation checks and limitations are recorded in [phone-look-around-implementation.md](phone-look-around-implementation.md).
+
 Baseline: main `21cbb73e02adc82285f811d89b1539a6a14b7ec7`.
 Scope: design, dependency-free math experiment, static directional-workload experiment and an unexecuted browser measurement harness. No production feature or dependency change.
 

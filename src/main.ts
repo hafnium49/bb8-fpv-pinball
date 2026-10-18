@@ -340,7 +340,7 @@ async function boot() {
         pendingLookResume = false; phoneLook!.enable(view.routeCamera); lookPanel.hidden = false; refreshLook();
       });
       const centerLook = () => { phoneLook!.center(view.routeCamera); refreshLook(); };
-      const followLook = () => { pendingLookResume = false; phoneLook!.follow(); refreshLook(); };
+      const followLook = () => { const liveFocus = $('look-live').contains(document.activeElement); pendingLookResume = false; phoneLook!.follow(); refreshLook(); if (liveFocus) $('game').focus(); };
       $('look-center').addEventListener('click', centerLook); $('look-center-live').addEventListener('click', centerLook);
       $('look-follow').addEventListener('click', followLook); $('look-follow-live').addEventListener('click', followLook);
       refreshLook();
