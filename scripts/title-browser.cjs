@@ -23,7 +23,7 @@ const assert = require('node:assert/strict');
         Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false });
         Object.defineProperty(document, 'webkitFullscreenEnabled', { configurable: true, value: false });
         localStorage.setItem('orbit-pinball-best', '12345');
-        localStorage.setItem('orbit-pinball-music-volume', '27');
+        localStorage.setItem('orbit-pinball-music-volume', '0.27');
       });
       page.on('pageerror', e => errors.push(e.message));
       await page.goto(server.resolvedUrls.local[0], { waitUntil: 'networkidle' });
