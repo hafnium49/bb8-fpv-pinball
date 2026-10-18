@@ -53,3 +53,38 @@ test('reduced motion disables the random roll and cancels an episode already in 
   assert.equal(camera.update(playing(2, 0), [], true).ended, true);
   assert.equal(camera.update(playing(3, 0), []).mode, 'fpv');
 });
+
+test('manual look preserves event timing and announcement while suppressing spin presentation', () => {
+  let draws = 0;
+  const camera = new HeadLossCamera(() => { draws++; return 0; });
+  const start = camera.update(playing(1, 0), launch, false, true);
+  assert.equal(start.started, true);
+  assert.equal(start.mode, 'fpv');
+  assert.equal(camera.eventActive, true);
+  assert.equal(draws, 1);
+  // Returning to Follow mid-event must not surprise the player with Spin.
+  assert.equal(camera.update(playing(2, 0), [], false, false).mode, 'fpv');
+  assert.equal(camera.update(playing(4, 0), [], false, false).ended, true);
+  assert.equal(camera.eventActive, false);
+  assert.equal(camera.update(playing(5, 0), launch).mode, 'spin');
+  assert.equal(draws, 2);
+});
+
+test('manual look suppresses a pending or already active spin for the entire event', () => {
+  for (const x of [5.18, 0]) {
+    const camera = new HeadLossCamera(() => 0);
+    camera.update(playing(1, x), launch);
+    camera.update(playing(1.1, x), [], false, true);
+    assert.equal(camera.update(playing(1.2, 0), [], false, false).mode, 'fpv');
+    assert.equal(camera.eventActive, true);
+  }
+});
+
+test('reduced-motion Look to Follow retains the manually suppressed event until its normal end', () => {
+  const camera = new HeadLossCamera(() => 0);
+  assert.equal(camera.update(playing(1, 0), launch, true, true).started, true);
+  assert.equal(camera.update(playing(2, 0), [], true, false).ended, false);
+  assert.equal(camera.eventActive, true);
+  assert.equal(camera.mode, 'fpv');
+  assert.equal(camera.update(playing(4, 0), [], true, false).ended, true);
+});

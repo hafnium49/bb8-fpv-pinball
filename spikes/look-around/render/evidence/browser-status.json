@@ -1,0 +1,12 @@
+{
+  "status": "blocked-before-browser-start",
+  "sourceRef": "21cbb73e02adc82285f811d89b1539a6a14b7ec7",
+  "initialFailure": "Chromium process_singleton_posix: socket() failed: Operation not permitted (1)",
+  "supportedEscalationFailure": "Execution environment setup failed due to a read-only internal mount before Chromium launch",
+  "measuredRendererCounters": false,
+  "measuredCpuSubmission": false,
+  "measuredFrameIntervals": false,
+  "measuredGpuTime": false,
+  "physicalIPhoneEvidence": false,
+  "fallback": "static-estimate.json"
+}
