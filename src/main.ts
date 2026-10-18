@@ -238,7 +238,7 @@ function refreshLook() {
   if (key === lookUICache) return;
   lookUICache = key;
   positionLookControls();
-  $('look-status').textContent = selected ? phoneLook.message : 'Follow ball';
+  $('look-status').textContent = selected ? state === 'active' && sim.paused ? 'View centered. Resume when ready.' : phoneLook.message : 'Follow ball';
   $('look-live').hidden = !selected || sim.paused || sim.phase === 'intro' || sim.phase === 'over';
   const enable = $<HTMLButtonElement>('look-enable');
   enable.hidden = selected && state !== 'unavailable';
@@ -348,7 +348,7 @@ async function boot() {
         if (sim.phase === 'intro' || sim.phase === 'over') begin(true);
         pendingLookResume = false; phoneLook!.enable(view.routeCamera); lookPanel.hidden = false; refreshLook();
       });
-      const centerLook = () => { phoneLook!.center(view.routeCamera); refreshLook(); };
+      const centerLook = () => { phoneLook!.center(view.routeCamera); refreshLook(); if (sim.paused && phoneLook!.state === 'active') $('resume').focus(); };
       const followLook = () => { const liveFocus = $('look-live').contains(document.activeElement); pendingLookResume = false; phoneLook!.follow(); refreshLook(); if (liveFocus) $('game').focus(); };
       $('look-center').addEventListener('click', centerLook); $('look-center-live').addEventListener('click', centerLook);
       $('look-follow').addEventListener('click', followLook); $('look-follow-live').addEventListener('click', followLook);

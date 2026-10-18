@@ -21,12 +21,12 @@ Uses relative orientation only, in memory. No sensor recording/upload, compass r
 - Pure forward-vector math and a generation-safe permission/lifecycle controller keep sensor processing separate from ball simulation.
 - The existing route camera continues as a shadow target. Manual orientation controls yaw/pitch only; ball translation and swept near-plane clearance remain in the single render path. Guided manual views also use the clearance sweep.
 - Lost-head event duration, sound/caption and one random draw per launch are retained in Look; ball-quaternion takeover is suppressed for the whole event, including a mid-event return to Follow.
-- Review corrected drain suspension accidentally pausing the next-ball timer, reduced-motion Look-to-Follow event truncation, hidden controls in the modal focus cycle, and focus restoration after live Follow.
+- Review corrected drain suspension accidentally pausing the next-ball timer, reduced-motion Look-to-Follow event truncation, hidden controls in the modal focus cycle, focus restoration after live Follow, and portrait controls being obscured by the HUD. Header-size observation now keeps these controls below the HUD; calibration returns focus to the explicit Resume action.
 - The optional manual look pad is intentionally deferred, as allowed in the reviewed design. Follow is the sensor-free fallback.
 
 ## Evidence and limits
 
-Local `npm ci --cache /tmp/pinball-npm-cache` succeeded. Unit tests, TypeScript, fidelity typecheck, production build and circuit/guides/course checks are run for this change. Exact final counts and CI evidence will be added after final validation.
+Local `npm ci --cache /tmp/pinball-npm-cache` succeeded. Local validation passed 174 unit tests, TypeScript, fidelity typecheck, production build and circuit/guides/course checks. Final-head browser results, independent review and workflow links are maintained in [PR #23](https://github.com/hafnium49/bb8-fpv-pinball/pull/23).
 
 The browser suite runs Chromium and Linux WebKit with synthetic permission and orientation fixtures. It tests real app rendering, controls, lifecycle and screenshots, not real iPhone permission sheets or physical sensor signs. The local browser could not create its required socket, so successful browser evidence must come from GitHub Actions.
 

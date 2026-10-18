@@ -157,10 +157,12 @@ async function capture(label) {
     assert.equal((await state()).charge, 0);
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.enabled), audioBefore);
     assert.equal(await page.evaluate(() => !!(document.fullscreenElement || document.webkitFullscreenElement)), false);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'resume', 'Calibration should reveal explicit Resume');
+    const resumeGeometry = await geometry('intro-calibrated-resume', ['resume']);
     await capture('intro-enable-paused-calibrated');
     await page.locator('#resume').click();
     assert.equal((await state()).paused, false); assert.equal((await state()).phase, 'ready');
-    cases.push({ name: 'intro-enable-calibration-explicit-resume-separate-audio-fullscreen', result: 'pass' }); await context.close();
+    cases.push({ name: 'intro-enable-calibration-explicit-resume-separate-audio-fullscreen', result: 'pass', resumeGeometry }); await context.close();
   }
   for (const mode of ['denied', 'throw', 'pending']) {
     const context = await open(mode); await page.locator('#look-enable').click();
@@ -191,7 +193,12 @@ async function capture(label) {
     await page.evaluate(() => window.lookFixture.emit([null, null, null]));
     assert.equal((await state()).state, 'waiting');
     await page.evaluate(() => window.lookFixture.start()); await settle('calibrating');
-    await page.locator('#look-center').focus(); await page.keyboard.press('Space'); await settle('active');
+    // State changes inside our explicit render precede the app's next UI refresh.
+    // focus() alone does not wait for a hidden/disabled button to become usable.
+    await page.locator('#look-center').click({ trial: true });
+    await page.locator('#look-center').focus();
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'look-center');
+    await page.keyboard.press('Space'); await settle('active');
     assert.equal((await state()).phase, 'ready', 'Focused Center must not launch');
     assert.equal((await state()).charge, 0);
     assert.equal(await page.evaluate(() => window.orbitDebug.audio.enabled), audioBefore, 'Look enable changed audio');
@@ -336,6 +343,11 @@ async function capture(label) {
       'Physical drift, thermal behavior, touch comfort, and sensor-to-photon latency remain unmeasured.'] }, null, 2));
 })().catch(async error => {
   console.error(error); process.exitCode = 1; mkdirSync(out, { recursive: true });
-  writeFileSync(`${out}/failure.json`, JSON.stringify({ error: error.stack, cases, sweep, errors }, null, 2));
+  const diagnostic = page && !page.isClosed() ? await page.evaluate(() => ({
+    state: window.orbitDebug?.phoneLook?.state, message: window.orbitDebug?.phoneLook?.message,
+    focus: document.activeElement?.id, phase: window.orbitDebug?.sim.phase, paused: window.orbitDebug?.sim.paused,
+    center: { hidden: document.getElementById('look-center')?.hidden, disabled: document.getElementById('look-center')?.disabled },
+  })).catch(() => null) : null;
+  writeFileSync(`${out}/failure.json`, JSON.stringify({ error: error.stack, diagnostic, cases, sweep, errors }, null, 2));
   if (page && !page.isClosed()) await page.screenshot({ path: `${out}/failure.png` }).catch(() => {});
 }).finally(async () => { if (browser) await browser.close(); if (server) await server.close(); });
