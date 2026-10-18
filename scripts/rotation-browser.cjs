@@ -255,3 +255,4 @@ async function capture(label) {
   writeFileSync(`${out}/failure.json`, JSON.stringify({ error: error.stack, cases, errors }, null, 2));
   if (page && !page.isClosed()) await page.screenshot({ path: `${out}/failure.png` }).catch(() => {});
 }).finally(async () => { if (browser) await browser.close(); if (server) await server.close(); });
+

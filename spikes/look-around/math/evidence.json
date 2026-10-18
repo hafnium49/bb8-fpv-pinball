@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "command": "node test-lookaround.mjs",
+  "runtime": "v24.19.0",
+  "passed": 14,
+  "tests": [
+    {
+      "name": "Explicit W3C physical cardinal poses",
+      "status": "pass"
+    },
+    {
+      "name": "Independent expanded Euler forward-vector oracle",
+      "status": "pass"
+    },
+    {
+      "name": "Landscape +90 and -90 physical roll retain optical forward",
+      "status": "pass"
+    },
+    {
+      "name": "Alpha wrap and multi-turn yaw remain continuous",
+      "status": "pass"
+    },
+    {
+      "name": "Tilted comfortable calibration preserves yaw about gravity",
+      "status": "pass"
+    },
+    {
+      "name": "Unrestricted inverse calibration demonstrably breaks gravity yaw",
+      "status": "pass"
+    },
+    {
+      "name": "Pitch clamp, zero roll and output quaternion convention",
+      "status": "pass"
+    },
+    {
+      "name": "Pole yaw hold and hysteresis suppress unstable heading",
+      "status": "pass"
+    },
+    {
+      "name": "Opposite-heading pole exit is continuous and next delta works",
+      "status": "pass"
+    },
+    {
+      "name": "Pole calibration rejects and target calibration sets shadow follow pose",
+      "status": "pass"
+    },
+    {
+      "name": "180-degree screen-angle change retains accumulated yaw and pitch",
+      "status": "pass"
+    },
+    {
+      "name": "Resume with changed sensor reference retains displayed orientation",
+      "status": "pass"
+    },
+    {
+      "name": "Repeated recenter remains idempotent",
+      "status": "pass"
+    },
+    {
+      "name": "Invalid samples rejected without corrupting state",
+      "status": "pass"
+    }
+  ],
+  "benchmark": {
+    "kind": "CPU-only coordinate math; excludes sensor cadence, rendering, input-to-photon latency and mobile thermal effects",
+    "iterations": 100000,
+    "elapsedMs": 60.72966500000001,
+    "nanosecondsPerUpdate": 607.2966500000001,
+    "checksum": -104873082.15825553
+  },
+  "limitations": [
+    "Relative alpha can drift; this does not establish geographic north.",
+    "Unwrap assumes less than 180 degrees of heading motion between accepted non-pole samples.",
+    "At vertical optical direction yaw is undefined; hold policy deliberately cannot infer turns made at the pole.",
+    "Fresh sample rebasing requires lifecycle gating in a future integration.",
+    "No production input, permissions, lifecycle or renderer implementation is included."
+  ]
+}

@@ -9,6 +9,28 @@ let server, preview, browser, page;
 // Model browser capabilities before app initialization. These fixtures test app
 // behavior, not whether a particular OS grants real fullscreen or installs a PWA.
 function installFixture(mode) {
+  const withLook = mode.endsWith('-look');
+  mode = mode.replace(/-look$/, '');
+  let gesture = false;
+  if (withLook) {
+    // Fullscreen consumes transient activation synchronously. Model that here
+    // so a permission request after automatic fullscreen really fails.
+    document.addEventListener('click', () => { gesture = true; }, true);
+    const fixture = window.fullscreenLook = { requests: 0, deniedForActivation: 0 };
+    class Orientation extends Event {
+      constructor(data) { super('deviceorientation'); Object.assign(this, data); }
+      static requestPermission() {
+        fixture.requests++;
+        if (!gesture || navigator.userActivation?.isActive === false) {
+          fixture.deniedForActivation++;
+          return Promise.reject(new DOMException('Motion requires user activation', 'NotAllowedError'));
+        }
+        return Promise.resolve('granted');
+      }
+    }
+    Object.defineProperty(window, 'DeviceOrientationEvent', { configurable: true, value: Orientation });
+    fixture.emit = () => window.dispatchEvent(new Orientation({ alpha: 0, beta: 90, gamma: 0, absolute: false }));
+  }
   let active = null;
   if (mode === 'legacy-dialog') {
     Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { configurable: true, value: undefined });
@@ -26,6 +48,7 @@ function installFixture(mode) {
   if (['standard', 'prefixed', 'rejected'].includes(mode)) {
     set(Element.prototype, mode === 'prefixed' ? 'webkitRequestFullscreen' : 'requestFullscreen', function () {
       window.fullscreenCalls.enter++;
+      if (withLook) gesture = false;
       if (mode === 'rejected') return Promise.reject(new DOMException('Fixture denied fullscreen', 'NotAllowedError'));
       active = this; document.dispatchEvent(new Event(event));
       return mode === 'prefixed' ? undefined : Promise.resolve();
@@ -49,7 +72,7 @@ async function open(mode, viewport = { width: 844, height: 390 }, mobile = true,
   if (mode !== 'native') await context.addInitScript(installFixture, mode);
   page = await context.newPage(); page.setDefaultTimeout(120000);
   page.on('pageerror', error => errors.push(`${mode}: ${error.message}`));
-  await page.goto(server.resolvedUrls.local[0], { waitUntil: 'networkidle' });
+  await page.goto(server.resolvedUrls.local[0] + (mode.endsWith('-look') ? '?look=1' : ''), { waitUntil: 'networkidle' });
   await page.locator('#start:not([disabled])').waitFor();
   if (start) await page.locator('#start').click();
   await page.evaluate(() => {
@@ -344,6 +367,62 @@ async function verifyPreviewAssets() {
     assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), false);
     cases.push({ name: mode, result: 'pass', views, play }); await context.close(); page = undefined;
   }
+  for (const mode of ['standard', 'prefixed', 'standalone']) {
+    for (const entry of ['intro', 'pause', 'game-over']) {
+      const context = await open(`${mode}-look`, { width: 844, height: 390 }, true, false);
+      if (entry !== 'intro') {
+        await page.locator('#start').click();
+        assert.equal(await page.evaluate(() => window.fullscreenCalls.enter), mode === 'standalone' ? 0 : 1,
+          'Ordinary touch Start still requests supported fullscreen');
+        if (entry === 'game-over') {
+          if (mode !== 'standalone') await page.evaluate(() => window.fixtureExit());
+          await page.evaluate(() => { window.orbitDebug.sim.phase = 'over'; });
+          await page.locator('#restart').waitFor({ state: 'visible' });
+        } else await page.locator('#pause').click();
+        await page.locator('#dialog-look').click();
+      } else await page.locator('#look-settings').click();
+      const enters = await page.evaluate(() => window.fullscreenCalls.enter);
+      await page.locator('#look-enable').click();
+      await page.waitForFunction(() => ['waiting', 'unavailable'].includes(window.orbitDebug.phoneLook.state));
+      assert.equal(await page.evaluate(() => window.orbitDebug.phoneLook.state), 'waiting', 'Phone-look permission must retain user activation');
+      assert.equal(await page.evaluate(() => window.fullscreenCalls.enter), enters, 'Phone-look setup must not consume activation with fullscreen');
+      assert.deepEqual(await page.evaluate(() => ({ requests: window.fullscreenLook.requests,
+        denied: window.fullscreenLook.deniedForActivation })), { requests: 1, denied: 0 });
+      await page.waitForFunction(() => {
+        window.fullscreenLook.emit();
+        window.fullscreenRender(window.orbitDebug.sim, 1 / 60);
+        return window.orbitDebug.phoneLook.state === 'calibrating';
+      });
+      await page.locator('#look-center').click();
+      await page.waitForFunction(() => {
+        window.fullscreenLook.emit();
+        window.fullscreenRender(window.orbitDebug.sim, 1 / 60);
+        return window.orbitDebug.phoneLook.state === 'active';
+      });
+      assert.equal(await page.locator('#dialog-quality').isVisible(), true);
+      assert.equal(await page.locator('#dialog-look').isVisible(), true);
+      assert.equal(await page.locator('#dialog-sound').isVisible(), true);
+      const quality = await page.locator('#dialog-quality').innerText();
+      await page.locator('#dialog-quality').click();
+      assert.notEqual(await page.locator('#dialog-quality').innerText(), quality);
+      await page.locator('#resume').click();
+      assert.equal(await page.evaluate(() => window.orbitDebug.sim.paused), false);
+      await page.locator('#look-live').waitFor({ state: 'visible' });
+      const controls = await page.evaluate(() => ['look-center-live', 'look-follow-live', 'left', 'launch', 'right'].map(id => {
+        const el = document.getElementById(id), r = el.getBoundingClientRect();
+        const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        return { id, width: r.width, height: r.height, visible: r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight,
+          hit: hit === el || el.contains(hit) };
+      }));
+      for (const control of controls) assert.ok(control.width >= 44 && control.height >= 44 && control.visible && control.hit,
+        `Combined look/fullscreen control is unusable: ${JSON.stringify(control)}`);
+      await capture(`${mode}-look-${entry}`);
+      await page.locator('#look-follow-live').click();
+      assert.equal(await page.evaluate(() => window.orbitDebug.phoneLook.selected), false);
+      cases.push({ name: `${mode}-look-${entry}-preserves-permission-and-controls`, result: 'pass', controls });
+      await context.close(); page = undefined;
+    }
+  }
   await verifyPreviewAssets();
   assert.deepEqual(errors, []);
   writeFileSync(`${out}/report.json`, JSON.stringify({ result: 'pass', engine, version: browser.version(), cases, errors,
@@ -359,3 +438,4 @@ async function verifyPreviewAssets() {
   if (browser) await browser.close(); if (server) await server.close();
   if (preview) await new Promise(resolve => preview.httpServer.close(resolve));
 });
+
