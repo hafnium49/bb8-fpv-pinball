@@ -1,4 +1,5 @@
 import './style.css';
+import { PhoneLook } from './ui/phone-orientation';
 import { setupFullscreen } from './ui/fullscreen';
 import { cabinetDisplay } from './ui/cabinet-display';
 import { rankedScores, readScores, saveRun } from './ui/local-scores';
@@ -11,6 +12,7 @@ import { GameAudio } from './ui/audio';
 import { SoundDirector, type SoundCue } from './ui/sound-director';
 import voiceUrl from './assets/droid-beeps.wav?inline';
 
+const lookEnabled = new URLSearchParams(location.search).get('look') === '1';
 const referenceEnabled = new URLSearchParams(location.search).get('table') !== 'orbit';
 const circuitEnabled = referenceEnabled || new URLSearchParams(location.search).get('circuit') === '1';
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -37,9 +39,10 @@ app.innerHTML = `
       <div id="desktop-start-slot" class="desktop-start-slot"></div>
       <div class="top-actions"><button id="quality" class="icon-button" aria-label="Change graphics quality" aria-pressed="false" disabled>FX HIGH</button><button id="sound" class="icon-button" aria-label="Enable sound" aria-pressed="false">SOUND OFF</button><button id="pause" class="icon-button" aria-label="Pause game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button><button id="fullscreen" class="icon-button" aria-label="Enter fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></svg></button></div>
     </header>
+    <div id="look-live" class="look-live" hidden><button id="look-center-live">Center view</button><button id="look-follow-live">Follow ball</button></div>
     <aside id="droid-comms" class="droid-comms sr-only" role="status" aria-live="polite" aria-atomic="true"><span class="comms-label">◎ BALL COMMS</span><span id="droid-line"></span></aside>
     <section id="intro" class="intro-panel">
-      <div id="intro-content" class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${referenceEnabled ? 'HYPERSPACE COURSE' : circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${referenceEnabled ? 'Three ramps. Two playfields.<br/>Ride the subway. Reach the upper deck.<br/>A whole cabinet, in first person.' : circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div id="intro-feedback"></div><div id="intro-best"><span id="best-panel" class="best">PERSONAL BEST <b id="best-score">00000</b></span></div><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" ${referenceEnabled ? 'hidden' : ''} href="${circuitEnabled ? '?table=orbit' : '?table=orbit&circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><div id="audio-settings" class="audio-settings"><label for="music-volume">Music <output id="music-value" aria-live="off">60%</output></label><input id="music-volume" type="range" min="0" max="100" value="60" aria-label="Music volume"/><small>Music at 0% keeps droid and cabinet sounds.</small></div><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${referenceEnabled ? '<p>Left, wire and sky ramps score <b>1,000 / 1,500 / 2,500</b>. The sky ramp reaches the upper deck. A/D operate both flipper pairs. Subway holes return the ball through the cabinet.</p>' : circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds glow and shadows. <b>FX ECO</b> reduces graphics work. Resolution adapts automatically for smooth play; controls stay sharp.</p></div></div>
+      <div id="intro-content" class="intro-content"><span class="eyebrow amber"><i class="live-dot"></i> SECTOR 07 / ${referenceEnabled ? 'HYPERSPACE COURSE' : circuitEnabled ? 'ELEVATED CIRCUIT' : 'ORBITAL ARCADE'}</span><h1>Be the<br/><em>ball.</em></h1><p>${referenceEnabled ? 'Three ramps. Two playfields.<br/>Ride the subway. Reach the upper deck.<br/>A whole cabinet, in first person.' : circuitEnabled ? 'Climb the ramp. Cross the wire bridge.<br/>Ride the tunnel back to the flippers.<br/>One full circuit. +750.' : 'Light up the reactors. Ride the ricochet.<br/>A neon pinball universe, seen from<br class="desktop-break"/> the inside.'}</p><button id="start" class="primary" disabled>INITIALIZING PHYSICS <span>↗</span></button><div id="intro-feedback"></div><div id="intro-best"><span id="best-panel" class="best">PERSONAL BEST <b id="best-score">00000</b></span></div><div class="intro-note"><span>STABLE FPV</span><span>REAL PHYSICS</span><span>3 BALLS</span></div><a id="table-variant" class="text-button" ${referenceEnabled ? 'hidden' : ''} href="${circuitEnabled ? '?table=orbit' : '?table=orbit&circuit=1'}">${circuitEnabled ? 'Classic table' : 'Try elevated circuit'} <span>↗</span></a><button id="look-settings" class="text-button" ${lookEnabled ? '' : 'hidden'}>Look around · experimental</button><div id="look-intro-slot"></div><button id="show-controls" class="text-button">How to play <span>+</span></button><div id="instructions" class="instructions" hidden><div id="audio-settings" class="audio-settings"><label for="music-volume">Music <output id="music-value" aria-live="off">60%</output></label><input id="music-volume" type="range" min="0" max="100" value="60" aria-label="Music volume"/><small>Music at 0% keeps droid and cabinet sounds.</small></div><p><b>A / ←</b> left flipper · <b>D / →</b> right flipper</p><p>Hold <b>Space</b>, then release to launch. <b>Esc</b> pauses.</p><p>Touch buttons support both flippers at once. FPV keeps your head steady. About one launch in twenty briefly spins: BB-8 lost its head! Reduced-motion settings keep FPV steady.</p>${referenceEnabled ? '<p>Left, wire and sky ramps score <b>1,000 / 1,500 / 2,500</b>. The sky ramp reaches the upper deck. A/D operate both flipper pairs. Subway holes return the ball through the cabinet.</p>' : circuitEnabled ? '<p>Aim up the left ramp. Cross the bridge and tunnel for <b>+750</b>, then flip the right return. Weak shots can roll back.</p>' : ''}<p><b>FX HIGH</b> adds glow and shadows. <b>FX ECO</b> reduces graphics work. Resolution adapts automatically for smooth play; controls stay sharp.</p></div></div>
       <div class="intro-index"><span>01 / ORBITAL TABLE <b>● SYSTEM ONLINE</b></span><span>FPV PINBALL / THREE BALLS · ONE ORBIT</span></div>
     </section>
     <div id="play-controls" class="play-controls" hidden>
@@ -47,7 +50,7 @@ app.innerHTML = `
       <div class="launch-cluster"><button id="launch" aria-label="Hold then release to launch the ball"><span id="launch-label">LAUNCH</span><span class="charge-track"><span id="charge"></span></span></button></div>
       <button id="right" class="flipper-button" aria-label="Hold right flipper"><span class="flipper-icon">↗</span><b>RIGHT FLIPPER</b><small>D / →</small></button>
     </div>
-    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-copy" hidden><div class="modal-card"><span id="modal-kicker" class="eyebrow amber">TAKE A BREATHER</span><h2 id="modal-title">Paused.</h2><p id="modal-copy">Your orbit will be right here.</p><button id="resume" class="primary">BACK TO THE TABLE <span>↗</span></button><button id="restart" class="text-button">Start a new game</button><div id="modal-settings"><button id="dialog-sound" class="text-button">SOUND OFF</button></div><div id="modal-feedback"></div></div></section>
+    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-copy" hidden><div class="modal-card"><span id="modal-kicker" class="eyebrow amber">TAKE A BREATHER</span><h2 id="modal-title">Paused.</h2><p id="modal-copy">Your orbit will be right here.</p><button id="resume" class="primary">BACK TO THE TABLE <span>↗</span></button><button id="restart" class="text-button">Start a new game</button><div id="modal-settings"><button id="dialog-look" class="text-button" ${lookEnabled ? '' : 'hidden'}>Look around · experimental</button><button id="dialog-sound" class="text-button">SOUND OFF</button></div><div id="modal-feedback"></div></div></section>
     <dialog id="fullscreen-help" aria-labelledby="fullscreen-help-title" aria-describedby="fullscreen-help-copy">
       <h2 id="fullscreen-help-title" tabindex="-1" autofocus>Play without browser bars.</h2>
       <div id="fullscreen-help-body" tabindex="0" role="region" aria-label="Home Screen setup instructions"><p id="fullscreen-help-copy"></p>
@@ -66,6 +69,14 @@ const audio = new GameAudio(voiceUrl), soundDirector = new SoundDirector();
 const headLoss = new HeadLossCamera();
 try { audio.setEnabled(localStorage.getItem('orbit-pinball-sound') === 'on'); } catch { /* Sound still works without storage. */ }
 let sim: PinballSimulation, view: PinballView;
+let phoneLook: PhoneLook | undefined;
+let pendingLookResume = false;
+let lookUICache = '';
+const lookPanel = document.createElement('section');
+lookPanel.id = 'look-panel'; lookPanel.className = 'look-panel'; lookPanel.hidden = true;
+lookPanel.setAttribute('aria-label', 'Look around settings');
+lookPanel.innerHTML = `<p>Turn your phone to look. The ball keeps moving. Hold it comfortably, then enable.</p><small>Experimental. Follow ball is always available. Phone comfort and drift have not been verified on physical devices.</small><p id="look-status" role="status" aria-live="polite">Follow ball</p><div class="look-buttons"><button id="look-enable" disabled>Enable phone look</button><button id="look-center" hidden>Center view</button><button id="look-follow">Follow ball</button></div>`;
+$('look-intro-slot').append(lookPanel);
 let best = 0;
 try { best = Number(localStorage.getItem('orbit-pinball-best') || 0) || 0; } catch { /* Private browsing still plays. */ }
 $('best-score').textContent = String(best).padStart(5, '0');
@@ -121,10 +132,10 @@ function setDialog(open: boolean) {
   modal.hidden = !open;
   for (const node of Array.from($('game').children)) if (node instanceof HTMLElement && node !== modal && node.id !== 'fullscreen-help' && node.id !== 'fullscreen-help-overlay') node.inert = open;
   if (open) {
-    $('modal-settings').append($('best-panel'), $('audio-settings')); $('modal-feedback').append($('toast'));
+    $('modal-settings').append($('best-panel'), $('audio-settings')); if (lookEnabled) $('modal-settings').append(lookPanel); $('modal-feedback').append($('toast'));
     if (!document.hidden) ($('resume').hidden ? $('restart') : $('resume')).focus();
   } else {
-    $('intro-best').append($('best-panel')); $('instructions').prepend($('audio-settings')); $('display-status').append($('toast'));
+    $('look-intro-slot').append(lookPanel); $('intro-best').append($('best-panel')); $('instructions').prepend($('audio-settings')); $('display-status').append($('toast'));
     if (focusBeforeDialog?.isConnected && !focusBeforeDialog.closest('[hidden]') && !document.hidden) focusBeforeDialog.focus();
     focusBeforeDialog = null;
   }
@@ -213,24 +224,64 @@ function toggleSound() {
 }
 $('sound').addEventListener('click', toggleSound);
 $('dialog-sound').addEventListener('click', toggleSound);
-function begin() {
-  sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); void activateSound();
+function refreshLook() {
+  if (!phoneLook) return;
+  const state = phoneLook.state, selected = phoneLook.selected;
+  const key = `${state}:${phoneLook.message}:${sim?.paused}:${sim?.phase}`;
+  if (key === lookUICache) return;
+  lookUICache = key;
+  $('look-status').textContent = selected ? phoneLook.message : 'Follow ball';
+  $('look-live').hidden = !selected || sim.paused || sim.phase === 'intro' || sim.phase === 'over';
+  const enable = $<HTMLButtonElement>('look-enable');
+  enable.hidden = selected && state !== 'unavailable';
+  enable.textContent = state === 'unavailable' ? 'Retry phone look' : 'Enable phone look';
+  const center = $<HTMLButtonElement>('look-center');
+  center.hidden = !selected || state === 'unavailable' || state === 'suspended';
+  center.disabled = state !== 'calibrating' && state !== 'active';
+  $<HTMLButtonElement>('look-center-live').disabled = state !== 'active';
+  $('look-follow').textContent = state === 'requesting' || state === 'waiting' || state === 'calibrating' ? 'Cancel · Follow ball' : 'Follow ball';
+  $('dialog-look').textContent = selected ? 'Look around selected' : 'Look around · experimental';
+  $('look-settings').setAttribute('aria-expanded', String(!lookPanel.hidden));
+  $('dialog-look').setAttribute('aria-expanded', String(!lookPanel.hidden));
+  const focused = document.activeElement;
+  if (!lookPanel.hidden && focused instanceof HTMLElement && lookPanel.contains(focused) && focused.hidden) {
+    (state === 'calibrating' ? center : $('look-follow')).focus();
+  }
+}
+
+function begin(silent = false) {
+  pendingLookResume = false;
+  sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); if (!silent) void activateSound();
   displayCache = ''; previousPhase = 'ready'; playInput.clear();
   setDialog(false); $('toast').classList.remove('visible'); toastUntil = 0;
   $('intro').hidden = true; $('desktop-start-slot').hidden = true; $('game').classList.remove('intro-state'); $('game').focus(); refreshDisplay();
   for (const id of ['hud', 'play-controls']) $(id).hidden = false;
   toast(touchDevice() ? 'Hold LAUNCH, then release to fire' : 'Hold SPACE, then release to launch');
+  if (phoneLook?.selected) { phoneLook.reset(view.routeCamera); showPause(false); lookPanel.hidden = false; }
+  refreshLook();
 }
-function showPause() {
+function showPause(suspendLook = true) {
+  pendingLookResume = false;
+  if (suspendLook) phoneLook?.suspend();
   audio.setPaused(true); clearComms(); headLoss.reset(); if (view) view.mode = 'fpv';
   if (sim.phase === 'intro' || sim.phase === 'over') return;
-  sim.paused = true; playInput.clear(); sim.releaseControls();
+  sim.paused = true; playInput.clear(); sim.releaseControls(); sim.cancelLaunchCharge();
   $('modal-kicker').textContent = 'TAKE A BREATHER'; $('modal-title').textContent = 'Paused.';
   $('modal-copy').textContent = 'Your orbit will be right here.'; $('resume').hidden = false;
   $('restart').textContent = 'Start a new game'; setDialog(true); refreshDisplay();
 }
-function resume() { sim.paused = false; sim.releaseControls(); soundDirector.resume(); audio.setPaused(false); setDialog(false); refreshDisplay(); last = performance.now(); void activateSound(); }
+function resume() {
+  if (document.hidden) return;
+  if (phoneLook?.selected && phoneLook.state !== 'active') {
+    lookPanel.hidden = false;
+    if (phoneLook.state === 'suspended') { pendingLookResume = true; phoneLook.resume(); }
+    refreshLook(); return;
+  }
+  resumeGame();
+}
+function resumeGame() { pendingLookResume = false; sim.paused = false; sim.releaseControls(); soundDirector.resume(); audio.setPaused(false); setDialog(false); refreshDisplay(); last = performance.now(); void activateSound(); }
 function gameOver() {
+  pendingLookResume = false; phoneLook?.suspend();
   if (sim.score > best) { best = sim.score; try { localStorage.setItem('orbit-pinball-best', String(best)); } catch {} }
   $('best-score').textContent = String(best).padStart(5, '0');
   scores = saveRun(scores, sim.score, Date.now(), circuitEnabled, referenceEnabled ? 'reference' : undefined);
@@ -277,9 +328,26 @@ async function boot() {
       view.setQuality(!view.highQuality); updateQuality();
       toast(view.highQuality ? 'HIGH · glow + dynamic shadows' : 'ECO · lighter graphics');
     });
+    if (lookEnabled) {
+      phoneLook = new PhoneLook({ pause: () => { pendingLookResume = false; if (sim.phase === 'ready' || sim.phase === 'playing') { showPause(false); lookPanel.hidden = false; } }, reducedMotion: () => view.effects.reducedMotion });
+      view.orientationInput = (dt, follow) => phoneLook!.update(dt, follow);
+      $<HTMLButtonElement>('look-enable').disabled = false;
+      const openLook = () => { lookPanel.hidden = !lookPanel.hidden; if (!lookPanel.hidden) ($('look-enable').hidden ? $('look-follow') : $('look-enable')).focus(); lookUICache = ''; refreshLook(); };
+      $('look-settings').addEventListener('click', openLook); $('dialog-look').addEventListener('click', openLook);
+      $('look-enable').addEventListener('click', () => {
+        if (document.hidden) return;
+        if (sim.phase === 'intro' || sim.phase === 'over') begin(true);
+        pendingLookResume = false; phoneLook!.enable(view.routeCamera); lookPanel.hidden = false; refreshLook();
+      });
+      const centerLook = () => { phoneLook!.center(view.routeCamera); refreshLook(); };
+      const followLook = () => { pendingLookResume = false; phoneLook!.follow(); refreshLook(); };
+      $('look-center').addEventListener('click', centerLook); $('look-center-live').addEventListener('click', centerLook);
+      $('look-follow').addEventListener('click', followLook); $('look-follow-live').addEventListener('click', followLook);
+      refreshLook();
+    }
     $('start').textContent = 'ENTER THE TABLE ↗'; $<HTMLButtonElement>('start').disabled = false;
-    $('start').addEventListener('click', begin);
-    $('resume').addEventListener('click', resume); $('restart').addEventListener('click', begin);
+    $('start').addEventListener('click', () => begin());
+    $('resume').addEventListener('click', resume); $('restart').addEventListener('click', () => begin());
     $('pause').addEventListener('click', () => sim.paused ? resume() : showPause());
     $('show-controls').addEventListener('click', () => { $('instructions').hidden = !$('instructions').hidden; });
     setupFullscreen({ game: $('game'), button: $<HTMLButtonElement>('fullscreen'), help: $<HTMLDialogElement>('fullscreen-help'),
@@ -294,7 +362,7 @@ async function boot() {
       lastPointerType = 'keyboard';
       if (!$('modal').hidden && e.code === 'Tab') {
         const controls = Array.from($('modal').querySelectorAll<HTMLElement>('button:not([hidden]), input'))
-          .filter(el => !el.hasAttribute('disabled'));
+          .filter(el => !el.hasAttribute('disabled') && el.getClientRects().length > 0);
         const first = controls[0], end = controls[controls.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); end?.focus(); }
         else if (!e.shiftKey && document.activeElement === end) { e.preventDefault(); first?.focus(); }
@@ -329,13 +397,14 @@ async function boot() {
       if (pauseOnWindowBlur(document.hidden, coarseInput.matches, lastPointerType)) showPause();
       else playInput.clearKeyboard();
     });
-    window.addEventListener('pagehide', showPause);
+    window.addEventListener('pagehide', () => showPause());
     document.addEventListener('visibilitychange', () => { if (document.hidden) showPause(); else if (!$('modal').hidden) ($('resume').hidden ? $('restart') : $('resume')).focus(); });
     observeGameLayout($('viewport'), () => {
       arrangeIntro(); view.resize(); refreshDisplay();
     }, () => {
       // Rotation moves touch targets; discard old owners without releasing a
       // charged shot or resetting the run, camera, pause state or sound.
+      phoneLook?.screenChanged();
       playInput.clear(); sim.releaseControls(); sim.cancelLaunchCharge(); refreshControls();
     });
     anyCoarseInput.addEventListener('change', () => { arrangeIntro(); view.resize(); refreshDisplay(); });
@@ -343,7 +412,7 @@ async function boot() {
     view.renderer.domElement.addEventListener('webglcontextrestored', () => { toast('Graphics restored · resume when ready'); });
 
     // A development-only inspection hook supports browser QA without changing the production UI.
-    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector, headLoss, begin } });
+    if (import.meta.env.DEV) Object.assign(window, { orbitDebug: { sim, view, audio, soundDirector, headLoss, begin, phoneLook, showPause, resume } });
     requestAnimationFrame(frame);
   } catch (error) {
     $('loading-error').hidden = false;
@@ -355,13 +424,14 @@ async function boot() {
 function frame(now: number) {
   const frameMs = Math.max(0, now - last), dt = Math.min(frameMs / 1000, 0.1); last = now;
   sim.update(dt);
-  const cameraFrame = headLoss.update(sim, sim.events, view.effects.reducedMotion);
+  const cameraFrame = headLoss.update(sim, sim.events, view.effects.reducedMotion, phoneLook?.selected ?? false);
   view.mode = cameraFrame.mode;
   if (cameraFrame.ended && $('droid-line').textContent === HEAD_LOSS_CAPTION) clearComms();
   refreshDisplay();
   refreshControls();
   if (sim.phase !== previousPhase) {
-    if (sim.phase === 'draining') toast('BALL LOST · next ball ready shortly');
+    if (sim.phase === 'draining') { phoneLook?.suspend(); toast('BALL LOST · next ball ready shortly'); }
+    if (sim.phase === 'ready' && phoneLook?.selected) { view.routeCamera.reset(); phoneLook.reset(view.routeCamera); showPause(false); lookPanel.hidden = false; }
     if (sim.phase === 'over') gameOver();
     previousPhase = sim.phase;
   }
@@ -381,7 +451,7 @@ function frame(now: number) {
   for (const cue of soundFrame.cues) {
     const vocalized = audio.play(cue);
     // Critical instructions remain visible when the player chooses mute.
-    const headCaption = $('droid-line').textContent === HEAD_LOSS_CAPTION && headLoss.mode === 'spin';
+    const headCaption = $('droid-line').textContent === HEAD_LOSS_CAPTION && headLoss.eventActive;
     if (cue.caption && (vocalized || cue.kind === 'warning' || cue.kind === 'head-loss')
       && (!headCaption || cue.kind === 'warning' || cue.kind === 'head-loss')) showComms(cue);
   }
@@ -390,8 +460,11 @@ function frame(now: number) {
   else $('display-status').classList.toggle('has-toast', $('modal').hidden);
   // Submit expensive graphics after input feedback and sound scheduling.
   view.render(sim, dt, frameMs);
+  refreshLook();
+  if (pendingLookResume && phoneLook?.state === 'active' && !document.hidden) resumeGame();
   sim.events.length = 0;
   requestAnimationFrame(frame);
 }
 
 void boot();
+
