@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<title>Fixed-pose pinball fidelity comparison</title>
+<style>
+  body { margin: 0; background: #080e24; color: white; font: 14px system-ui; }
+  #stage { width: 960px; height: 540px; }
+  pre { margin: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  button { margin: 8px; }
+</style>
+<div id="stage"></div>
+<button id="run" disabled>Run fixed-pose benchmark</button>
+<pre id="report" data-status="loading" aria-live="polite">Loading renderer…</pre>
+<script type="module" src="./harness.ts"></script>
+</html>

@@ -13,6 +13,8 @@ import { RenderBudget, renderPixelRatio } from './render-budget';
 import { ReferenceTable } from './reference-table';
 import { courseBumpers, courseTargets } from '../physics/reference-course';
 
+export interface ViewOrientation { heading: number; pitch: number }
+
 export type CameraMode = 'fpv' | 'spin';
 
 export class PinballView {
@@ -21,6 +23,8 @@ export class PinballView {
   readonly renderer: THREE.WebGLRenderer;
   readonly effects: ArcadeEffects;
   mode: CameraMode = 'fpv';
+  manualOrientation: ViewOrientation | null = null;
+  orientationInput?: (dt: number, follow: ViewOrientation) => ViewOrientation | null;
   readonly routeCamera = new RouteCamera();
   get heading() { return this.routeCamera.heading; }
   set heading(value: number) { this.routeCamera.heading = value; }
@@ -106,7 +110,7 @@ export class PinballView {
     const ratio = renderPixelRatio(w, h, window.devicePixelRatio, this.highQuality, this.budget.scale);
     this.renderer.setPixelRatio(ratio); this.renderer.setSize(w, h);
     this.post?.resize(this.renderer.domElement.width, this.renderer.domElement.height);
-    this.camera.aspect = w / h; this.projectionFov = -1;
+    this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); this.projectionFov = -1;
   }
 
   async warmup() {
@@ -135,7 +139,9 @@ export class PinballView {
     this.effects.update(visualDt, p, Math.hypot(v.x, v.z), sim.phase === 'playing' && !sim.paused);
     this.routeCamera.update(sim, visualDt, this.effects.reducedMotion);
     if (this.mode !== this.previousMode) { this.clearance.reset(); this.previousMode = this.mode; }
-    this.forward.set(Math.sin(this.heading), 0, -Math.cos(this.heading));
+    this.manualOrientation = this.orientationInput?.(dt, this.routeCamera) ?? null;
+    const orientation = this.manualOrientation ?? this.routeCamera;
+    this.forward.set(Math.sin(orientation.heading), 0, -Math.cos(orientation.heading));
     this.camera.up.set(0, 1, 0);
     if (sim.phase === 'intro') {
       if (sim.reference) {
@@ -148,15 +154,21 @@ export class PinballView {
         this.camera.position.set(0, this.camera.aspect < 1.2 ? 25 : 22, this.camera.aspect < 1.2 ? 16 : 19);
         this.camera.lookAt(0, 0, -.7);
       }
-    } else if (this.mode === 'spin') {
+    } else if (this.mode === 'spin' && !this.manualOrientation) {
       this.camera.fov = 82; this.camera.position.set(p.x, p.y + 0.08, p.z);
       this.camera.quaternion.copy(this.table.ball.quaternion);
     } else {
       this.camera.fov = 82; this.position.set(p.x, p.y + 0.30, p.z);
-      if (sim.reference?.guided) { this.camera.position.copy(this.position); this.camera.position.y -= .1; }
+      if (sim.reference?.guided && !this.manualOrientation) { this.camera.position.copy(this.position); this.camera.position.y -= .1; }
+      else if (sim.reference?.guided) {
+        // Manual full-circle views use the same swept near-plane envelope as
+        // free play, including the guided branch that normally bypasses it.
+        this.position.y -= .1;
+        this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 82, visualDt);
+      }
       else this.clearance.place(sim, this.position, this.camera.position, this.camera.aspect, 82, visualDt);
-      this.look.copy(this.camera.position).addScaledVector(this.forward, 8 * Math.cos(this.routeCamera.pitch));
-      this.look.y += 8 * Math.sin(this.routeCamera.pitch); this.camera.lookAt(this.look);
+      this.look.copy(this.camera.position).addScaledVector(this.forward, 8 * Math.cos(orientation.pitch));
+      this.look.y += 8 * Math.sin(orientation.pitch); this.camera.lookAt(this.look);
     }
     // Keep the near-plane corners within the swept envelope at extreme aspect ratios.
     if (this.projectionFov !== this.camera.fov) {

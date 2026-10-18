@@ -1,0 +1,367 @@
+{
+  "commit": "21cbb73e02adc82285f811d89b1539a6a14b7ec7",
+  "files": [
+    {
+      "path": "src/render/cabinet-theme.ts",
+      "encoding": "base64",
+      "sha": "c85d4ef447de3567681cd75f0e30a3f8356deda2",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/cabinet-theme.ts",
+      "display_title": "cabinet-theme.ts"
+    },
+    {
+      "path": "src/render/effects.ts",
+      "encoding": "base64",
+      "sha": "255c90770d589e2515f33594165c7fd7acc1c68d",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/effects.ts",
+      "display_title": "effects.ts"
+    },
+    {
+      "path": "src/render/head-loss.ts",
+      "encoding": "base64",
+      "sha": "25843a75dbb2683e533a4a82c76db50706bf7351",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/head-loss.ts",
+      "display_title": "head-loss.ts"
+    },
+    {
+      "path": "src/render/night-market.ts",
+      "encoding": "base64",
+      "sha": "99cf4b3e2bbb385ba1bd0c9c22d3fa7e1bb7cb61",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/night-market.ts",
+      "display_title": "night-market.ts"
+    },
+    {
+      "path": "src/render/render-budget.ts",
+      "encoding": "base64",
+      "sha": "666cae9d532feac37b93cc03b14c4ee74c893a7d",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/render-budget.ts",
+      "display_title": "render-budget.ts"
+    },
+    {
+      "path": "src/render/reference-artwork.ts",
+      "encoding": "base64",
+      "sha": "e9e626a65f87e1f1dcd1cf3577a4cec4b940991a",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/reference-artwork.ts",
+      "display_title": "reference-artwork.ts"
+    },
+    {
+      "path": "src/render/reference-table.ts",
+      "encoding": "base64",
+      "sha": "1e976aa6854e2565da9238ec71eabc92c9298875",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/reference-table.ts",
+      "display_title": "reference-table.ts"
+    },
+    {
+      "path": "src/render/view.ts",
+      "encoding": "base64",
+      "sha": "6b52f0b735b2435179ba4f3a2878370d959a5a28",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/view.ts",
+      "display_title": "view.ts"
+    },
+    {
+      "path": "src/render/night-market-layout.ts",
+      "encoding": "base64",
+      "sha": "8d75609a0ae7664e2fa885eb6cc2539498d840a6",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/night-market-layout.ts",
+      "display_title": "night-market-layout.ts"
+    },
+    {
+      "path": "src/render/night-market-paving.ts",
+      "encoding": "base64",
+      "sha": "af58049068f6a7b8eada9f83b0d02bdf34aa0c39",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/night-market-paving.ts",
+      "display_title": "night-market-paving.ts"
+    },
+    {
+      "path": "src/render/table-model.ts",
+      "encoding": "base64",
+      "sha": "077b223c9990521f252c111302ebaab27809e89e",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/table-model.ts",
+      "display_title": "table-model.ts"
+    },
+    {
+      "path": "src/render/fidelity-bake.ts",
+      "encoding": "base64",
+      "sha": "025067c4857acda4ac2ab30bf8eb331911710593",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/fidelity-bake.ts",
+      "display_title": "fidelity-bake.ts"
+    },
+    {
+      "path": "src/render/wall-palette.ts",
+      "encoding": "base64",
+      "sha": "0350816a625292a6af1d9bd1c8a9a1c33bae514b",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/wall-palette.ts",
+      "display_title": "wall-palette.ts"
+    },
+    {
+      "path": "src/render/material-optimizations.ts",
+      "encoding": "base64",
+      "sha": "56171cae2c28949ad03fc6d7c235daff215033e3",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/material-optimizations.ts",
+      "display_title": "material-optimizations.ts"
+    },
+    {
+      "path": "src/render/artwork.ts",
+      "encoding": "base64",
+      "sha": "984906af6153150da233899a7d593cb96bdc1856",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/artwork.ts",
+      "display_title": "artwork.ts"
+    },
+    {
+      "path": "src/render/route-model.ts",
+      "encoding": "base64",
+      "sha": "32e72a0c05e6996e9cf1b0d6039ceed9ff0ff46d",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/route-model.ts",
+      "display_title": "route-model.ts"
+    },
+    {
+      "path": "src/render/night-market-art.ts",
+      "encoding": "base64",
+      "sha": "4005aaf6e86763593d085433a9f99c742ee1a8be",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/night-market-art.ts",
+      "display_title": "night-market-art.ts"
+    },
+    {
+      "path": "src/render/night-market-clearance.ts",
+      "encoding": "base64",
+      "sha": "0f8d1967a3245706849ce060a24e7c2b4e43c09b",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/night-market-clearance.ts",
+      "display_title": "night-market-clearance.ts"
+    },
+    {
+      "path": "src/render/arcade-post.ts",
+      "encoding": "base64",
+      "sha": "dfcfeaba24d6d0a0b22727cdd3a134a153a642f3",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/arcade-post.ts",
+      "display_title": "arcade-post.ts"
+    },
+    {
+      "path": "src/render/static-batch.ts",
+      "encoding": "base64",
+      "sha": "9a4ff32fa8d81362eff2c35c25e21cad97d5f605",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/static-batch.ts",
+      "display_title": "static-batch.ts"
+    },
+    {
+      "path": "src/render/route-camera.ts",
+      "encoding": "base64",
+      "sha": "edd9e1a28cc3d629e879d9a2545bec74bc355b96",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/render/route-camera.ts",
+      "display_title": "route-camera.ts"
+    },
+    {
+      "path": "src/assets/droid-beeps.wav",
+      "sha": "4f69f93c7112f432a22fee271349b928bdcc5ca6",
+      "provenance": "Local bytes verified against connector blob SHA"
+    },
+    {
+      "path": "src/main.ts",
+      "encoding": "base64",
+      "sha": "6914742cd53531b5f3bb3b127854c190ee188069",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/main.ts",
+      "display_title": "main.ts"
+    },
+    {
+      "path": "src/style.css",
+      "encoding": "base64",
+      "sha": "3e05daae5101de31126a1a4e9fe22ce08cef3756",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/style.css",
+      "display_title": "style.css"
+    },
+    {
+      "path": "src/ui/audio.ts",
+      "encoding": "base64",
+      "sha": "926ff287793af2deaf242fd75a5e5537242c3562",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/audio.ts",
+      "display_title": "audio.ts"
+    },
+    {
+      "path": "src/ui/fullscreen.ts",
+      "encoding": "base64",
+      "sha": "f208ca4753c2caa360e313b5694b41c6ff74e71f",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/fullscreen.ts",
+      "display_title": "fullscreen.ts"
+    },
+    {
+      "path": "src/ui/music-pattern.ts",
+      "encoding": "base64",
+      "sha": "e7459b7912556397d9b1cdafd5cf28bdb216c89c",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/music-pattern.ts",
+      "display_title": "music-pattern.ts"
+    },
+    {
+      "path": "src/ui/game-layout.ts",
+      "encoding": "base64",
+      "sha": "c3cf2e470a18f8f5d08dbf23b9b1aba10055b4a2",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/game-layout.ts",
+      "display_title": "game-layout.ts"
+    },
+    {
+      "path": "src/ui/voice-bank.ts",
+      "encoding": "base64",
+      "sha": "edea654bb879d3744f67ecf0375f1e5239814e18",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/voice-bank.ts",
+      "display_title": "voice-bank.ts"
+    },
+    {
+      "path": "src/ui/cabinet-display.ts",
+      "encoding": "base64",
+      "sha": "7bbed16054752682826e19e23dcbb98c3fb464e8",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/cabinet-display.ts",
+      "display_title": "cabinet-display.ts"
+    },
+    {
+      "path": "src/ui/audio-presets.ts",
+      "encoding": "base64",
+      "sha": "0353348bc7f75289b7ed0f0c8a86d8fb8f4ab673",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/audio-presets.ts",
+      "display_title": "audio-presets.ts"
+    },
+    {
+      "path": "src/ui/voice-selector.ts",
+      "encoding": "base64",
+      "sha": "44e5143f2313932b27aa3cb0b9ed6aa023978f7d",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/voice-selector.ts",
+      "display_title": "voice-selector.ts"
+    },
+    {
+      "path": "src/ui/play-input.ts",
+      "encoding": "base64",
+      "sha": "2b5a73d38b9e382ff247781af097479030202fdb",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/play-input.ts",
+      "display_title": "play-input.ts"
+    },
+    {
+      "path": "src/ui/sound-director.ts",
+      "encoding": "base64",
+      "sha": "bc194791052aac520c65d214dc75ed9314dca2f5",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/sound-director.ts",
+      "display_title": "sound-director.ts"
+    },
+    {
+      "path": "src/ui/local-scores.ts",
+      "encoding": "base64",
+      "sha": "7217a1fc3e74ec01e5dc60ac04b95c7b3dadba7f",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/ui/local-scores.ts",
+      "display_title": "local-scores.ts"
+    },
+    {
+      "path": "src/physics/reference-motion.ts",
+      "encoding": "base64",
+      "sha": "3197dbc9b8fb8f25ecf54b6d59a0840646ae683e",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/reference-motion.ts",
+      "display_title": "reference-motion.ts"
+    },
+    {
+      "path": "src/physics/simulation.ts",
+      "encoding": "base64",
+      "sha": "39452f6243b6f1f79886d1966562c5c3dc2765c9",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/simulation.ts",
+      "display_title": "simulation.ts"
+    },
+    {
+      "path": "src/physics/route-state.ts",
+      "encoding": "base64",
+      "sha": "2a626749889114b55c15b2fd05eb815f7fd032e7",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/route-state.ts",
+      "display_title": "route-state.ts"
+    },
+    {
+      "path": "src/physics/reference-course-data.json",
+      "encoding": "base64",
+      "sha": "c02f3e7dddc7806a328341904a15ab30bd139532",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/reference-course-data.json",
+      "display_title": "reference-course-data.json"
+    },
+    {
+      "path": "src/physics/table.ts",
+      "encoding": "base64",
+      "sha": "86da6dc2573ee9d70847d314b2f82e660b26d77e",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/table.ts",
+      "display_title": "table.ts"
+    },
+    {
+      "path": "src/physics/reference-course.ts",
+      "encoding": "base64",
+      "sha": "fb3fce048869a13fc4ef0ac3545ef2fdc110b744",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/reference-course.ts",
+      "display_title": "reference-course.ts"
+    },
+    {
+      "path": "src/physics/route-geometry.ts",
+      "encoding": "base64",
+      "sha": "9a652cd7c41e9cb3ce722a904870b2e92eee0177",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/src/physics/route-geometry.ts",
+      "display_title": "route-geometry.ts"
+    },
+    {
+      "path": "public/icons/orbit-180.png",
+      "encoding": "base64",
+      "sha": "103be3340b32f8600bca674e7f871f5e17b26a93",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/public/icons/orbit-180.png",
+      "display_title": "orbit-180.png"
+    },
+    {
+      "path": "public/icons/orbit-192.png",
+      "encoding": "base64",
+      "sha": "3b791d1fa815fbc8ddebabee6cdd34ae5bb0abf3",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/public/icons/orbit-192.png",
+      "display_title": "orbit-192.png"
+    },
+    {
+      "path": "public/icons/orbit-512.png",
+      "encoding": "base64",
+      "sha": "6716077e5767d8dd4e2e66f8aec5f1e20923e1e8",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/public/icons/orbit-512.png",
+      "display_title": "orbit-512.png"
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "encoding": "base64",
+      "sha": "2be70a1bb64e10055ca95d89d79208afd371010e",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/public/manifest.webmanifest",
+      "display_title": "manifest.webmanifest"
+    },
+    {
+      "path": "public/audio/droid-voice-preview.wav",
+      "encoding": "base64",
+      "sha": "929d761c3bc3438242cc2a0c7b74963d171b4661",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/public/audio/droid-voice-preview.wav",
+      "display_title": "droid-voice-preview.wav"
+    },
+    {
+      "path": "public/favicon.svg",
+      "encoding": "base64",
+      "sha": "3a440bccec185faae667d54988f9b5e643836bd0",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/public/favicon.svg",
+      "display_title": "favicon.svg"
+    },
+    {
+      "path": "index.html",
+      "encoding": "base64",
+      "sha": "924ad8786fc217fb5a6a8e412edee9989f4e8ee5",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/index.html",
+      "display_title": "index.html"
+    },
+    {
+      "path": "package.json",
+      "encoding": "base64",
+      "sha": "857444dbfee67ec2643327293791356a3714b2df",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/package.json",
+      "display_title": "package.json"
+    },
+    {
+      "path": "package-lock.json",
+      "encoding": "base64",
+      "sha": "0daa4d45fa11c53a365c2152950c8271374cacfa",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/package-lock.json",
+      "display_title": "package-lock.json"
+    },
+    {
+      "path": "vite.config.ts",
+      "encoding": "base64",
+      "sha": "2d8637e6fe73c89dd5ad6f2021a20418a10394ce",
+      "display_url": "https://github.com/hafnium49/bb8-fpv-pinball/blob/21cbb73e02adc82285f811d89b1539a6a14b7ec7/vite.config.ts",
+      "display_title": "vite.config.ts"
+    }
+  ]
+}

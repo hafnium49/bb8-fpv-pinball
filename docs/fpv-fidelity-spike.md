@@ -1,0 +1,95 @@
+# FPV fidelity spike and lighter wall bases
+
+Status: complete fixed-pose software-renderer comparison and independent visual review. See the [final results and recommendation](fpv-fidelity-results.md) and [per-measurement CSV](fpv-fidelity-measurements.csv). The optional material experiment remains default-off; actual-device performance and input latency remain unmeasured.
+
+Baseline: `3c478dd7d4185750f6daac69780da0ebcc5aa063`. Existing title-only draft PR #17 (`e34e2430092a11420af94814b5ec47467bfe3e49`) is separate and unchanged. This branch preserves the repository's original audio asset; it does not replace or delete it.
+
+## Requested wall-base change
+Architectural bases now use lighter neutral slate **#74828C**:
+- Patterned playable rail/perimeter faces, including upper-deck guides.
+- Storefront cladding and enamel shells/architectural trim.
+- Decorative tunnel vault lining and patterned upper-deck underside, which share the wall atlas.
+- Actual lower subway walls now use their own opaque slate material instead of the dark route-floor texture. Slate emission (.35) keeps that material independent of environment lighting in Eco. Floor paving and tunnel guide lights are unchanged.
+- Under-deck rail faces, fascia and soffit are covered. Ramp riding surfaces/undersides remain their existing paving, and recessed windows/sign backgrounds intentionally remain dark; this is not a global recoloring of every dark surface.
+
+These surfaces occur in both the reference and classic/circuit courses. Sky/background, floor/paving, sign backgrounds, brass, recessed windows and neon colors remain unchanged. Existing atlas/palette batching is preserved. The lower-tunnel correction separates a material, which can add draw batches/program variation; it adds no texture, light, geometry or postprocessing pass. Measured final-frame counters add one draw call at the bridge fixture and three at the other fixtures, with unchanged triangle and texture counts. Other wall-atlas/enamel material parameters are unchanged. Diffuse and emissive slots share the wall artwork; the fixed-pose Eco/High captures are reviewed for readable contrast and bloom.
+
+## Opt-in material experiment
+The renderer already has ACES tone mapping, procedural PMREM environment lighting, physical clearcoat materials, shadow-revision caching, HDR bloom, adaptive resolution, static batching, palette/atlas consolidation and repeated texture-sample reuse. These are existing features, not claimed new improvements.
+
+The reference playfield experiment is strictly opt-in:
+- `fidelity=baseline` or omitted: no experiment.
+- `fidelity=baked`: static contact-darkening around fixed ground bumpers/posts, painted once into the existing artwork. Artistic approximation, not traced GI; no moving ball/flipper shadows. No new runtime mesh/texture/pass. Because diffuse and emissive slots share the artwork, both change.
+- `fidelity=roughness`: contacts plus one 256x512 linear-data roughness map for broad glaze variation/seams. Adds a texture lookup and approximately 0.67 MiB uncompressed GPU texels including mipmaps, plus 0.50 MiB source pixels. Actual driver allocation is unmeasured. The texture follows existing table disposal.
+
+Physics, audio, input, camera, collision geometry and adaptive-budget logic are untouched. The optional artwork also appears in the intro preview; no camera mode or overhead inset is added. This is a small material experiment, not a full scene redesign.
+
+## Historical verification (before final comparison)
+- Baseline: 100 tests, 97 pass, 3 audio-dependent failures because the original WAV could not be retrieved into this local workspace through the connector.
+- Combined candidate: 105 tests, 102 pass, the same 3 missing-WAV failures. The original WAV remains in this repository and must be present for full CI checks.
+- Three new fidelity tests pass: strict mode allowlist, deterministic/bounded roughness data, fixed contact drawing/restoration.
+- Two new wall tests pass: all base tiles/enamel use lighter slate, sky and neon values stay unchanged. Verified red/green against old wall source.
+- Source and dedicated harness TypeScript checks pass.
+- Render-only harness production bundle passes. Full local game build is blocked by the unavailable local WAV import; this is not a full-build pass.
+- Patch whitespace check passes. Independent review recommendations to guard concurrent measurements and normalize variant labels were applied.
+
+Remote CI passed on `63832d3351d5f9f8c2584e8dff7970616c80c192`: [run #87](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38811587611) verified all 105 tests, circuit/flipper-guide/reference-course checks and the full production build with the original WAV. This is historical evidence for that commit only. Review corrections require their own exact-head check; use the PR checks rather than treating the older result as validation of later changes.
+
+The first correction head `6afa3e13740029cd72b788bad34a0a17cee13e3e` also passed [run #89](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38839148954): 115/115 tests, source and harness typechecks, circuit/guide/course checks and full production build. Later reliability fixes require their own exact-head CI.
+
+Review corrections add dedicated lower-tunnel wall material coverage, under-deck coverage assertions, and a compiled old-main/PR comparison harness. Local corrected suite: **117/120 passed**, with the same three missing-WAV failures; all four wall tests and thirteen harness tests pass. Source/harness typechecks and circuit, guide and reference-course checks pass. Full local build still cannot resolve the absent WAV. See the current exact-head PR checks for complete-checkout verification.
+
+## Browser execution history and remaining measurement limits
+Installed Chromium could not start because of a socket permission error. An expanded launch failed during environment setup. The available cloud browser could not reach the workspace's localhost server. The portable runner also failed before rendering.
+
+The earlier own-cloud attempts produced no valid rendered evidence. A bounded PR18-only GitHub Actions workflow now runs the shared comparison on a standard Ubuntu runner with explicitly requested SwiftShader. It has read-only repository contents permission, no deployment, no stored checkout credentials, and a 25-minute timeout per condition (at most four standard runners concurrently), plus a 10-minute aggregation step. It uploads complete or failed raw evidence for seven days. Results must be evaluated for their exact source head; a successful unit/build check is not a rendered comparison. Actual PC/iPhone performance, GPU timings and input latency remain unmeasured.
+
+## First rendered run: partial evidence, not a complete benchmark
+
+[Run 38840880132](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38840880132), source `c4266fcd760f1ca3221ce44c8005b5fd594b97cd`, completed only **8/160** cases: desktop/Eco/ground, four treatments, forward/reverse repeats. The next launch measurement exceeded its 120-second timeout. Its failed manifest is retained; it is not accepted as full coverage. [Raw partial artifact](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/38840880132/artifacts/12021771979) expires after seven days.
+
+The actual renderer was ANGLE/Vulkan **SwiftShader Device (Subzero)**. At 960x540, DPR1, 60 warmup +240 measured frames:
+- Old main: frame-delivery p95 800.0 /816.6 ms; CPU submission p95 4.7 /4.5 ms; 144 draw calls; 176754 triangles.
+- PR default walls: frame-delivery p95 800.1 /816.6 ms; CPU submission p95 4.5 /4.5 ms; 147 draw calls; identical triangle count.
+- Baked: p95 816.6 /800.1 ms. Roughness: p95 833.3 /816.6 ms. These small differences on this overloaded software renderer do not establish a performance benefit or regression.
+- The wall material separation adds three draw batches in this view; roughness adds one texture. Optional JS heap reported 37.3 MB for every case, a coarse JS-heap snapshot rather than total/GPU allocation.
+- Startup was cache-sensitive (approximately 1.2–4.7 seconds), so it is not a controlled cold-start comparison. Most sampled frames exceeded50 ms. No input latency was measured.
+
+Actual ground captures were inspected independently: patterned wall faces visibly change from near-black to lighter slate, with preserved framing, readable neon/patterns, dark sky and floor. This validates this one pose only; optional floor differences are subtle here.
+
+To complete the matrix in bounded CI, subsequent runs use **15 warmup +60 sampled frames**, retaining the full-resolution screenshots. Each of20 viewport/quality/pose conditions runs all four treatments and both orders sequentially on one runner. The aggregator rejects any missing/failed condition. Timings are compared only within each condition/runner, never pooled across machines. A 60-frame p95 is exploratory tail evidence, not a robust device-performance certification. The original60/240 profile remains the default for manual runs.
+
+## Reproduce an actual old-main/PR comparison
+
+Prepare two separate complete source checkouts using the authorized repository access method: baseline `3c478dd7d4185750f6daac69780da0ebcc5aa063` and the exact current PR head. Preserve each checkout's own `src` and original audio. Copy only the PR's `spikes/fidelity/` directory unchanged into the baseline checkout, so both use the identical measurement harness. The harness imports only APIs present on old main; it does not simulate old walls by toggling a PR material.
+
+Run `npm ci` in each checkout. In the PR checkout run `npm test` and `npm run build`; the build now also typechecks the harness. Serve old main on port 5188 and PR on 5198 using `npm run dev -- --port <port>` in their respective directories. Verify the checkout revisions yourself: the URL/commit labels below are operator declarations, not independently authenticated provenance.
+
+From the PR checkout:
+
+```sh
+export FIDELITY_BASELINE_URL=http://127.0.0.1:5188/spikes/fidelity/
+export FIDELITY_PR_URL=http://127.0.0.1:5198/spikes/fidelity/
+export FIDELITY_BASELINE_COMMIT=3c478dd7d4185750f6daac69780da0ebcc5aa063
+export FIDELITY_PR_COMMIT='REPLACE_WITH_EXACT_CURRENT_PR_HEAD_SHA'
+node spikes/fidelity/run.cjs --plan
+CHROME_PATH=/path/to/chromium node spikes/fidelity/run.cjs
+```
+
+Runner output goes into a timestamped `artifacts/fidelity/` directory: manifest, raw results and matching PNGs. Missing/distinct-source configuration errors fail before launch. Browser page/console errors and WebGL context loss invalidate the case; failures are latched so later restoration cannot turn that run into a pass. A failed/incomplete manifest is not a successful benchmark. It defaults to SwiftShader/software rendering; `PERF_GPU=hardware` requests the normal GPU path, but verify the recorded actual renderer string. Software data is only a relative diagnostic, never desktop/iPhone proof.
+
+The default matrix is 160 measurements: 2 viewports × Eco/High × ground/launch/bridge/tunnel/underdeck × 4 treatments × 2 forward/reverse repeats. Treatments are old-main baseline, PR default walls, PR baked, PR roughness. Thus old-main versus PR baseline isolates this PR's default wall change; PR baseline versus baked/roughness evaluates the opt-in floor experiments. Screenshots are saved for the first repeat of every treatment/condition.
+
+Fixed conditions: 960x540 desktop and 844x390 mobile-landscape canvases; DPR 1 by default; adaptive scaling off; 60 warmup RAFs plus 240 sampled RAFs. Geometry-derived route fixtures use actual route capture before pausing. The runner rejects mismatched camera/simulation/buffer state across compared treatments. Fixture generation is tested, but framing and visible surface coverage still require inspecting the images. These five fixtures are not an exhaustive course walkthrough or motion test.
+
+Startup timings separate simulation creation, pose preparation, view construction, shader warmup and first submitted render. They exclude page download/module loading and are not time-to-interactive. Browser/resource caches are not cold-controlled. RAF interval is frame delivery, not GPU time; CPU submission includes view-update overhead. Optional JS heap is not total memory; texture/geometry counts are not bytes. Input latency, audio and live physics are not measured. Paused screenshots cannot establish motion shimmer or touch/keyboard responsiveness.
+
+For manual inspection open either server's `/spikes/fidelity/?source=pr&quality=eco&pose=underdeck&viewport=mobile&fidelity=baseline` (use `source=main` for the baseline server). Other supported quality/pose/variant names match the matrix above. Production defaults are unchanged by these harness options.
+
+## Evidence interpretation and follow-up checks
+1. The completed-run report records fixed-pose desktop/mobile Eco/High visual review, including under-deck and tunnel walls. Moving gameplay shimmer remains outside these static captures.
+2. Software-GPU measurements diagnose relative rendering cost on this CI runner only. Actual target desktop/mobile A/B gameplay is needed before claiming device-specific performance or response equivalence. That limitation must remain explicit; it is not evidence of a regression or an automatic blocker to merging a default-off experiment.
+3. Physics, audio and input code are unchanged. Existing automated gameplay checks remain relevant; broader device playtesting should exercise keyboard/simultaneous touch, pause/blur, launch-lane exit, three-ball lifecycle and reduced motion. Event-to-present latency requires separate instrumentation if response equivalence is claimed.
+4. Reconcile with the title PR's latest head before approved integration.
+
+Recommendation: keep the requested lighter walls as the normal change and keep both optional material modes default-off. Baked contacts are the lower-cost experiment by structure and measured resource counters. Their visual effect is subtle, clearest around under-deck bumper bases. The roughness map changes highlights but the software timing evidence does not show that its extra lookup earns its cost; do not promote it to the default based on this run.

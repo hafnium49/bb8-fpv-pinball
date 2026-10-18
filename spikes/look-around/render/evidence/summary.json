@@ -1,0 +1,46 @@
+[
+  {
+    "pose": "launch",
+    "forwardCalls": 127,
+    "maxCalls": 139,
+    "maxCallsDirection": "left45",
+    "callsIncreasePct": 9.4,
+    "forwardTriangles": 117036,
+    "maxTriangles": 125048,
+    "maxTrianglesDirection": "left45",
+    "trianglesIncreasePct": 6.8
+  },
+  {
+    "pose": "ground",
+    "forwardCalls": 84,
+    "maxCalls": 106,
+    "maxCallsDirection": "right45",
+    "callsIncreasePct": 26.2,
+    "forwardTriangles": 81282,
+    "maxTriangles": 104784,
+    "maxTrianglesDirection": "right90",
+    "trianglesIncreasePct": 28.9
+  },
+  {
+    "pose": "bridge",
+    "forwardCalls": 78,
+    "maxCalls": 118,
+    "maxCallsDirection": "right90",
+    "callsIncreasePct": 51.3,
+    "forwardTriangles": 86906,
+    "maxTriangles": 113742,
+    "maxTrianglesDirection": "right90",
+    "trianglesIncreasePct": 30.9
+  },
+  {
+    "pose": "tunnel",
+    "forwardCalls": 75,
+    "maxCalls": 111,
+    "maxCallsDirection": "right90",
+    "callsIncreasePct": 48.0,
+    "forwardTriangles": 62454,
+    "maxTriangles": 105796,
+    "maxTrianglesDirection": "right90",
+    "trianglesIncreasePct": 69.4
+  }
+]

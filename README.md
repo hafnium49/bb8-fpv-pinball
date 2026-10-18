@@ -22,6 +22,14 @@ Open the address printed by Vite. Requires Node.js 20.19+ or 22.12+ and a browse
 
 FPV fills the playfield; there is no overhead/radar inset, including during a spin. The two touch flippers support simultaneous presses. Tap **SOUND OFF** to enable the lower, metallic nonverbal droid voice, rolling sounds, mechanical effects and arcade music. The sound preference is remembered on this device; after a reload, entering the table activates it again. On iPhone, use the media volume controls; older browsers may also require Silent Mode to be off. Stabilized FPV is the normal player camera. Each launch has a 5% chance of a three-second **lost head** spin after leaving the launcher: **Oh no, BB-8 lost its head!** A startled electronic cry accompanies the caption; the camera follows the real ball rotation, then restores upright FPV. Pause, drain and restart cancel it, and reduced-motion settings disable it. A game has three balls; bumper values range from 50 to 250, ground/deck targets score 150/300, and left/wire/sky ramps score 1,000/1,500/2,500. The best score is stored locally when a game ends.
 
+## Phone and tablet rotation
+
+Portrait and landscape both work, including rotation during a run or while paused. The table, camera aspect, HUD and touch targets resize without restarting the game. Touch-capable tablets keep the full-width playfield even with a mouse or trackpad attached; desktop computers retain the cabinet panels.
+
+Rotation cancels held flippers and launch charge so an old touch cannot get stuck or fire accidentally. Touch the controls again after turning the device. Ordinary browser-toolbar resizing keeps existing holds. Safe-area padding keeps controls clear of display cutouts and the home indicator; fullscreen is optional, and the game does not lock orientation.
+
+Run `npm run test:rotation:browser` for Chromium, or `ROTATION_ENGINE=webkit npm run test:rotation:browser` for WebKit. The PR workflow installs each engine and uploads screenshots and a JSON report. These are browser-emulation checks, not physical-device or FPS measurements.
+
 ## Tropical neon cabinet
 
 The [recovery-build release notes](docs/NEON-RECOVERY-2026-10-14.md) describe the current dense tropical night-street treatment: 52 original storefronts, patterned close-up inner rails, hanging lanterns, illuminated bridge undersides and fully decorated tunnel interiors. Neon animation stops with pause and becomes steady under reduced-motion. The course and existing audio are unchanged. This release supersedes the older material descriptions below.
@@ -117,3 +125,16 @@ The default course has four flippers, nine bumpers, twelve bank targets, three r
 Licensed under MIT. `THIRD-PARTY-NOTICES.txt` includes the Three.js and Rapier licenses; the standalone HTML embeds those notices.
 
 See the [FPV immersion and voice refinement](docs/fpv-immersion-voice.md) and [reference cabinet and UI study](docs/reference-cabinet-ui-study.md).
+
+
+## Fullscreen and iPhone Home Screen play
+
+The fullscreen control uses the browser's element Fullscreen API when available. It tracks enter/exit state (including Escape) and uses the supported WebKit-prefixed API on older browsers. If the browser does not support element fullscreen, the control reads **APP** and opens setup instructions. A denied request gets a separate explanation rather than being mistaken for missing support.
+
+On iPhone, open the game in **Safari → Share → Add to Home Screen**. Keep **Open as Web App** enabled if that option appears, then launch **ORBIT** from the new icon. This removes the normal browser toolbars; the OS status bar/home indicator may remain. Finish the current game before switching, because the Home Screen app opens a new session and browser storage may be separate. Already-installed apps hide the redundant fullscreen control. Portrait and landscape remain supported.
+
+The manifest and Apple web-app metadata explicitly enable standalone launch, with local PNG icons and relative URLs for GitHub Pages project paths. This is an online web app: no service worker or offline cache is installed.
+
+Run `node scripts/fullscreen-browser.cjs` after `npm run build`, or set `FULLSCREEN_ENGINE=webkit`. CI checks actual rendering, mocked API/support states, dialog accessibility and paused input, and built manifest/icon URLs under `/bb8-fpv-pinball/`. Browser emulation cannot verify iPhone browser chrome or the system installation sheet; physical-device installation remains a manual check.
+
+Platform references: [Apple Home Screen instructions](https://support.apple.com/en-lamr/guide/iphone/iphea86e5236/ios), [WebKit iOS 26 web app behavior](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/), and [WebKit's iPhone Fullscreen API issue](https://bugs.webkit.org/show_bug.cgi?id=206854). Capability detection, rather than browser-name detection, decides which control to show.

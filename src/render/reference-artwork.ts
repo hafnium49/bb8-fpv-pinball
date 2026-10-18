@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { marketPaving } from './night-market-paving';
+import { bakeGroundContacts, fidelityMode } from './fidelity-bake';
 import data from '../physics/reference-course-data.json';
 /** Original artwork placed at the reference's board landmarks, rather than
 * reusing the old ORBIT texture's unrelated bumper/route positions. */
@@ -120,6 +121,7 @@ export function referencePlayfield() {
   c.font = 'bold 11px sans-serif';
   c.fillStyle = '#f4ce3f';
   c.fillText('PINBALL', 220, 810);
+  if (fidelityMode(window.location.search) !== 'baseline') bakeGroundContacts(c);
   const map = new THREE.CanvasTexture(image);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = 8;

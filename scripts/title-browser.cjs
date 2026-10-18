@@ -15,14 +15,29 @@ const assert = require('node:assert/strict');
     for (const [width, height] of [[1440,900],[1280,720],[768,1024],[844,390],[667,375],[375,812],[430,932]]) {
       console.log(`Checking ${width}x${height}`);
       browser = await chromium.launch(launchOptions);
-      const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
+      const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce',
+        isMobile: width < 1000, hasTouch: width < 1000 });
       const page = await context.newPage(); const errors = [];
+      await page.addInitScript(() => {
+        // Keep title geometry tied to the requested viewport; fullscreen has its own suite.
+        Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false });
+        Object.defineProperty(document, 'webkitFullscreenEnabled', { configurable: true, value: false });
+        localStorage.setItem('orbit-pinball-best', '12345');
+        localStorage.setItem('orbit-pinball-music-volume', '27');
+      });
       page.on('pageerror', e => errors.push(e.message));
       await page.goto(server.resolvedUrls.local[0], { waitUntil: 'networkidle' });
       await page.locator('#start:not([disabled])').waitFor({ timeout: 60000 });
       // Freeze continuous GPU work, as in cabinet-browser.cjs; render each state once.
       await page.evaluate(() => { const {view}=window.orbitDebug; window.titleRender=view.render.bind(view); view.render=()=>{}; });
       assert.equal(await page.title(), 'Be the Ball 8: FPV Pinball');
+      assert.equal(await page.locator('meta[name="apple-mobile-web-app-title"]').getAttribute('content'), 'Be the Ball 8');
+      assert.equal(await page.locator('#best-score').textContent(), '12345');
+      assert.equal(await page.locator('#music-volume').inputValue(), '27');
+      const manifest = await page.evaluate(async () => (await fetch(document.querySelector('link[rel="manifest"]').href)).json());
+      assert.equal(manifest.name, 'Be the Ball 8: FPV Pinball');
+      assert.equal(manifest.short_name, 'Be the Ball 8');
+      assert.deepEqual([manifest.id, manifest.start_url, manifest.scope], ['./', './', './']);
       for (const phase of ['intro','ready']) {
         if (phase === 'ready') await page.locator('#start').click();
         await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
