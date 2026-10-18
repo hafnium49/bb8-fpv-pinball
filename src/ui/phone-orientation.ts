@@ -44,6 +44,8 @@ export class PhoneLook {
   private readonly now: () => number;
   private generation = 0;
   private disposed = false;
+  private permissionGranted = false;
+  private needsCalibration = true;
   private detach?: () => void;
   private deadline = 0;
   private sequence = 0;
@@ -66,7 +68,14 @@ export class PhoneLook {
     this.math = new LookAround(typeof options.reducedMotion === 'function' ? options.reducedMotion() : options.reducedMotion ?? false);
   }
   get reducedMotion() { return this.math.reducedMotion; }
-  set reducedMotion(value: boolean) { this.math.reducedMotion = value; }
+  set reducedMotion(value: boolean) {
+    this.math.reducedMotion = value;
+    if (!this.selected) return;
+    const limit = this.math.pitchLimit;
+    this.orientation.pitch = Math.max(-limit, Math.min(limit, this.orientation.pitch));
+    this.start.pitch = Math.max(-limit, Math.min(limit, this.start.pitch));
+    this.target.pitch = Math.max(-limit, Math.min(limit, this.target.pitch));
+  }
   private copy(pose: LookPose) { this.orientation.heading = pose.heading; this.orientation.pitch = pose.pitch; }
   private stop() {
     this.generation++; this.detach?.(); this.detach = undefined; this.transition = null;
@@ -77,7 +86,7 @@ export class PhoneLook {
   enable(followPose: LookPose) {
     if (this.disposed || this.env.hidden()) return;
     this.options.pause('Enable phone look'); // Before creating the acquisition generation or invoking permission.
-    this.stop(); this.selected = true; this.copy(followPose); this.acquire('calibrate', true);
+    this.stop(); this.needsCalibration = true; this.selected = true; this.copy(followPose); this.acquire('calibrate', true);
   }
   private acquire(mode: 'calibrate' | 'rebase', permission: boolean) {
     this.acquisition = mode;
@@ -85,13 +94,14 @@ export class PhoneLook {
     if (!this.env.secure() || !this.env.available()) { this.unavailable('Phone look needs a supported browser on HTTPS. Follow ball is available.'); return; }
     const generation = this.generation;
     if (permission && this.env.requestPermission) {
+      this.permissionGranted = false;
       this.state = 'requesting'; this.message = 'Allow motion access to enable phone look.';
       try {
         // Deliberately invoked directly on the enable/resume gesture, before any await.
         const result = this.env.requestPermission();
         void result.then(status => {
           if (generation !== this.generation || this.disposed || this.env.hidden()) return;
-          if (status === 'granted') this.listen(generation);
+          if (status === 'granted') { this.permissionGranted = true; this.listen(generation); }
           else this.unavailable('Motion access was not allowed. Retry or choose Follow ball.');
         }, () => {
           if (generation === this.generation && !this.disposed && !this.env.hidden()) this.unavailable('Motion access failed. Retry or choose Follow ball.');
@@ -123,19 +133,31 @@ export class PhoneLook {
   suspend() {
     if (this.disposed) return;
     if (!this.selected) { this.transition = null; return; }
-    if (this.state === 'suspended') return;
+    if (this.state === 'suspended' || this.state === 'unavailable') return;
     this.stop(); this.state = 'suspended'; this.message = 'Phone look paused. Resume or Follow ball.';
     this.options.pause(this.message);
   }
   /** Use for explicit sensor permission/revocation errors, not ordinary event silence. */
   sensorError() { this.suspend(); }
   resume() {
-    if (this.disposed || !this.selected || this.env.hidden()) return;
-    this.stop(); this.acquire('rebase', true);
+    if (this.disposed || !this.selected || this.env.hidden() || this.state === 'unavailable') return;
+    this.stop(); this.acquire(this.needsCalibration ? 'calibrate' : 'rebase', true);
   }
   reset(followPose: LookPose) {
-    if (this.disposed || !this.selected) return;
-    this.stop(); this.copy(followPose); this.acquire('calibrate', false);
+    if (this.disposed || !this.selected || this.state === 'unavailable') return;
+    this.needsCalibration = true; this.copy(followPose); this.acquisition = 'calibrate';
+    // Restart invalidates pending permission; only an explicit Retry may request again.
+    if (this.state === 'requesting') {
+      this.unavailable('Phone look setup was interrupted. Retry or choose Follow ball.');
+      return;
+    }
+    this.stop();
+    if (this.env.requestPermission && !this.permissionGranted) {
+      this.needsCalibration = true;
+      this.state = 'suspended'; this.message = 'Phone look paused. Resume or Follow ball.';
+      return;
+    }
+    this.acquire('calibrate', false);
   }
   screenChanged() {
     if (this.disposed || !this.selected || !this.detach) return;
@@ -166,7 +188,7 @@ export class PhoneLook {
     if (this.state === 'active' && !this.reducedMotion) {
       this.beginTransition('center', followPose); return;
     }
-    this.math.calibrate(followPose); this.copy(this.math.orientation); this.state = 'active';
+    this.math.calibrate(followPose); this.copy(this.math.orientation); this.needsCalibration = false; this.state = 'active';
     this.message = 'Turn your phone to look.';
   }
   private beginTransition(kind: 'center' | 'follow', target: LookPose) {
@@ -183,7 +205,8 @@ export class PhoneLook {
   }
   update(dt: number, followPose: LookPose): LookPose | null {
     if (this.disposed) return null;
-    if (typeof this.options.reducedMotion === 'function') this.math.reducedMotion = this.options.reducedMotion();
+    if (typeof this.options.reducedMotion === 'function') this.reducedMotion = this.options.reducedMotion();
+    else this.reducedMotion = this.math.reducedMotion;
     if (this.selected && this.env.hidden()) this.suspend();
     if (this.invalidStream && this.selected) this.suspend();
     if (this.transition) {
@@ -200,7 +223,7 @@ export class PhoneLook {
       this.transition = null;
       if (transition === 'follow') { this.copy(followPose); return null; }
       this.applySample();
-      if (this.fresh() && this.math.calibrate(this.orientation)) this.silenceRebase = false;
+      if (this.fresh() && this.math.calibrate(this.orientation)) { this.silenceRebase = false; this.needsCalibration = false; }
       else {
         this.state = 'waiting'; this.acquisition = 'calibrate'; this.deadline = this.now() + 3000;
         this.message = 'Hold your phone comfortably, then tap Center view.'; this.options.pause(this.message);

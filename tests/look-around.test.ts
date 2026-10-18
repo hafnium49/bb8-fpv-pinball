@@ -30,3 +30,13 @@ test('expanded conversion matches independent quaternion oracle over arbitrary p
  for(let i=0;i<1000;i++) {const a=i*137.507%360,b=i*17.91%360-180,g=i*23.4%180-90,s=[0,90,180,270][i%4];const q=mul(mul(mul(mul(axis(0,-90),axis(2,a)),axis(0,b)),axis(1,g)),axis(2,-s));const v=mul(mul(q,[0,0,-1,0]),[-q[0],-q[1],-q[2],q[3]]);const f=deviceForward(a,b,g,s);near(f.x,v[0]);near(f.y,v[1]);near(f.z,v[2]);}
 });
 test('yaw unwrap stays continuous through several full rotations',()=>{const look=new LookAround();look.sample(0,90,0,0);look.calibrate({heading:0,pitch:0});for(let a=10;a<=1080;a+=10){look.sample(a%360,90,0,0);near(look.orientation.heading,-a*Math.PI/180);}});
+
+test('pitch-limit changes immediately clamp and reanchor without stationary snap on expansion',()=>{
+ for(const beta of [30,150]){
+  const look=new LookAround();look.sample(0,90,0,0);look.calibrate({heading:1,pitch:0});look.sample(0,beta,0,0);
+  look.reducedMotion=true;const held=look.orientation.pitch;near(Math.abs(held),20*Math.PI/180);
+  look.sample(0,beta,0,0);near(look.orientation.pitch,held);
+  look.reducedMotion=false;look.sample(0,beta,0,0);near(look.orientation.pitch,held);
+  look.sample(0,beta+1,0,0);near(look.orientation.pitch,held+Math.PI/180);
+ }
+});

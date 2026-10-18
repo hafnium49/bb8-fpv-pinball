@@ -31,7 +31,20 @@ export class LookAround {
   private referencePitch = 0;
   private referenceHeading = 0;
   private referenceViewPitch = 0;
-  constructor(public reducedMotion = false) {}
+  private reduced = false;
+  constructor(reducedMotion = false) { this.reduced = reducedMotion; }
+  get reducedMotion() { return this.reduced; }
+  set reducedMotion(value: boolean) {
+    if (value === this.reduced) return;
+    this.reduced = value;
+    this.orientation.pitch = clamp(this.orientation.pitch, -this.pitchLimit, this.pitchLimit);
+    // Reanchor to the displayed pitch, including when widening a previously saturated
+    // range. A stationary next sample must not reveal an old, clipped sensor offset.
+    if (this.calibrated) {
+      this.referencePitch = this.pitch;
+      this.referenceViewPitch = this.orientation.pitch;
+    }
+  }
   get pitchLimit() { return (this.reducedMotion ? 20 : 45) * RAD; }
   sample(alpha: number, beta: number, gamma: number, screenAngle: number): boolean {
     if (!Number.isFinite(alpha) || !Number.isFinite(beta) || !Number.isFinite(gamma) || !Number.isFinite(screenAngle)) return false;

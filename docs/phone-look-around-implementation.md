@@ -31,3 +31,23 @@ Local `npm ci --cache /tmp/pinball-npm-cache` succeeded. Local validation passed
 The browser suite runs Chromium and Linux WebKit with synthetic permission and orientation fixtures. It tests real app rendering, controls, lifecycle and screenshots, not real iPhone permission sheets or physical sensor signs. The local browser could not create its required socket, so successful browser evidence must come from GitHub Actions.
 
 No physical iPhone/Android measurements have been made. Sensor latency, real permission behavior, natural-turn signs, long-session drift/thermal behavior and comfort remain unverified. The `?look=1` flag and explicit enable are retained for that reason. Software-renderer directional counters/timings are diagnostics, not phone GPU performance claims.
+
+## Follow-up: late review edge cases
+
+After the initial deployment, two review findings were reproduced with failing
+regressions and corrected on top of deployed commit `c49b30b`:
+
+- Denial, permission exceptions and acquisition failures remain unavailable across
+  New Game, pause and Resume, preserving the original explanation. Only explicit
+  Retry begins a new permission/acquisition attempt. Restart cancels a pending
+  permission generation, so a late grant cannot attach listeners. Interrupted
+  initial setup and new-ball setup still require Center before play.
+- A runtime reduced-motion change clamps the held/transition pitch immediately,
+  even when a stationary browser emits no new sensor events. The pitch reference
+  is reanchored so the next unchanged sample, or later widening the pitch range,
+  does not reveal a stale clipped offset.
+
+The updated local suite passes 183 tests (35 focused math/controller tests), both
+typechecks and production build. Browser regressions exercise real UI restart,
+Retry and permission races, plus runtime media-preference changes without fresh
+sensor input. Physical-device limitations above remain unchanged.

@@ -12,17 +12,17 @@ const angleDelta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 // They do not prove physical phone axes, real permission sheets, or GPU speed.
 function installFixture(mode) {
   let resolvePermission, angle = 0, interval;
-  const fixture = window.lookFixture = { requests: 0, pose: [0, 90, 0], listeners: 0 };
+  const fixture = window.lookFixture = { requests: 0, pose: [0, 90, 0], listeners: 0, attachments: 0, emissions: 0, permissionMode: mode };
   const listeners = new Set(), add = window.addEventListener.bind(window), remove = window.removeEventListener.bind(window);
-  window.addEventListener = (type, callback, options) => { if (type === 'deviceorientation') { listeners.add(callback); fixture.listeners = listeners.size; } return add(type, callback, options); };
+  window.addEventListener = (type, callback, options) => { if (type === 'deviceorientation') { listeners.add(callback); fixture.listeners = listeners.size; fixture.attachments++; } return add(type, callback, options); };
   window.removeEventListener = (type, callback, options) => { if (type === 'deviceorientation') { listeners.delete(callback); fixture.listeners = listeners.size; } return remove(type, callback, options); };
   class SyntheticOrientation extends Event {
     constructor(type, data = {}) { super(type); Object.assign(this, data); }
     static requestPermission() {
       fixture.requests++;
-      if (mode === 'pending') return new Promise(resolve => { resolvePermission = resolve; });
-      if (mode === 'throw') throw new Error('Synthetic permission failure');
-      return Promise.resolve(mode === 'denied' ? 'denied' : 'granted');
+      if (fixture.permissionMode === 'pending') return new Promise(resolve => { resolvePermission = resolve; });
+      if (fixture.permissionMode === 'throw') throw new Error('Synthetic permission failure');
+      return Promise.resolve(fixture.permissionMode === 'denied' ? 'denied' : 'granted');
     }
   }
   Object.defineProperty(window, 'DeviceOrientationEvent', { configurable: true, value: SyntheticOrientation });
@@ -33,15 +33,15 @@ function installFixture(mode) {
   Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });
   fixture.hide = value => { hidden = value; document.dispatchEvent(new Event('visibilitychange')); };
   fixture.resolve = result => resolvePermission(result);
-  fixture.emit = (pose = fixture.pose) => window.dispatchEvent(new SyntheticOrientation('deviceorientation', {
+  fixture.emit = (pose = fixture.pose) => { fixture.emissions++; return window.dispatchEvent(new SyntheticOrientation('deviceorientation', {
     alpha: pose[0], beta: pose[1], gamma: pose[2], absolute: false,
-  }));
+  })); };
   fixture.start = (pose = fixture.pose) => { fixture.pose = pose; clearInterval(interval); fixture.emit(); interval = setInterval(() => fixture.emit(), 30); };
   fixture.stop = () => clearInterval(interval);
   fixture.screen = value => { angle = value; orientation.dispatchEvent(new Event('change')); window.dispatchEvent(new Event('orientationchange')); };
 }
-async function open(mode = 'granted', viewport = { width: 844, height: 390 }) {
-  const context = await browser.newContext({ viewport, hasTouch: viewport.width < 1024, isMobile: viewport.width < 1024, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+async function open(mode = 'granted', viewport = { width: 844, height: 390 }, reducedMotion = 'reduce') {
+  const context = await browser.newContext({ viewport, hasTouch: viewport.width < 1024, isMobile: viewport.width < 1024, deviceScaleFactor: 1, reducedMotion });
   await context.addInitScript(installFixture, mode);
   page = await context.newPage(); page.setDefaultTimeout(45000);
   page.on('pageerror', error => errors.push(`${mode}: ${error.message}`));
@@ -172,6 +172,87 @@ async function capture(label) {
     if (mode === 'pending') { await page.evaluate(() => window.lookFixture.resolve('granted')); await page.waitForTimeout(100); }
     assert.equal((await state()).state, 'follow'); assert.equal(await page.evaluate(() => window.lookFixture.listeners), 0); assert.equal(await page.evaluate(() => window.lookFixture.requests), 1);
     cases.push({ name: `${mode}-follow-escape`, result: 'pass' }); await context.close();
+  }
+  for (const mode of ['denied', 'throw', 'timeout']) {
+    const context = await open(mode === 'timeout' ? 'granted' : mode);
+    await page.locator('#look-enable').click(); await settle('unavailable');
+    const failure = await page.evaluate(() => ({ message: window.orbitDebug.phoneLook.message,
+      requests: window.lookFixture.requests, attachments: window.lookFixture.attachments }));
+    assert.ok(failure.message.length > 0);
+    assert.equal(await page.evaluate(() => window.lookFixture.listeners), 0);
+    await page.locator('#restart').click();
+    // Check before any new reading, then again with a plausible unsolicited reading.
+    // Attachment totals detect even a transient listener that was removed later.
+    for (let i = 0; i < 3; i++) await frame();
+    assert.equal((await state()).state, 'unavailable', `${mode}: new game changed the failure before any reading`);
+    await page.evaluate(() => window.lookFixture.emit()); await frame();
+    assert.equal((await state()).state, 'unavailable', `${mode}: new game bypassed failure`);
+    assert.equal((await state()).paused, true);
+    assert.equal((await state()).phase, 'ready');
+    assert.equal(await page.evaluate(() => window.orbitDebug.phoneLook.message), failure.message);
+    assert.deepEqual(await page.evaluate(() => ({ requests: window.lookFixture.requests,
+      attachments: window.lookFixture.attachments, listeners: window.lookFixture.listeners })),
+    { requests: failure.requests, attachments: failure.attachments, listeners: 0 }, `${mode}: new game acquired sensors or permission`);
+    await page.waitForFunction(message => document.getElementById('look-status').textContent === message, failure.message);
+    assert.equal(await page.locator('#look-enable').textContent(), 'Retry phone look');
+    await page.locator('#resume').click(); await frame();
+    assert.equal((await state()).state, 'unavailable', `${mode}: Resume bypassed Retry`);
+    assert.equal(await page.evaluate(() => window.lookFixture.requests), failure.requests);
+    assert.equal(await page.evaluate(() => window.lookFixture.attachments), failure.attachments);
+    // A real Retry gesture can acquire again and restore the complete playable path.
+    await page.evaluate(() => window.lookFixture.permissionMode = 'granted');
+    await calibrate();
+    assert.equal(await page.evaluate(() => window.lookFixture.requests), failure.requests + 1);
+    assert.equal(await page.evaluate(() => window.lookFixture.attachments), failure.attachments + 1);
+    await page.locator('#look-follow').click(); await settle('follow');
+    assert.equal(await page.evaluate(() => window.lookFixture.listeners), 0);
+    await page.locator('#resume').click();
+    assert.equal((await state()).paused, false); assert.equal((await state()).phase, 'ready');
+    cases.push({ name: `${mode}-restart-preserves-failure-explicit-retry-follow-playable`, result: 'pass' });
+    await context.close();
+  }
+  {
+    const context = await open('pending'); await page.locator('#look-enable').click(); await settle('requesting');
+    await page.locator('#restart').click(); await settle('unavailable');
+    assert.equal((await state()).paused, true); assert.equal((await state()).phase, 'ready');
+    const message = await page.evaluate(() => window.orbitDebug.phoneLook.message);
+    await page.evaluate(() => window.lookFixture.resolve('granted')); await page.waitForTimeout(100); await frame();
+    assert.equal((await state()).state, 'unavailable', 'Restarted pending grant reactivated phone look');
+    assert.equal(await page.evaluate(() => window.orbitDebug.phoneLook.message), message);
+    assert.deepEqual(await page.evaluate(() => ({ requests: window.lookFixture.requests,
+      attachments: window.lookFixture.attachments, listeners: window.lookFixture.listeners })),
+    { requests: 1, attachments: 0, listeners: 0 }, 'Restart or late grant acquired sensors');
+    assert.equal(await page.locator('#look-enable').textContent(), 'Retry phone look');
+    await page.evaluate(() => window.lookFixture.permissionMode = 'granted'); await calibrate();
+    assert.equal(await page.evaluate(() => window.lookFixture.requests), 2);
+    assert.equal(await page.evaluate(() => window.lookFixture.attachments), 1);
+    await page.locator('#resume').click();
+    assert.equal((await state()).paused, false); assert.equal((await state()).phase, 'ready');
+    cases.push({ name: 'pending-restart-cancels-late-grant-until-explicit-retry', result: 'pass' });
+    await context.close();
+  }
+  {
+    const context = await open('granted', { width: 844, height: 390 }, 'no-preference');
+    await calibrate(); await page.locator('#resume').click();
+    await page.evaluate(() => { window.lookFixture.stop(); window.lookFixture.emit([0, 125, 0]); });
+    await frame();
+    const before = (await state()).orientation;
+    assert.ok(before.pitch > 20 * Math.PI / 180, 'Fixture must begin outside the reduced-motion range');
+    assert.ok(before.pitch <= 45 * Math.PI / 180 + 1e-6);
+    const emissions = await page.evaluate(() => window.lookFixture.emissions);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => window.orbitDebug.view.effects.reducedMotion);
+    await frame();
+    const clamped = (await state()).orientation;
+    assert.equal((await state()).state, 'active'); assert.equal((await state()).paused, false);
+    assert.ok(Math.abs(clamped.pitch) <= 20 * Math.PI / 180 + 1e-6, 'Preference change must clamp on the next render without a sensor event');
+    assert.ok(Math.abs(angleDelta(clamped.heading, before.heading)) < 1e-6);
+    assert.equal(await page.evaluate(() => window.lookFixture.emissions), emissions, 'Stationary clamp test accidentally emitted a new reading');
+    await page.evaluate(() => window.lookFixture.emit([0, 125, 0])); await frame();
+    assert.ok(Math.abs((await state()).orientation.pitch - clamped.pitch) < 1e-6, 'Repeated stationary reading caused a delayed pitch jump');
+    assert.ok(Math.abs(angleDelta((await state()).orientation.heading, clamped.heading)) < 1e-6);
+    cases.push({ name: 'runtime-reduced-motion-stationary-next-frame-clamp', result: 'pass' });
+    await context.close();
   }
   {
     const context = await open('pending'); await page.locator('#look-enable').click(); await settle('requesting');
