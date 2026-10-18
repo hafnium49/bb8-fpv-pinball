@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const engine = process.env.LOOK_ENGINE || 'chromium';
 const out = `artifacts/look-around-${engine}`;
 const cases = [], errors = [], sweep = [];
+cases.push = function (...entries) { for (const entry of entries) console.log(`${engine}: ${entry.name}: ${entry.result}`); return Array.prototype.push.apply(this, entries); };
 let server, browser, page;
 const angleDelta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
@@ -96,11 +97,15 @@ async function geometry(label, ids) {
   const result = await page.evaluate(ids => {
     const rect = el => { const r = el.getBoundingClientRect(); return { id: el.id, x: r.x, y: r.y, width: r.width, height: r.height }; };
     return { width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth,
-      buttons: ids.map(id => rect(document.getElementById(id))) };
+      buttons: ids.map(id => {
+        const el = document.getElementById(id), bounds = rect(el), hit = document.elementFromPoint(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+        return { ...bounds, hit: !!hit && (hit === el || el.contains(hit)) };
+      }) };
   }, ids);
   assert.ok(result.scrollWidth <= result.width + 1, `${label}: overflow`);
   for (const b of result.buttons) {
     assert.ok(b.width >= 44 && b.height >= 44, `${label}: ${b.id} target below 44px`);
+    assert.equal(b.hit, true, `${label}: ${b.id} obscured or not pointer-reachable`);
     assert.ok(b.x >= -1 && b.y >= -1 && b.x + b.width <= result.width + 1 && b.y + b.height <= result.height + 1, `${label}: ${b.id} outside viewport`);
   }
   for (let i = 0; i < result.buttons.length; i++) for (const b of result.buttons.slice(i + 1)) {
@@ -133,6 +138,29 @@ async function capture(label) {
     assert.equal(await page.evaluate(() => window.lookFixture.requests), 0);
     assert.equal(await page.evaluate(() => window.lookFixture.listeners), 0);
     cases.push({ name: 'default-follow-no-permission-or-sensors', result: 'pass' }); await context.close();
+  }
+  {
+    const context = await browser.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, reducedMotion: 'reduce' });
+    await context.addInitScript(installFixture, 'granted'); page = await context.newPage(); page.setDefaultTimeout(45000);
+    page.on('pageerror', error => errors.push(`intro: ${error.message}`));
+    await page.goto(server.resolvedUrls.local[0] + '?look=1', { waitUntil: 'networkidle' });
+    await page.locator('#start:not([disabled])').waitFor();
+    await page.evaluate(() => {
+      const { sim, view } = window.orbitDebug;
+      window.lookOriginalUpdate = sim.update.bind(sim); sim.update = () => {};
+      window.lookRender = view.render.bind(view); view.render = () => {};
+    });
+    assert.equal((await state()).phase, 'intro');
+    const audioBefore = await page.evaluate(() => window.orbitDebug.audio.enabled);
+    await page.locator('#look-settings').click(); await calibrate();
+    assert.equal((await state()).phase, 'ready'); assert.equal((await state()).paused, true);
+    assert.equal((await state()).charge, 0);
+    assert.equal(await page.evaluate(() => window.orbitDebug.audio.enabled), audioBefore);
+    assert.equal(await page.evaluate(() => !!(document.fullscreenElement || document.webkitFullscreenElement)), false);
+    await capture('intro-enable-paused-calibrated');
+    await page.locator('#resume').click();
+    assert.equal((await state()).paused, false); assert.equal((await state()).phase, 'ready');
+    cases.push({ name: 'intro-enable-calibration-explicit-resume-separate-audio-fullscreen', result: 'pass' }); await context.close();
   }
   for (const mode of ['denied', 'throw', 'pending']) {
     const context = await open(mode); await page.locator('#look-enable').click();
@@ -201,8 +229,9 @@ async function capture(label) {
     assert.ok(Math.abs(angleDelta((await state()).orientation.heading, held.heading)) < 1e-6, 'Silence recovery jumped');
     await capture('landscape-active');
     await page.setViewportSize({ width: 390, height: 844 }); await page.waitForTimeout(150); await frame();
+    const portraitGeometry = await geometry('portrait-live', ['look-center-live', 'look-follow-live', 'left', 'right', 'launch']);
     await capture('portrait-active');
-    cases.push({ name: 'calibration-focus-flippers-trajectory-screen-pause-silence', result: 'pass', geometry: geometryResult });
+    cases.push({ name: 'calibration-focus-flippers-trajectory-screen-pause-silence', result: 'pass', geometry: geometryResult, portraitGeometry });
     await context.close();
   }
   {
@@ -275,7 +304,7 @@ async function capture(label) {
     });
     const neutral = (await state()).orientation;
     for (const high of [false, true]) for (const pose of poses) for (const [direction, alpha, beta] of [
-      ['forward', 0, 90], ['right', -90, 90], ['back', 180, 90], ['left', 90, 90], ['up', 0, 60], ['down', 0, 120],
+      ['forward', 0, 90], ['right', -90, 90], ['back', 180, 90], ['left', 90, 90], ['up', 0, 120], ['down', 0, 60],
     ]) {
       await page.evaluate(async ({ pose, high, alpha, beta }) => {
         const { courseRamps } = await import('/src/physics/reference-course.ts');
@@ -289,6 +318,8 @@ async function capture(label) {
       assert.ok(warm.calls > 0 && !warm.contextLost);
       const displayed = (await state()).orientation;
       assert.ok(Math.abs(angleDelta(displayed.heading, neutral.heading - alpha * Math.PI / 180)) < 1e-5, 'Sweep failed to apply requested yaw');
+      if (direction === 'up') assert.ok(displayed.pitch > 0, 'Up sweep must display positive pitch');
+      if (direction === 'down') assert.ok(displayed.pitch < 0, 'Down sweep must display negative pitch');
       assert.equal(warm.fov, 82, 'Look changed established perspective FOV');
       assert.ok(Math.abs(warm.rightY) < 1e-6, 'Directional sweep camera must stay roll-free');
       const label = `${high ? 'high' : 'eco'}-${pose.name.replace(/[^a-z0-9]/gi, '-')}-${direction}`;

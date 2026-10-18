@@ -103,10 +103,17 @@ const desktopCabinet = matchMedia('(min-width: 1024px) and (min-height: 600px)')
 const anyCoarseInput = matchMedia('(any-pointer: coarse)');
 const touchDevice = () => anyCoarseInput.matches || navigator.maxTouchPoints > 0;
 const cabinetLayout = () => usesDesktopCabinet(desktopCabinet.matches, touchDevice());
+function positionLookControls() {
+  if (!lookEnabled) return;
+  const header = document.querySelector<HTMLElement>('.topbar')!;
+  const top = cabinetLayout() ? 12 : header.getBoundingClientRect().bottom - $('game').getBoundingClientRect().top + 8;
+  $('game').style.setProperty('--look-actions-top', `${top}px`);
+}
 function arrangeIntro() {
   document.documentElement.classList.toggle('touch-device', touchDevice());
   const parent = cabinetLayout() ? $('desktop-start-slot') : $('intro');
   if ($('intro-content').parentElement !== parent) parent.append($('intro-content'));
+  positionLookControls();
 }
 arrangeIntro();
 let displayCache = '';
@@ -230,6 +237,7 @@ function refreshLook() {
   const key = `${state}:${phoneLook.message}:${sim?.paused}:${sim?.phase}`;
   if (key === lookUICache) return;
   lookUICache = key;
+  positionLookControls();
   $('look-status').textContent = selected ? phoneLook.message : 'Follow ball';
   $('look-live').hidden = !selected || sim.paused || sim.phase === 'intro' || sim.phase === 'over';
   const enable = $<HTMLButtonElement>('look-enable');
@@ -329,6 +337,7 @@ async function boot() {
       toast(view.highQuality ? 'HIGH · glow + dynamic shadows' : 'ECO · lighter graphics');
     });
     if (lookEnabled) {
+      new ResizeObserver(positionLookControls).observe(document.querySelector('.topbar')!);
       phoneLook = new PhoneLook({ pause: () => { pendingLookResume = false; if (sim.phase === 'ready' || sim.phase === 'playing') { showPause(false); lookPanel.hidden = false; } }, reducedMotion: () => view.effects.reducedMotion });
       view.orientationInput = (dt, follow) => phoneLook!.update(dt, follow);
       $<HTMLButtonElement>('look-enable').disabled = false;
