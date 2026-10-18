@@ -9,7 +9,7 @@
   "limitations": [
     "Static estimates, not measured WebGL renderer counters or timings.",
     "No camera physics clearance: ideal ball center plus 0.30m camera height.",
-    "No effects, postprocessing, shadow passes or live mechanism state; initial table state except ball translation.",
+    "No effects, postprocessing, shadow passes or live mechanism state; initial table state except ball translation and production FPV ball invisibility.",
     "Texture canvas is stubbed and no pixels/shaders are executed. Geometry and batching use source unchanged.",
     "No iPhone GPU, Safari, sensor, input, frame time or thermal evidence."
   ],
@@ -24,9 +24,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 155,
-      "estimatedSubmittedTriangles": 187890,
-      "visibleMeshObjects": 154,
+      "estimatedSceneCalls": 153,
+      "estimatedSubmittedTriangles": 186194,
+      "visibleMeshObjects": 152,
       "transparentCalls": 2
     },
     {
@@ -39,9 +39,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 165,
-      "estimatedSubmittedTriangles": 192902,
-      "visibleMeshObjects": 164,
+      "estimatedSceneCalls": 163,
+      "estimatedSubmittedTriangles": 191206,
+      "visibleMeshObjects": 162,
       "transparentCalls": 2
     },
     {
@@ -54,9 +54,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 98,
-      "estimatedSubmittedTriangles": 143539,
-      "visibleMeshObjects": 97,
+      "estimatedSceneCalls": 96,
+      "estimatedSubmittedTriangles": 141843,
+      "visibleMeshObjects": 95,
       "transparentCalls": 2
     },
     {
@@ -69,9 +69,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 103,
-      "estimatedSubmittedTriangles": 148464,
-      "visibleMeshObjects": 102,
+      "estimatedSceneCalls": 101,
+      "estimatedSubmittedTriangles": 146768,
+      "visibleMeshObjects": 100,
       "transparentCalls": 2
     },
     {
@@ -84,9 +84,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 22,
-      "estimatedSubmittedTriangles": 31508,
-      "visibleMeshObjects": 22,
+      "estimatedSceneCalls": 20,
+      "estimatedSubmittedTriangles": 29812,
+      "visibleMeshObjects": 20,
       "transparentCalls": 0
     },
     {
@@ -114,9 +114,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 155,
-      "estimatedSubmittedTriangles": 187890,
-      "visibleMeshObjects": 154,
+      "estimatedSceneCalls": 153,
+      "estimatedSubmittedTriangles": 186194,
+      "visibleMeshObjects": 152,
       "transparentCalls": 2
     },
     {
@@ -129,9 +129,9 @@
         0.595,
         9.52
       ],
-      "estimatedSceneCalls": 18,
-      "estimatedSubmittedTriangles": 20752,
-      "visibleMeshObjects": 18,
+      "estimatedSceneCalls": 16,
+      "estimatedSubmittedTriangles": 19056,
+      "visibleMeshObjects": 16,
       "transparentCalls": 0
     },
     {
@@ -144,9 +144,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 135,
-      "estimatedSubmittedTriangles": 170632,
-      "visibleMeshObjects": 134,
+      "estimatedSceneCalls": 133,
+      "estimatedSubmittedTriangles": 168936,
+      "visibleMeshObjects": 132,
       "transparentCalls": 2
     },
     {
@@ -159,9 +159,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 117,
-      "estimatedSubmittedTriangles": 162142,
-      "visibleMeshObjects": 116,
+      "estimatedSceneCalls": 115,
+      "estimatedSubmittedTriangles": 160446,
+      "visibleMeshObjects": 114,
       "transparentCalls": 2
     },
     {
@@ -174,9 +174,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 122,
-      "estimatedSubmittedTriangles": 160575,
-      "visibleMeshObjects": 121,
+      "estimatedSceneCalls": 120,
+      "estimatedSubmittedTriangles": 158879,
+      "visibleMeshObjects": 119,
       "transparentCalls": 2
     },
     {
@@ -189,9 +189,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 72,
-      "estimatedSubmittedTriangles": 130557,
-      "visibleMeshObjects": 71,
+      "estimatedSceneCalls": 70,
+      "estimatedSubmittedTriangles": 128861,
+      "visibleMeshObjects": 69,
       "transparentCalls": 2
     },
     {
@@ -204,9 +204,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 70,
-      "estimatedSubmittedTriangles": 132000,
-      "visibleMeshObjects": 69,
+      "estimatedSceneCalls": 68,
+      "estimatedSubmittedTriangles": 130304,
+      "visibleMeshObjects": 67,
       "transparentCalls": 2
     },
     {
@@ -234,9 +234,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 135,
-      "estimatedSubmittedTriangles": 170632,
-      "visibleMeshObjects": 134,
+      "estimatedSceneCalls": 133,
+      "estimatedSubmittedTriangles": 168936,
+      "visibleMeshObjects": 132,
       "transparentCalls": 2
     },
     {
@@ -249,9 +249,9 @@
         0.605,
         3
       ],
-      "estimatedSceneCalls": 59,
-      "estimatedSubmittedTriangles": 106876,
-      "visibleMeshObjects": 58,
+      "estimatedSceneCalls": 57,
+      "estimatedSubmittedTriangles": 105180,
+      "visibleMeshObjects": 56,
       "transparentCalls": 2
     }
   ]

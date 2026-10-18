@@ -23,8 +23,22 @@ An independent design reviewer found no P0/P1 defects and independently passed a
 
 Additional iterative fixes: stationary event silence does not automatically pause play; first recovery rebases. Pole exit discards unobservable yaw and stays continuous. Calibration at a pole is rejected. These are deliberate continuity tradeoffs and need real-device validation.
 
+## Fresh review of commit `198014a`
+
+A second independent review found no new P0/P1/P2 design or math defects. Two P3 evidence corrections were made without changing production code:
+
+- The static estimator left the player ball visible, although both production table update methods hide it outside intro. It now hides the ball for FPV. Both sweeps were rerun against all 52 source-manifest Git blob hashes, which were reverified locally. All 48 rows and both summaries were regenerated. Orbit bridge right90 is now 118 versus 78 forward scene calls (+51.3%); orbit tunnel right90 is 105,796 versus 62,454 submitted triangles (+69.4%). Reference launch remains +6.5% calls and +2.7% triangles. These remain static estimates, not renderer counters or FPS.
+- The unexecuted browser harness no longer says Eco/High have different resolution: with this fixture's DPR 1 they both use pixel ratio 1. Actual dimensions are recorded in `renderSize`; quality/postprocessing still differ.
+
+Independent re-review verified both corrections, all 48 regenerated rows, both summaries and the updated README percentages; no additional concrete defect was found.
+
+The connector-fetched math files independently passed all 14 test groups on Node v24.19.0. Additional local seeded checks covered 10,000 normalized sensor quaternions, arbitrary-pose no-jump rebases and the reduced-motion 20-degree pitch bound. This does not exercise browser lifecycle or physical devices. Coordinate conventions were checked against `view.ts`, `route-camera.ts` and the linked W3C specification; the proposed Spin exception matches the existing event/presentation coupling in `head-loss.ts`.
+
+The reviewed input commit's [Verify pinball run](https://github.com/hafnium49/bb8-fpv-pinball/actions/runs/39078308217) completed successfully. That workflow runs application tests, circuit/guides/course checks and build; it does **not** run the isolated look-around math spike. The math result above is a separate local run. Final-commit CI must be checked separately. Browser startup was not retried and no new browser or hardware result is claimed.
+
 ## Still open before implementation/release
 
 Design approval is not a release approval. The future coordinator, permission UI, sensor listeners, transition interpolation and input integration have not been implemented or tested. Hardware permission behavior, physical signs in both landscape directions, drift, stationary event cadence, phone-lock/app-switch recovery, two-finger comfort, hand fatigue and sensor-to-display latency remain unmeasured. All-direction clipping/art coverage and actual render performance remain release gates. Follow mode remains the immediately available fallback in the proposal.
 
 Read `docs/phone-look-around.md` for the complete acceptance matrix and explicit opt-in rollout plan.
+

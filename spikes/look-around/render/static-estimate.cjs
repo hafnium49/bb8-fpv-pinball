@@ -19,7 +19,8 @@ global.document={createElement:()=>canvas()};global.window={location:{search:mod
   const directions=[['forward',0,0],['left45',-45,0],['right45',45,0],['left90',-90,0],['right90',90,0],['up25',0,25],['down25',0,-25],['rear180',180,0]];
   const rows=[];const camera=new THREE.PerspectiveCamera(82,844/390,.06,160);const frustum=new THREE.Frustum();
   for(const pose of poses)for(const [direction,yaw,offset] of directions){
-    table.ball.position.copy(pose.p);scene.updateMatrixWorld(true);
+    // Production FPV hides the player ball; constructors default to intro visibility.
+    table.ball.position.copy(pose.p);table.ball.visible=false;scene.updateMatrixWorld(true);
     const heading=pose.heading+yaw*Math.PI/180,pitch=pose.pitch+offset*Math.PI/180;
     camera.position.set(pose.p.x,pose.p.y+.3,pose.p.z);camera.lookAt(camera.position.clone().add(new THREE.Vector3(Math.sin(heading)*Math.cos(pitch),Math.sin(pitch),-Math.cos(heading)*Math.cos(pitch))));camera.updateMatrixWorld();
     frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
@@ -36,5 +37,6 @@ global.document={createElement:()=>canvas()};global.window={location:{search:mod
     });rows.push({pose:pose.name,direction,yawDegrees:yaw,pitchOffsetDegrees:offset,cameraPosition:camera.position.toArray(),estimatedSceneCalls:calls,estimatedSubmittedTriangles:triangles,visibleMeshObjects:objects,transparentCalls});
   }
   const out=resolve(process.env.RENDER_OUT||join(__dirname,'evidence'));mkdirSync(out,{recursive:true});
-  writeFileSync(join(out,mode==='orbit'?'static-estimate.json':'static-reference-estimate.json'),JSON.stringify({scene:mode,sourceRef:process.env.SOURCE_REF||'unverified',viewport:[844,390],method:'Actual main scene constructors with no-op 2D texture canvas; Three.js mesh bounding-sphere frustum culling and geometry/material-group counts; no renderer instantiated.',limitations:['Static estimates, not measured WebGL renderer counters or timings.','No camera physics clearance: ideal ball center plus 0.30m camera height.','No effects, postprocessing, shadow passes or live mechanism state; initial table state except ball translation.','Texture canvas is stubbed and no pixels/shaders are executed. Geometry and batching use source unchanged.','No iPhone GPU, Safari, sensor, input, frame time or thermal evidence.'],rows},null,2)+'\n');console.log(JSON.stringify(rows));
+  writeFileSync(join(out,mode==='orbit'?'static-estimate.json':'static-reference-estimate.json'),JSON.stringify({scene:mode,sourceRef:process.env.SOURCE_REF||'unverified',viewport:[844,390],method:'Actual main scene constructors with no-op 2D texture canvas; Three.js mesh bounding-sphere frustum culling and geometry/material-group counts; no renderer instantiated.',limitations:['Static estimates, not measured WebGL renderer counters or timings.','No camera physics clearance: ideal ball center plus 0.30m camera height.','No effects, postprocessing, shadow passes or live mechanism state; initial table state except ball translation and production FPV ball invisibility.','Texture canvas is stubbed and no pixels/shaders are executed. Geometry and batching use source unchanged.','No iPhone GPU, Safari, sensor, input, frame time or thermal evidence.'],rows},null,2)+'\n');console.log(JSON.stringify(rows));
 })().catch(e=>{console.error(e);process.exitCode=1;});
+

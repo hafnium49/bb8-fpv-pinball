@@ -1,46 +1,46 @@
 [
   {
     "pose": "launch",
-    "forwardCalls": 129,
-    "maxCalls": 141,
+    "forwardCalls": 127,
+    "maxCalls": 139,
     "maxCallsDirection": "left45",
-    "callsIncreasePct": 9.3,
-    "forwardTriangles": 120220,
-    "maxTriangles": 128232,
+    "callsIncreasePct": 9.4,
+    "forwardTriangles": 117036,
+    "maxTriangles": 125048,
     "maxTrianglesDirection": "left45",
-    "trianglesIncreasePct": 6.7
+    "trianglesIncreasePct": 6.8
   },
   {
     "pose": "ground",
-    "forwardCalls": 86,
-    "maxCalls": 108,
+    "forwardCalls": 84,
+    "maxCalls": 106,
     "maxCallsDirection": "right45",
-    "callsIncreasePct": 25.6,
-    "forwardTriangles": 84466,
-    "maxTriangles": 107968,
+    "callsIncreasePct": 26.2,
+    "forwardTriangles": 81282,
+    "maxTriangles": 104784,
     "maxTrianglesDirection": "right90",
-    "trianglesIncreasePct": 27.8
+    "trianglesIncreasePct": 28.9
   },
   {
     "pose": "bridge",
-    "forwardCalls": 80,
-    "maxCalls": 120,
+    "forwardCalls": 78,
+    "maxCalls": 118,
     "maxCallsDirection": "right90",
-    "callsIncreasePct": 50.0,
-    "forwardTriangles": 90090,
-    "maxTriangles": 116926,
+    "callsIncreasePct": 51.3,
+    "forwardTriangles": 86906,
+    "maxTriangles": 113742,
     "maxTrianglesDirection": "right90",
-    "trianglesIncreasePct": 29.8
+    "trianglesIncreasePct": 30.9
   },
   {
     "pose": "tunnel",
-    "forwardCalls": 77,
-    "maxCalls": 113,
+    "forwardCalls": 75,
+    "maxCalls": 111,
     "maxCallsDirection": "right90",
-    "callsIncreasePct": 46.8,
-    "forwardTriangles": 65638,
-    "maxTriangles": 108980,
+    "callsIncreasePct": 48.0,
+    "forwardTriangles": 62454,
+    "maxTriangles": 105796,
     "maxTrianglesDirection": "right90",
-    "trianglesIncreasePct": 66.0
+    "trianglesIncreasePct": 69.4
   }
 ]

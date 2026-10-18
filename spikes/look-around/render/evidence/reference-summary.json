@@ -2,24 +2,24 @@
   {
     "scene": "reference",
     "pose": "launch",
-    "forwardCalls": 155,
-    "maxCalls": 165,
+    "forwardCalls": 153,
+    "maxCalls": 163,
     "maxCallsDirection": "left45",
     "callsIncreasePct": 6.5,
-    "forwardTriangles": 187890,
-    "maxTriangles": 192902,
+    "forwardTriangles": 186194,
+    "maxTriangles": 191206,
     "maxTrianglesDirection": "left45",
     "trianglesIncreasePct": 2.7
   },
   {
     "scene": "reference",
     "pose": "ground",
-    "forwardCalls": 135,
-    "maxCalls": 135,
+    "forwardCalls": 133,
+    "maxCalls": 133,
     "maxCallsDirection": "forward",
     "callsIncreasePct": 0.0,
-    "forwardTriangles": 170632,
-    "maxTriangles": 170632,
+    "forwardTriangles": 168936,
+    "maxTriangles": 168936,
     "maxTrianglesDirection": "forward",
     "trianglesIncreasePct": 0.0
   }
