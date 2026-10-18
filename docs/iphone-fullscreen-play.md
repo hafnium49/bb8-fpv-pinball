@@ -11,7 +11,7 @@
 
 1. Open the deployed game in Safari or Chrome on iPhone.
 2. Share → Add to Home Screen; leave Open as Web App enabled if offered, and Add.
-3. Close the tab and launch ORBIT from the Home Screen icon.
+3. Close the tab and launch the game from its Home Screen icon.
 4. Press Start and verify the game has no normal browser URL/tab toolbar. In portrait and both landscape directions, verify that score, pause, launch and both flippers remain usable around the notch/home indicator. OS status/home-indicator behavior remains controlled by iOS.
 5. Test launch, simultaneous flippers, Pause → sound/graphics → Resume, background/relaunch and rotation during a held launch. Rotation cancels held input safely without restarting the run; phone-look rotation rebases the view.
 
