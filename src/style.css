@@ -186,8 +186,8 @@ h1 em { font-style: inherit; color: var(--amber); }
   :root:not(.touch-device) .ranking-panel .score-list li { flex: 1; padding-top: 3px; padding-bottom: 3px; }
   :root:not(.touch-device) .topbar { left: auto; right: 10px; width: 264px; height: auto; padding: 8px; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 12px; overflow-y: auto; }
   :root:not(.touch-device) .wordmark { min-height: 34px; flex: 0 0 auto; justify-content: center; }
-  :root:not(.touch-device) .wordmark strong { font: 900 24px Georgia, serif; letter-spacing: -.05em; color: #f9ce77; text-shadow: 0 -1px #ffebc4, 0 2px #825220, 0 3px #382415, 0 0 7px #e69b4870; white-space: nowrap; }
-  :root:not(.touch-device) .pinball-title { display: inline; }
+  :root:not(.touch-device) .wordmark strong { font: 900 24px Georgia, serif; letter-spacing: -.05em; color: #f9ce77; text-shadow: 0 -1px #ffebc4, 0 2px #825220, 0 3px #382415, 0 0 7px #e69b4870; white-space: normal; text-align: center; }
+  :root:not(.touch-device) .pinball-title { display: inline; font-size: 15px; letter-spacing: .02em; }
   :root:not(.touch-device) .orbit-mark, :root:not(.touch-device) .brand-note { display: none; }
   :root:not(.touch-device) .hud { order: 1; min-height: 112px; flex: 0 0 auto; padding: 11px 10px; border-color: #939a98; row-gap: 10px; }
   :root:not(.touch-device) #score { font-size: 31px; letter-spacing: .02em; }

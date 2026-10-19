@@ -95,8 +95,8 @@ export function setupFullscreen(options: {
     beforeHelp();
     help.querySelector('#fullscreen-help-title')!.textContent = rejected ? 'Fullscreen was blocked.' : 'Play without browser bars.';
     help.querySelector('#fullscreen-help-copy')!.textContent = rejected
-      ? 'The browser declined this fullscreen request. You can close this guide and try again, or open ORBIT as a Home Screen web app.'
-      : 'This browser does not offer fullscreen for this game. On iPhone, open ORBIT from the Home Screen to play without the normal browser bars.';
+      ? 'The browser declined this fullscreen request. You can close this guide and try again, or open Be the Ball 8 as a Home Screen web app.'
+      : 'This browser does not offer fullscreen for this game. On iPhone, open Be the Ball 8 from the Home Screen to play without the normal browser bars.';
     dialog.show();
   };
   button.addEventListener('click', async () => {

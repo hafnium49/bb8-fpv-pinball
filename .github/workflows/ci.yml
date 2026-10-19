@@ -17,3 +17,14 @@ jobs:
       - run: npm run test:guides
       - run: npm run test:course
       - run: npm run build
+      - name: Install browser for title verification
+        run: npx playwright install --with-deps chromium
+      - name: Verify title layout
+        run: npm run test:title:browser
+      - name: Upload title screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: title-layout
+          path: artifacts/title/
+          retention-days: 7
