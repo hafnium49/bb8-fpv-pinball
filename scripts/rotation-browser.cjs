@@ -17,6 +17,23 @@ const sizes = [
 ];
 const viewport = ([width, height]) => ({ width, height });
 async function resize(size) {
+  // A touch Start can now enter real fullscreen. Desktop automation cannot
+  // resize a fullscreen OS window to emulate rotation; restore the browser
+  // before setting viewport metrics. Installed-mode rotation is covered by
+  // fullscreen-browser.cjs without pretending this is physical iOS rotation.
+  await page.waitForFunction(() => !document.getElementById('fullscreen').disabled);
+  await page.evaluate(async () => {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (document.webkitFullscreenElement) await document.webkitExitFullscreen();
+  });
+  await page.waitForFunction(() => !document.fullscreenElement && !document.webkitFullscreenElement);
+  if (engine === 'chromium') {
+    // Document exit and the headless browser-window transition are separate.
+    const session = await page.context().newCDPSession(page);
+    const { windowId } = await session.send('Browser.getWindowForTarget');
+    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'normal' } });
+    await session.detach();
+  }
   await page.setViewportSize(viewport(size));
   await page.waitForFunction(() => {
     const { view } = window.orbitDebug, el = document.getElementById('viewport');
@@ -238,3 +255,4 @@ async function capture(label) {
   writeFileSync(`${out}/failure.json`, JSON.stringify({ error: error.stack, cases, errors }, null, 2));
   if (page && !page.isClosed()) await page.screenshot({ path: `${out}/failure.png` }).catch(() => {});
 }).finally(async () => { if (browser) await browser.close(); if (server) await server.close(); });
+

@@ -11,6 +11,12 @@ const angleDelta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 // These fixtures replace browser capability and sensor events, not app logic.
 // They do not prove physical phone axes, real permission sheets, or GPU speed.
 function installFixture(mode) {
+  // Keep sensor/lifecycle fixtures in a normal tab, including touch Start.
+  // fullscreen-browser.cjs covers the combined fullscreen + ?look=1 flows.
+  for (const key of ['requestFullscreen', 'webkitRequestFullscreen'])
+    Object.defineProperty(Element.prototype, key, { configurable: true, value: undefined });
+  Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false });
+  Object.defineProperty(document, 'webkitFullscreenEnabled', { configurable: true, value: false });
   let resolvePermission, angle = 0, interval;
   const fixture = window.lookFixture = { requests: 0, pose: [0, 90, 0], listeners: 0, attachments: 0, emissions: 0, permissionMode: mode };
   const listeners = new Set(), add = window.addEventListener.bind(window), remove = window.removeEventListener.bind(window);

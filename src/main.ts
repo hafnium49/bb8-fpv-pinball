@@ -50,7 +50,7 @@ app.innerHTML = `
       <div class="launch-cluster"><button id="launch" aria-label="Hold then release to launch the ball"><span id="launch-label">LAUNCH</span><span class="charge-track"><span id="charge"></span></span></button></div>
       <button id="right" class="flipper-button" aria-label="Hold right flipper"><span class="flipper-icon">↗</span><b>RIGHT FLIPPER</b><small>D / →</small></button>
     </div>
-    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-copy" hidden><div class="modal-card"><span id="modal-kicker" class="eyebrow amber">TAKE A BREATHER</span><h2 id="modal-title">Paused.</h2><p id="modal-copy">Your orbit will be right here.</p><button id="resume" class="primary">BACK TO THE TABLE <span>↗</span></button><button id="restart" class="text-button">Start a new game</button><div id="modal-settings"><button id="dialog-look" class="text-button" ${lookEnabled ? '' : 'hidden'}>Look around · experimental</button><button id="dialog-sound" class="text-button">SOUND OFF</button></div><div id="modal-feedback"></div></div></section>
+    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-copy" hidden><div class="modal-card"><span id="modal-kicker" class="eyebrow amber">TAKE A BREATHER</span><h2 id="modal-title">Paused.</h2><p id="modal-copy">Your orbit will be right here.</p><button id="resume" class="primary">BACK TO THE TABLE <span>↗</span></button><button id="restart" class="text-button">Start a new game</button><div id="modal-settings"><button id="dialog-quality" class="text-button" aria-label="Change graphics quality">FX HIGH</button><button id="dialog-look" class="text-button" ${lookEnabled ? '' : 'hidden'}>Look around · experimental</button><button id="dialog-sound" class="text-button">SOUND OFF</button></div><div id="modal-feedback"></div></div></section>
     <dialog id="fullscreen-help" aria-labelledby="fullscreen-help-title" aria-describedby="fullscreen-help-copy">
       <h2 id="fullscreen-help-title" tabindex="-1" autofocus>Play without browser bars.</h2>
       <div id="fullscreen-help-body" tabindex="0" role="region" aria-label="Home Screen setup instructions"><p id="fullscreen-help-copy"></p>
@@ -120,6 +120,7 @@ let displayCache = '';
 let focusBeforeDialog: HTMLElement | null = null;
 let playInput: PlayInput;
 let lastPointerType = '';
+let fullscreenController: ReturnType<typeof setupFullscreen> | undefined;
 try {
   const saved = localStorage.getItem('orbit-pinball-music-volume');
   if (saved !== null && saved.trim()) audio.setMusicVolume(Number(saved));
@@ -258,6 +259,9 @@ function refreshLook() {
 }
 
 function begin(silent = false) {
+  // Phone-look setup uses begin(true) before its permission request. Fullscreen
+  // consumes transient activation, so reserve it for Start / Restart gestures.
+  if (!silent && touchDevice()) fullscreenController?.enterForPlay();
   pendingLookResume = false;
   sim.start(); soundDirector.reset(); audio.reset(); clearComms(); headLoss.reset(); view.mode = 'fpv'; view.heading = 0; view.resetEffects(); if (!silent) void activateSound();
   displayCache = ''; previousPhase = 'ready'; playInput.clear();
@@ -328,14 +332,18 @@ async function boot() {
     arrangeIntro(); view.resize();
     const updateQuality = () => {
       $('quality').textContent = view.highQuality ? 'FX HIGH' : 'FX ECO';
+      $('dialog-quality').textContent = $('quality').textContent;
+      $('dialog-quality').setAttribute('aria-pressed', String(view.highQuality));
       $('quality').setAttribute('aria-pressed', String(view.highQuality));
       $('quality').setAttribute('aria-label', view.highQuality ? 'Enable Eco graphics' : 'Enable High graphics');
     };
     updateQuality(); $<HTMLButtonElement>('quality').disabled = false;
-    $('quality').addEventListener('click', () => {
+    const toggleQuality = () => {
       view.setQuality(!view.highQuality); updateQuality();
       toast(view.highQuality ? 'HIGH · glow + dynamic shadows' : 'ECO · lighter graphics');
-    });
+    };
+    $('quality').addEventListener('click', toggleQuality);
+    $('dialog-quality').addEventListener('click', toggleQuality);
     if (lookEnabled) {
       new ResizeObserver(positionLookControls).observe(document.querySelector('.topbar')!);
       phoneLook = new PhoneLook({ pause: () => { pendingLookResume = false; if (sim.phase === 'ready' || sim.phase === 'playing') { showPause(false); lookPanel.hidden = false; } }, reducedMotion: () => view.effects.reducedMotion });
@@ -359,7 +367,7 @@ async function boot() {
     $('resume').addEventListener('click', resume); $('restart').addEventListener('click', () => begin());
     $('pause').addEventListener('click', () => sim.paused ? resume() : showPause());
     $('show-controls').addEventListener('click', () => { $('instructions').hidden = !$('instructions').hidden; });
-    setupFullscreen({ game: $('game'), button: $<HTMLButtonElement>('fullscreen'), help: $<HTMLDialogElement>('fullscreen-help'),
+    fullscreenController = setupFullscreen({ game: $('game'), button: $<HTMLButtonElement>('fullscreen'), help: $<HTMLDialogElement>('fullscreen-help'),
       beforeHelp: () => { playInput.clear(); sim.releaseControls(); sim.cancelLaunchCharge(); showPause(); },
       afterHelp: () => { if (!$('modal').hidden) ($('resume').hidden ? $('restart') : $('resume')).focus(); else if (!$('fullscreen').hidden) $('fullscreen').focus(); else $('game').focus(); },
     });
