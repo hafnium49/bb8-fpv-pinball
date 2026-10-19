@@ -193,7 +193,11 @@ export class ReferenceMotion {
     if (!path)
       return;
     const f = pathFrame(path, this.progress);
-    this.speed = path.tunnel ? 12.04 : this.speed + (COURSE_GRAVITY * f.tangent.z - Math.sign(this.speed) * 1.68) * STEP;
+    // Taper rolling resistance near rest so it cannot repeatedly reverse tiny
+    // velocities and pin a weak shot on a shallow ramp. Gravity can then
+    // carry the rider back downhill; normal-speed resistance is unchanged.
+    const resistance = 1.68 * Math.max(-1, Math.min(1, this.speed / .5));
+    this.speed = path.tunnel ? 12.04 : this.speed + (COURSE_GRAVITY * f.tangent.z - resistance) * STEP;
     this.progress += this.speed * STEP;
     if (this.progress >= path.length) {
       this.finish(path, events);

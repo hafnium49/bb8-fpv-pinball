@@ -339,3 +339,30 @@ test('ramp entry and bridge cues survive a frame that advances through both phas
     assert.equal(frame.cues.filter(c => c.kind === 'bridge').length, 1);
   } finally { s.dispose(); }
 });
+
+
+// These shallow-ramp turnarounds previously stayed guided for over 30 seconds
+// because constant rolling resistance repeatedly reversed near-zero velocity.
+for (const [index, speed] of [[0, 14.5], [1, 13.75], [2, 15.375]])
+  test(`${courseRamps[index].name}: a shallow turnaround releases naturally`, async () => {
+    const s = await sim();
+    try {
+      const path = courseRamps[index], p = path.points[8], t = pathFrame(path, 0).tangent;
+      place(s, p.x, .295, p.z, t.x * speed, t.z * speed);
+      let captured = false;
+      for (let n = 0; n < 20 / STEP; n++) {
+        s.step();
+        captured ||= s.reference!.guided;
+        if (captured && !s.reference!.guided) break;
+      }
+      assert.ok(captured, 'shot must enter the ramp');
+      assert.equal(s.reference!.guided, false, 'weak shot must leave the ramp within 20 seconds');
+      const completed = s.reference!.routeDistance >= path.length;
+      assert.ok(completed || s.reference!.routeDistance <= 0, 'shot exits at a path endpoint');
+      assert.equal(s.route.completions, completed ? 1 : 0);
+      assert.equal(s.events.filter(e => e.type === 'ramp' && e.name === path.name).length, completed ? 1 : 0);
+      assert.equal(s.ball.isDynamic(), true);
+      assert.notEqual(s.ballCollider.collisionGroups(), 0);
+      assert.equal(s.balls, 3);
+    } finally { s.dispose(); }
+  });
