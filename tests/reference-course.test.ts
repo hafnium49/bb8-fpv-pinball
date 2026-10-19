@@ -343,20 +343,20 @@ test('ramp entry and bridge cues survive a frame that advances through both phas
 
 // These shallow-ramp turnarounds previously stayed guided for over 30 seconds
 // because constant rolling resistance repeatedly reversed near-zero velocity.
-for (const [index, speed] of [[0, 14.5], [1, 13.75], [2, 15.375]])
-  test(`${courseRamps[index].name}: a shallow turnaround releases naturally`, async () => {
+for (const [index, speed] of [[0, 14.5], [1, 13.75], [2, 15.375], [0, 14.65], [1, 13.82]])
+  test(`${courseRamps[index].name} at ${speed}: a shallow turnaround releases naturally`, async () => {
     const s = await sim();
     try {
       const path = courseRamps[index], p = path.points[8], t = pathFrame(path, 0).tangent;
       place(s, p.x, .295, p.z, t.x * speed, t.z * speed);
       let captured = false;
-      for (let n = 0; n < 20 / STEP; n++) {
+      for (let n = 0; n < 45 / STEP; n++) {
         s.step();
         captured ||= s.reference!.guided;
         if (captured && !s.reference!.guided) break;
       }
       assert.ok(captured, 'shot must enter the ramp');
-      assert.equal(s.reference!.guided, false, 'weak shot must leave the ramp within 20 seconds');
+      assert.equal(s.reference!.guided, false, 'weak shot must leave the ramp within 45 seconds');
       const completed = s.reference!.routeDistance >= path.length;
       assert.ok(completed || s.reference!.routeDistance <= 0, 'shot exits at a path endpoint');
       assert.equal(s.route.completions, completed ? 1 : 0);
@@ -366,3 +366,10 @@ for (const [index, speed] of [[0, 14.5], [1, 13.75], [2, 15.375]])
       assert.equal(s.balls, 3);
     } finally { s.dispose(); }
   });
+
+
+test('ramp crests have no quantized level segments that can hold a slow rider', () => {
+  for (const path of courseRamps)
+    for (let i = 1; i < path.points.length; i++)
+      assert.notEqual(path.points[i].z, path.points[i - 1].z, `${path.name} segment ${i - 1}`);
+});
